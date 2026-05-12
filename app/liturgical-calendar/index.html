@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="la">
+<head>
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta charset="UTF-8" />
+  <title>Calendarium Liturgicum</title>
+  <base href="/" />
+  <link rel="stylesheet" href="/styles.css" media="screen">
+</head>
+<body>
+  <h1 id="h1"></h1>
+  <h2 id="h2"></h2>
+
+  <p id="status">Chargement…</p>
+
+  <!-- Vue annuelle -->
+  <table id="cal-table" hidden>
+    <thead>
+      <tr><th>Doy</th><th>Date</th><th>Célébrations</th></tr>
+    </thead>
+    <tbody id="cal-body"></tbody>
+  </table>
+
+  <!-- Vue journalière -->
+  <div id="day-content" hidden></div>
+  <script type="module" src="app.js"></script>
+</body>
+</html>
