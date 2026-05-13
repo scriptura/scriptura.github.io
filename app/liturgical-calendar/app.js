@@ -26,7 +26,7 @@ const KAL_ERR_BUILD_ID_MISMATCH = -22
 
 // Base path résolu depuis <base href> — patché par index.html sur GitHub Pages projet.
 // Vaut '/' dans tous les autres environnements.
-const BASE_PATH = new URL(document.baseURI).pathname
+const BASE_PATH = `/app/liturgical-calendar/`
 
 // ── Lookup tables (miroir de types.rs) ───────────────────────────────────────
 
