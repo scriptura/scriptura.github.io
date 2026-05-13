@@ -5,7 +5,7 @@
     <title>Scriptura . Calendarium Liturgicum</title>
     <meta name="description" content="Un framework front-end permettant de créer des applications web." />
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-    <base href="/" />
+    <base href="/app/liturgical-calendar/" />
     <meta name="theme-color" content="#333" />
     <link rel="manifest" href="/app.webmanifest" crossorigin="use-credentials" />
     <link rel="shortcut icon" href="/favicons/favicon.ico" />
@@ -13,25 +13,22 @@
     <link rel="icon" type="image/png" href="/favicons/favicon.png" />
     <link rel="apple-touch-icon" sizes="180x180" href="/favicons/apple-touch-icon.png" />
     <link rel="mask-icon" href="/favicons/safari-pinned-tab.svg" color="#5bbad5" />
-    <link rel="stylesheet" href="/main.css" media="screen" />
-    <link rel="stylesheet" href="/styles/print.css" media="print" />
-    <link rel="preload" href="/fonts/notoSans-Regular.woff2" as="font" type="font/woff2" crossorigin />
-    <link rel="preload" href="/fonts/notoSerif-Regular.woff2" as="font" type="font/woff2" crossorigin />
+    <link rel="stylesheet" href="main.css" media="screen" />
     <script>
       // 1. Corrige <base href> sur GitHub Pages projet (/repo-name/).
       // 2. Restaure le path sauvegardé par 404.html (redirect SPA).
       // Synchrone : doit précéder tout module JS.
-      (function () {
+      ;(function () {
         if (/\.github\.io$/.test(location.hostname)) {
-          var m = location.pathname.match(/^(\/[^/]+\/)/);
-          if (m) document.querySelector('base').href = m[1];
+          var m = location.pathname.match(/^(\/[^/]+\/)/)
+          if (m) document.querySelector('base').href = m[1]
         }
-        var redirect = sessionStorage.getItem('spa_redirect');
+        var redirect = sessionStorage.getItem('spa_redirect')
         if (redirect) {
-          sessionStorage.removeItem('spa_redirect');
-          if (redirect !== location.pathname) history.replaceState(null, '', redirect);
+          sessionStorage.removeItem('spa_redirect')
+          if (redirect !== location.pathname) history.replaceState(null, '', redirect)
         }
-      })();
+      })()
     </script>
   </head>
   <body class="type-index">
