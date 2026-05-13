@@ -1,0 +1,12 @@
+{
+  "experimentalTernaries": false,
+  "printWidth": 140,
+  "trailingComma": "all",
+  "tabWidth": 2,
+  "useTabs": false,
+  "semi": false,
+  "singleQuote": true,
+  "bracketSpacing": true,
+  "arrowParens": "avoid",
+  "singleAttributePerLine": false
+}

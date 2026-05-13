@@ -1,0 +1,17 @@
+<!doctype html>
+<html lang="fr">
+  <head>
+    <meta charset="utf-8" />
+    <title>Calendarium Liturgicum</title>
+    <script>
+      var base = '/';
+      if (/\.github\.io$/.test(location.hostname)) {
+        var m = location.pathname.match(/^(\/[^/]+\/)/);
+        if (m) base = m[1];
+      }
+      sessionStorage.setItem('spa_redirect', location.pathname + location.search);
+      location.replace(location.origin + base);
+    </script>
+  </head>
+  <body></body>
+</html>

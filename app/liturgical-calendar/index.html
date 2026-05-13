@@ -1,28 +1,87 @@
-<!DOCTYPE html>
-<html lang="la">
-<head>
-  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-  <meta charset="UTF-8" />
-  <title>Calendarium Liturgicum</title>
-  <base href="/" />
-  <link rel="stylesheet" href="/styles.css" media="screen">
-</head>
-<body>
-  <h1 id="h1"></h1>
-  <h2 id="h2"></h2>
-
-  <p id="status">Chargement…</p>
-
-  <!-- Vue annuelle -->
-  <table id="cal-table" hidden>
-    <thead>
-      <tr><th>Doy</th><th>Date</th><th>Célébrations</th></tr>
-    </thead>
-    <tbody id="cal-body"></tbody>
-  </table>
-
-  <!-- Vue journalière -->
-  <div id="day-content" hidden></div>
-  <script type="module" src="app.js"></script>
-</body>
+<!doctype html>
+<html lang="fr">
+  <head>
+    <meta charset="utf-8" />
+    <title>Scriptura . Calendarium Liturgicum</title>
+    <meta name="description" content="Un framework front-end permettant de créer des applications web." />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <base href="/" />
+    <meta name="theme-color" content="#333" />
+    <link rel="manifest" href="/app.webmanifest" crossorigin="use-credentials" />
+    <link rel="shortcut icon" href="/favicons/favicon.ico" />
+    <link rel="icon" type="image/svg+xml" href="/favicons/favicon.svg" />
+    <link rel="icon" type="image/png" href="/favicons/favicon.png" />
+    <link rel="apple-touch-icon" sizes="180x180" href="/favicons/apple-touch-icon.png" />
+    <link rel="mask-icon" href="/favicons/safari-pinned-tab.svg" color="#5bbad5" />
+    <link rel="stylesheet" href="/main.css" media="screen" />
+    <link rel="stylesheet" href="/styles/print.css" media="print" />
+    <link rel="preload" href="/fonts/notoSans-Regular.woff2" as="font" type="font/woff2" crossorigin />
+    <link rel="preload" href="/fonts/notoSerif-Regular.woff2" as="font" type="font/woff2" crossorigin />
+    <script>
+      // 1. Corrige <base href> sur GitHub Pages projet (/repo-name/).
+      // 2. Restaure le path sauvegardé par 404.html (redirect SPA).
+      // Synchrone : doit précéder tout module JS.
+      (function () {
+        if (/\.github\.io$/.test(location.hostname)) {
+          var m = location.pathname.match(/^(\/[^/]+\/)/);
+          if (m) document.querySelector('base').href = m[1];
+        }
+        var redirect = sessionStorage.getItem('spa_redirect');
+        if (redirect) {
+          sessionStorage.removeItem('spa_redirect');
+          if (redirect !== location.pathname) history.replaceState(null, '', redirect);
+        }
+      })();
+    </script>
+  </head>
+  <body class="type-index">
+    <a class="sr-only" href="#main">Aller au contenu</a>
+    <main id="main" role="main">
+      <article>
+        <header>
+          <h1 class="main-heading" id="h1"></h1>
+        </header>
+        <p id="status">Chargement…</p>
+        <!-- Vue annuelle -->
+        <table class="table" id="cal-table" hidden>
+          <thead>
+            <tr>
+              <th>Doy</th>
+              <th>Date</th>
+              <th>Celebrationes</th>
+            </tr>
+          </thead>
+          <tbody class="table" id="cal-body"></tbody>
+        </table>
+        <!-- Vue journalière -->
+        <div id="day-content" hidden></div>
+      </article>
+    </main>
+    <footer class="footer" role="contentinfo">
+      <div class="wrap">
+        <div>
+          <p>liturgical-calendar</p>
+        </div>
+        <p>Created by <a class="author" href="https://www.linkedin.com/in/olivier-chavarin/">Olivier Chavarin</a></p>
+        <p>Since 2026</p>
+      </div>
+    </footer>
+    <div class="alert">
+      <noscript>
+        <div class="wrap">
+          <div class="mm" role="alert">
+            <svg class="icon" role="img" focusable="false">
+              <use href="sprites/util.svg#warning"></use>
+            </svg>
+            <p>
+              Javascript est désactivé dans votre navigateur. Afin de bénéficier de toutes les fonctionnalités du site, réactivez cette
+              option dans vos paramètres.
+            </p>
+          </div>
+        </div>
+      </noscript>
+    </div>
+    <script src="main.js" async></script>
+    <script type="module" src="app.js"></script>
+  </body>
 </html>
