@@ -49,7 +49,7 @@ prepend script
   //- Pour gérer les URLs de liturgical-calendar :
   script.
     (function () {
-      var APP_BASE = '/app/liturgical-calendar/';
+      const APP_BASE = '/app/liturgical-calendar/';
       if (location.pathname.startsWith(APP_BASE)) {
         sessionStorage.setItem('spa_redirect', location.pathname + location.search);
         location.replace(location.origin + APP_BASE);
