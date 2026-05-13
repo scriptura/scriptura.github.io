@@ -26,7 +26,7 @@ const KAL_ERR_BUILD_ID_MISMATCH = -22
 
 // Base path résolu depuis <base href> — patché par index.html sur GitHub Pages projet.
 // Vaut '/' dans tous les autres environnements.
-const BASE_PATH = `/app/liturgical-calendar/`
+const BASE_PATH = new URL(document.baseURI).pathname
 
 // ── Lookup tables (miroir de types.rs) ───────────────────────────────────────
 
@@ -80,25 +80,40 @@ function formatDateLong(year, month, day) {
 
 // ── Routage ───────────────────────────────────────────────────────────────────
 
+/** Vérifie qu'une date grégorienne existe (gère les années bissextiles). */
+function isValidDate(year, month, day) {
+  const d = new Date(year, month - 1, day)
+  return d.getFullYear() === year && d.getMonth() === month - 1 && d.getDate() === day
+}
+
 function detectRoute() {
   let raw = window.location.pathname
   if (raw.startsWith(BASE_PATH)) raw = raw.slice(BASE_PATH.length)
   raw = raw.replace(/\/$/, '')
 
+  // Racine → date du jour
+  if (raw === '') {
+    const now = new Date()
+    return { type: 'day', year: now.getFullYear(), month: now.getMonth() + 1, day: now.getDate() }
+  }
+
   const mYear = raw.match(/^(\d{4})$/)
-  if (mYear) return { type: 'year', year: parseInt(mYear[1]) }
+  if (mYear) {
+    const year = parseInt(mYear[1])
+    if (year < 1970 || year > 2399) return { type: 'not-found' }
+    return { type: 'year', year }
+  }
 
   const mDay = raw.match(/^(\d{4})\/(\d{2})\/(\d{2})$/)
-  if (mDay)
-    return {
-      type: 'day',
-      year: parseInt(mDay[1]),
-      month: parseInt(mDay[2]),
-      day: parseInt(mDay[3]),
-    }
+  if (mDay) {
+    const year = parseInt(mDay[1])
+    const month = parseInt(mDay[2])
+    const day = parseInt(mDay[3])
+    if (!isValidDate(year, month, day)) return { type: 'not-found' }
+    return { type: 'day', year, month, day }
+  }
 
-  const now = new Date()
-  return { type: 'day', year: now.getFullYear(), month: now.getMonth() + 1, day: now.getDate() }
+  return { type: 'not-found' }
 }
 
 // ── Utilitaires WASM ──────────────────────────────────────────────────────────
@@ -295,7 +310,7 @@ function renderDay(year, month, day, exports, memory) {
 
   // Rendu fête principale
   let html = `<section class="feast primary color-${COLOR_CSS[color] ?? ''}">
-        <h3>${label}</h3>`
+        <h2>${label}</h2>`
   if (annotation) html += `<p class="annotation">${renderMarkdown(annotation)}</p>`
   html += `<ul>
         <li>Feast ID: 0x${feastId.toString(16).toUpperCase().padStart(4, '0')}</li>
@@ -312,7 +327,7 @@ function renderDay(year, month, day, exports, memory) {
   // Fêtes secondaires
   if (secCount > 0 && exports.kal_wasm_read_secondary(secOffset, secCount) === KAL_ENGINE_OK) {
     const sv = new DataView(memory.buffer, exports.kal_wasm_secondary_ptr(), secCount * 2)
-    html += `<section class="secondaries"><h4>Commémorations</h4>`
+    html += `<section class="secondaries"><h2 class="sr-only">Commémorations</h2>`
     for (let i = 0; i < secCount; i++) {
       const ridx = sv.getUint16(i * 2, true)
       if (ridx === 0) continue
@@ -322,7 +337,7 @@ function renderDay(year, month, day, exports, memory) {
       const fv2 = new DataView(memory.buffer, feastPtr, 4) // FEAST_BUF still set from resolveSecondary
       const secFeastId = fv2.getUint16(0, true)
       html += `<div class="feast secondary color-${COLOR_CSS[sf.color] ?? ''}">
-                <strong>${res.label}</strong>`
+                <h3>${res.label}</h3>`
       if (res.annotation) html += `<p class="annotation">${renderMarkdown(res.annotation)}</p>`
       html += `<ul>
                 <li>Feast ID: 0x${secFeastId.toString(16).toUpperCase().padStart(4, '0')}</li>
@@ -344,6 +359,24 @@ function renderDay(year, month, day, exports, memory) {
     </nav>`
 
   container.innerHTML = html
+  container.hidden = false
+}
+
+// ── Vue 404 ───────────────────────────────────────────────────────────────────
+
+function renderNotFound() {
+  document.title = '404 — Page non trouvée'
+  document.getElementById('h1').innerHTML = 'Calendarium Romanum Generale <span>. 404</span>'
+  const container = document.getElementById('day-content')
+  container.innerHTML = `<section class="not-found">
+    <p>La ressource demandée n'existe pas.</p>
+    <p>Routes valides :</p>
+    <ul>
+      <li><a href="${BASE_PATH}">Date du jour</a></li>
+      <li><code>YYYY</code> — vue annuelle (ex. <a href="${BASE_PATH}2026">2026</a>)</li>
+      <li><code>YYYY/MM/DD</code> — vue journalière (ex. <a href="${BASE_PATH}2026/12/25">2026/12/25</a>)</li>
+    </ul>
+  </section>`
   container.hidden = false
 }
 
@@ -377,7 +410,9 @@ async function init() {
 
     status.hidden = true
     const route = detectRoute()
-    if (route.type === 'year') {
+    if (route.type === 'not-found') {
+      renderNotFound()
+    } else if (route.type === 'year') {
       renderYear(route.year, exports, memory)
     } else {
       renderDay(route.year, route.month, route.day, exports, memory)
