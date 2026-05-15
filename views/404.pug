@@ -15,6 +15,17 @@ mixin list(icon, name, slug)
       use(href='/sprites/util.svg#' + icon)
     a(href='/page/' + slug + '.html') #{name}
 
+prepend head
+  //- Pour gérer les URLs de liturgical-calendar :
+  script.
+    (function () {
+      const APP_BASE = '/app/liturgical-calendar/';
+      if (location.pathname.startsWith(APP_BASE)) {
+        sessionStorage.setItem('spa_redirect', location.pathname + location.search);
+        location.replace(location.origin + APP_BASE);
+      }
+    })();
+
 block main
   article
     header(role='banner')
@@ -44,14 +55,3 @@ block main
       +list('paint-roller', 'SVG sprite using CSS variables', 'sprite2')
       +list('hammer', 'Sandboxes', 'sandboxes')
       +list('hammer', 'MesseInfo API', 'messeInfoApi')
-
-prepend script
-  //- Pour gérer les URLs de liturgical-calendar :
-  script.
-    (function () {
-      const APP_BASE = '/app/liturgical-calendar/';
-      if (location.pathname.startsWith(APP_BASE)) {
-        sessionStorage.setItem('spa_redirect', location.pathname + location.search);
-        location.replace(location.origin + APP_BASE);
-      }
-    })();
