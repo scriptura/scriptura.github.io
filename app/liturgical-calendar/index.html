@@ -15,14 +15,7 @@
     <link rel="mask-icon" href="/favicons/safari-pinned-tab.svg" color="#5bbad5" />
     <link rel="stylesheet" href="main.css" media="screen" />
     <script>
-      // 1. Corrige <base href> sur GitHub Pages projet (/repo-name/).
-      // 2. Restaure le path sauvegardé par 404.html (redirect SPA).
-      // Synchrone : doit précéder tout module JS.
       ;(function () {
-        if (/\.github\.io$/.test(location.hostname)) {
-          var m = location.pathname.match(/^(\/[^/]+\/)/)
-          if (m) document.querySelector('base').href = m[1]
-        }
         var redirect = sessionStorage.getItem('spa_redirect')
         if (redirect) {
           sessionStorage.removeItem('spa_redirect')

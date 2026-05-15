@@ -24,9 +24,7 @@ const LITS_URL = 'calendar.lits'
 const KAL_ENGINE_OK = 0
 const KAL_ERR_BUILD_ID_MISMATCH = -22
 
-// Base path résolu depuis <base href> — patché par index.html sur GitHub Pages projet.
-// Vaut '/' dans tous les autres environnements.
-const BASE_PATH = `/app/liturgical-calendar/`
+const BASE_PATH = new URL(document.baseURI).pathname
 
 // ── Lookup tables (miroir de types.rs) ───────────────────────────────────────
 
