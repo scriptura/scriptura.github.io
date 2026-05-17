@@ -1,25 +1,14 @@
 /**
  * app.js — Bridge JS pour liturgical-calendar-wasm v5.
- *
- * Pattern de lecture v5 (2 appels au lieu de 1) :
- *   kal_wasm_read_day(year, doy)         → TimelineEntry dans ENTRY_BUF
- *   kal_wasm_read_feast(primaryIndex)    → FeastEntry dans FEAST_BUF (O(1))
- *
- * Les flags (couleur, nature, précédence) viennent de FeastEntry.flags.
- * Les bits d'occurrence (vesperae_i, vigilia) viennent de TimelineEntry.occurrence_flags.
- *
- * Routes :
- *   /YYYY         → vue annuelle (tableau 366 jours)
- *   /YYYY/MM/DD   → vue journalière (détail complet)
- *   /             → vue journalière, date du jour
- *
- * Compatibilité GitHub Pages : le path est restauré par index.html
- * (sessionStorage redirect depuis 404.html) avant l'exécution de ce module.
+ * * Invariant de routage et d'accès mémoire (AOT alignment) :
+ * Suppression du tag global <base> au profit d'une résolution explicite.
  */
 
-const WASM_URL = 'liturgical_calendar_wasm.wasm'
-const KALD_URL = 'calendar.kald'
-const LITS_URL = 'calendar.lits'
+const APP_ROOT = '/app/liturgical-calendar/'
+
+const WASM_URL = `${APP_ROOT}liturgical_calendar_wasm.wasm`
+const KALD_URL = `${APP_ROOT}romanus_universale.kald`
+const LITS_URL = `${APP_ROOT}romanus_universale_la.lits`
 
 const KAL_ENGINE_OK = 0
 const KAL_ERR_BUILD_ID_MISMATCH = -22
@@ -76,20 +65,26 @@ function formatDateLong(year, month, day) {
   return new Date(year, month - 1, day).toLocaleDateString('fr-FR', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })
 }
 
-// ── Routage ───────────────────────────────────────────────────────────────────
+// ── Routage Dynamique (Consommation du jeton SPA) ────────────────────────────
 
-/** Vérifie qu'une date grégorienne existe (gère les années bissextiles). */
 function isValidDate(year, month, day) {
   const d = new Date(year, month - 1, day)
   return d.getFullYear() === year && d.getMonth() === month - 1 && d.getDate() === day
 }
 
 function detectRoute() {
-  let raw = window.location.pathname
-  if (raw.startsWith(BASE_PATH)) raw = raw.slice(BASE_PATH.length)
+  // En priorité, on extrait la route virtuelle sauvegardée lors de la redirection 404,
+  // sinon on se replie sur l'URL physique courante.
+  let raw = sessionStorage.getItem('spa_redirect') || window.location.pathname
+
+  if (APP_ROOT.endsWith('/') && raw === APP_ROOT.slice(0, -1)) {
+    raw = ''
+  } else if (raw.startsWith(APP_ROOT)) {
+    raw = raw.slice(APP_ROOT.length)
+  }
+
   raw = raw.replace(/\/$/, '')
 
-  // Racine → date du jour
   if (raw === '') {
     const now = new Date()
     return { type: 'day', year: now.getFullYear(), month: now.getMonth() + 1, day: now.getDate() }
@@ -124,15 +119,6 @@ function wasmStr(memory, ptr, len) {
   return decoder.decode(new Uint8Array(memory.buffer, ptr, len))
 }
 
-/**
- * Décode FeastEntry.flags (u16 LE à l'offset 2 de FEAST_BUF).
- *
- * Bits [3:0]   → Precedence
- * Bits [7:4]   → Color
- * Bits [10:8]  → LiturgicalPeriod
- * Bits [13:11] → Nature
- * Bit  [14]    → has_vigil_mass (invariant corpus)
- */
 function decodeFeastFlags(flags) {
   return {
     precedence: flags & 0x000f,
@@ -143,12 +129,6 @@ function decodeFeastFlags(flags) {
   }
 }
 
-/**
- * Décode TimelineEntry.occurrence_flags (u8 à l'offset 4 de ENTRY_BUF).
- *
- * Bit 0 → has_vesperae_i (Premières Vêpres ce soir)
- * Bit 1 → has_vigilia    (Messe de Vigile ce soir)
- */
 function decodeOccurrenceFlags(occFlags) {
   return {
     hasVesperaeI: !!(occFlags & 0b01),
@@ -156,15 +136,10 @@ function decodeOccurrenceFlags(occFlags) {
   }
 }
 
-/** Rendu minimal Markdown inline : *texte* → <em>texte</em>. */
 function renderMarkdown(text) {
   return text.replace(/\*([^*]+)\*/g, '<em>$1</em>')
 }
 
-/**
- * Résout label + annotation pour un feast_id.
- * Retourne { label, annotation } ou null.
- */
 function resolveById(exports, memory, feastId, year) {
   if (exports.kal_wasm_get_label_by_id(feastId, year) !== 1) return null
   const label = wasmStr(memory, exports.kal_wasm_label_ptr(), exports.kal_wasm_label_len())
@@ -173,14 +148,6 @@ function resolveById(exports, memory, feastId, year) {
   return { label, annotation }
 }
 
-/**
- * Résout label, annotation ET flags d'un feast secondaire via son registry_index.
- *
- * Pattern v5 O(1) : registry_index → kal_wasm_read_feast → FeastEntry.feast_id
- * → kal_wasm_get_label_by_id. Remplace le scan linéaire O(366) de la v4.
- *
- * Retourne { label, annotation, feastFlags } ou null.
- */
 function resolveSecondary(exports, memory, registryIndex, year) {
   if (exports.kal_wasm_read_feast(registryIndex) !== KAL_ENGINE_OK) return null
 
@@ -207,16 +174,13 @@ function renderYear(year, exports, memory) {
   for (let doy = 0; doy < 366; doy++) {
     if (exports.kal_wasm_read_day(year, doy) !== KAL_ENGINE_OK) continue
 
-    // TimelineEntry layout : [0..2] primary_index, [2..4] secondary_offset,
-    //                        [4] occurrence_flags, [5] secondary_count
     const ev = new DataView(memory.buffer, entryPtr, 8)
     const primaryIndex = ev.getUint16(0, true)
     const secOffset = ev.getUint16(2, true)
     const secCount = ev.getUint8(5)
 
-    if (primaryIndex === 0) continue // Padding Entry
+    if (primaryIndex === 0) continue
 
-    // Couleur depuis FeastEntry (O(1))
     let colorCss = ''
     if (exports.kal_wasm_read_feast(primaryIndex) === KAL_ENGINE_OK) {
       const fv = new DataView(memory.buffer, feastPtr, 4)
@@ -225,16 +189,16 @@ function renderYear(year, exports, memory) {
     }
 
     const { month, day } = doyToMonthDay(doy)
-    const href = `${year}/${zeroPad(month)}/${zeroPad(day)}`
+    const href = `${APP_ROOT}${year}/${zeroPad(month)}/${zeroPad(day)}`
+
+    // Correction ici : initialisation stricte sans 's' pour correspondre aux mutations suivantes
     let featsHtml = ''
 
-    // Fête principale — label
     if (exports.kal_wasm_get_label(year, doy) === 1) {
       const label = wasmStr(memory, exports.kal_wasm_label_ptr(), exports.kal_wasm_label_len())
       featsHtml += `<p class="color-${colorCss}">${label}</p>`
     }
 
-    // Fêtes secondaires
     if (secCount > 0 && exports.kal_wasm_read_secondary(secOffset, secCount) === KAL_ENGINE_OK) {
       const sv = new DataView(memory.buffer, exports.kal_wasm_secondary_ptr(), secCount * 2)
       for (let i = 0; i < secCount; i++) {
@@ -249,7 +213,7 @@ function renderYear(year, exports, memory) {
 
     const tr = document.createElement('tr')
     tr.innerHTML = `
-            <td class="doy">${doy}</td>
+            <td class="doy"><a id="doy-${doy}" href="#doy-${doy}">${doy}</a></td>
             <td class="date"><a href="${href}">${zeroPad(day)}/${zeroPad(month)}</a></td>
             <td class="feasts">${featsHtml}</td>`
     tbody.appendChild(tr)
@@ -275,7 +239,6 @@ function renderDay(year, month, day, exports, memory) {
     return
   }
 
-  // TimelineEntry
   const ev = new DataView(memory.buffer, entryPtr, 8)
   const primaryIndex = ev.getUint16(0, true)
   const secOffset = ev.getUint16(2, true)
@@ -288,7 +251,6 @@ function renderDay(year, month, day, exports, memory) {
     return
   }
 
-  // FeastEntry — flags invariants
   let feastFlags = 0,
     feastId = 0
   if (exports.kal_wasm_read_feast(primaryIndex) === KAL_ENGINE_OK) {
@@ -300,46 +262,41 @@ function renderDay(year, month, day, exports, memory) {
   const { precedence, color, period, nature, hasVigil } = decodeFeastFlags(feastFlags)
   const { hasVesperaeI, hasVigilia } = decodeOccurrenceFlags(occFlags)
 
-  // Label + annotation fête principale
-  exports.kal_wasm_get_label(year, doy)
-  const label = wasmStr(memory, exports.kal_wasm_label_ptr(), exports.kal_wasm_label_len())
-  const annLen = exports.kal_wasm_annotation_len()
-  const annotation = annLen > 0 ? wasmStr(memory, exports.kal_wasm_annotation_ptr(), annLen) : null
+  // Alignement structurel : Résolution sécurisée via l'ID de la célébration principale
+  const res = resolveById(exports, memory, feastId, year)
+  const label = res ? res.label : `Fête inconnue (0x${feastId.toString(16).toUpperCase()})`
+  const annotation = res ? res.annotation : null
 
-  // Rendu fête principale
-  let html = `<section class="feast primary color-${COLOR_CSS[color] ?? ''}">
+  let html = ''
+  html += `<section class="feast primary color-${COLOR_CSS[color] ?? ''}">
         <h2>${label}</h2>`
   if (annotation) html += `<p class="annotation">${renderMarkdown(annotation)}</p>`
   html += `<ul>
         <li>Feast ID: 0x${feastId.toString(16).toUpperCase().padStart(4, '0')}</li>
-        <li>Précédence: ${PRECEDENCE[precedence] ?? precedence} (${precedence})</li>
+        <li>Précédence: ${PRECEDENCE[precedence] ?? precedence} (${precedence + 1})</li>
         <li>Couleur: ${COLOR[color] ?? color}</li>
         <li>Période: ${PERIOD[period] ?? period}</li>
         <li>Nature: ${NATURE[nature] ?? nature}</li>`
-  if (annotation) html += `<li>Annotation: ${renderMarkdown(annotation)}</li>`
   if (hasVigil) html += `<li>Vigile propre: oui (invariant)</li>`
   if (hasVesperaeI) html += `<li>Vêpres I: ce soir</li>`
   if (hasVigilia) html += `<li>Vigile: ce soir</li>`
   html += `</ul></section>`
 
-  // Fêtes secondaires
   if (secCount > 0 && exports.kal_wasm_read_secondary(secOffset, secCount) === KAL_ENGINE_OK) {
     const sv = new DataView(memory.buffer, exports.kal_wasm_secondary_ptr(), secCount * 2)
     html += `<section class="secondaries"><h2 class="sr-only">Commémorations</h2>`
     for (let i = 0; i < secCount; i++) {
       const ridx = sv.getUint16(i * 2, true)
       if (ridx === 0) continue
-      const res = resolveSecondary(exports, memory, ridx, year)
-      if (!res) continue
-      const sf = decodeFeastFlags(res.feastFlags)
-      const fv2 = new DataView(memory.buffer, feastPtr, 4) // FEAST_BUF still set from resolveSecondary
-      const secFeastId = fv2.getUint16(0, true)
+      const resSec = resolveSecondary(exports, memory, ridx, year)
+      if (!resSec) continue
+      const sf = decodeFeastFlags(resSec.feastFlags)
       html += `<div class="feast secondary color-${COLOR_CSS[sf.color] ?? ''}">
-                <h3>${res.label}</h3>`
-      if (res.annotation) html += `<p class="annotation">${renderMarkdown(res.annotation)}</p>`
+                <h3>${resSec.label}</h3>`
+      if (resSec.annotation) html += `<p class="annotation">${renderMarkdown(resSec.annotation)}</p>`
       html += `<ul>
-                <li>Feast ID: 0x${secFeastId.toString(16).toUpperCase().padStart(4, '0')}</li>
-                <li>Précédence: ${PRECEDENCE[sf.precedence] ?? sf.precedence} (${sf.precedence})</li>
+                <li>Feast ID: 0x${ridx.toString(16).toUpperCase().padStart(4, '0')}</li>
+                <li>Précédence: ${PRECEDENCE[sf.precedence] ?? sf.precedence} (${sf.precedence + 1})</li>
                 <li>Couleur: ${COLOR[sf.color] ?? sf.color}</li>
                 <li>Nature: ${NATURE[sf.nature] ?? sf.nature}</li>
             </ul></div>`
@@ -347,13 +304,12 @@ function renderDay(year, month, day, exports, memory) {
     html += `</section>`
   }
 
-  // Navigation
   const prev = doyToMonthDay(Math.max(0, doy - 1))
   const next = doyToMonthDay(Math.min(365, doy + 1))
   html += `<nav class="day-nav">
-        <a href="${year}/${zeroPad(prev.month)}/${zeroPad(prev.day)}">← Jour précédent</a>
-        <a href="${year}">Année ${year}</a>
-        <a href="${year}/${zeroPad(next.month)}/${zeroPad(next.day)}">Jour suivant →</a>
+        <a href="${APP_ROOT}${year}/${zeroPad(prev.month)}/${zeroPad(prev.day)}">← Jour précédent</a>
+        <a href="${APP_ROOT}${year}">Année ${year}</a>
+        <a href="${APP_ROOT}${year}/${zeroPad(next.month)}/${zeroPad(next.day)}">Jour suivant →</a>
     </nav>`
 
   container.innerHTML = html
@@ -370,43 +326,45 @@ function renderNotFound() {
     <p>La ressource demandée n'existe pas.</p>
     <p>Routes valides :</p>
     <ul>
-      <li><a href="${BASE_PATH}">Date du jour</a></li>
-      <li><code>YYYY</code> — vue annuelle (ex. <a href="${BASE_PATH}2026">2026</a>)</li>
-      <li><code>YYYY/MM/DD</code> — vue journalière (ex. <a href="${BASE_PATH}2026/12/25">2026/12/25</a>)</li>
+      <li><a href="${APP_ROOT}">Date du jour</a></li>
+      <li><code>YYYY</code> — vue annuelle (ex. <a href="${APP_ROOT}2026">2026</a>)</li>
+      <li><code>YYYY/MM/DD</code> — vue journalière (ex. <a href="${APP_ROOT}2026/12/25">2026/12/25</a>)</li>
     </ul>
   </section>`
   container.hidden = false
 }
 
-// ── Initialisation ────────────────────────────────────────────────────────────
+// ── Initialisation Déterministe ──────────────────────────────────────────────
 
 async function init() {
   const status = document.getElementById('status')
   try {
+    // Étape 1 : Les requêtes s'exécutent alors que le navigateur est TOUJOURS
+    // sur l'URL racine valide. Les chemins absolus garantissent un ciblage parfait.
     const [wasmResp, kaldBuf, litsBuf] = await Promise.all([
       fetch(WASM_URL),
       fetch(KALD_URL).then(r => r.arrayBuffer()),
       fetch(LITS_URL).then(r => r.arrayBuffer()),
     ])
 
-    const { instance } = await WebAssembly.instantiateStreaming(wasmResp, {})
-    const { exports } = instance
+    const obj = await WebAssembly.instantiateStreaming(wasmResp, {})
+    const { exports } = obj.instance
     const memory = exports.memory
 
+    // Allocation des structures DOD
     const kaldPtr = exports.kal_wasm_alloc_kald(kaldBuf.byteLength)
-    if (kaldPtr === 0) throw new Error('kald : capacité statique insuffisante')
+    if (kaldPtr === 0) throw new Error('kald capacity error')
     copyToWasm(memory, kaldPtr, kaldBuf)
-    const rcKald = exports.kal_wasm_commit_kald()
-    if (rcKald !== KAL_ENGINE_OK) throw new Error(`kal_wasm_commit_kald → ${rcKald}`)
+    if (exports.kal_wasm_commit_kald() !== KAL_ENGINE_OK) throw new Error('kald commit failed')
 
     const litsPtr = exports.kal_wasm_alloc_lits(litsBuf.byteLength)
-    if (litsPtr === 0) throw new Error('lits : capacité statique insuffisante')
+    if (litsPtr === 0) throw new Error('lits capacity error')
     copyToWasm(memory, litsPtr, litsBuf)
-    const rcLits = exports.kal_wasm_commit_lits()
-    if (rcLits === KAL_ERR_BUILD_ID_MISMATCH) throw new Error('build_id mismatch : .kald et .lits issus de builds différents')
-    if (rcLits !== KAL_ENGINE_OK) throw new Error(`kal_wasm_commit_lits → ${rcLits}`)
+    if (exports.kal_wasm_commit_lits() !== KAL_ENGINE_OK) throw new Error('lits commit failed')
 
     status.hidden = true
+
+    // Étape 2 : Évaluation de la route (qu'elle vienne de l'URL ou du stockage)
     const route = detectRoute()
     if (route.type === 'not-found') {
       renderNotFound()
@@ -414,6 +372,16 @@ async function init() {
       renderYear(route.year, exports, memory)
     } else {
       renderDay(route.year, route.month, route.day, exports, memory)
+    }
+
+    // Étape 3 : Une fois le moteur WASM stabilisé et l'IHM rendue,
+    // on synchronise l'URL du navigateur de façon transparente pour l'utilisateur.
+    const virtualRoute = sessionStorage.getItem('spa_redirect')
+    if (virtualRoute) {
+      sessionStorage.removeItem('spa_redirect')
+      if (virtualRoute !== window.location.pathname) {
+        window.history.replaceState(null, '', virtualRoute)
+      }
     }
   } catch (err) {
     status.textContent = `Erreur : ${err.message}`

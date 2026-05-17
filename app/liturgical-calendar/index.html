@@ -5,7 +5,6 @@
     <title>Scriptura . Calendarium Liturgicum</title>
     <meta name="description" content="Un framework front-end permettant de créer des applications web." />
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-    <base href="/app/liturgical-calendar/" />
     <meta name="theme-color" content="#333" />
     <link rel="manifest" href="/app.webmanifest" crossorigin="use-credentials" />
     <link rel="shortcut icon" href="/favicons/favicon.ico" />
@@ -14,26 +13,17 @@
     <link rel="apple-touch-icon" sizes="180x180" href="/favicons/apple-touch-icon.png" />
     <link rel="mask-icon" href="/favicons/safari-pinned-tab.svg" color="#5bbad5" />
     <link rel="stylesheet" href="main.css" media="screen" />
-    <script>
-      ;(function () {
-        var redirect = sessionStorage.getItem('spa_redirect')
-        if (redirect) {
-          sessionStorage.removeItem('spa_redirect')
-          if (redirect !== location.pathname) history.replaceState(null, '', redirect)
-        }
-      })()
-    </script>
   </head>
   <body class="type-index">
     <a class="sr-only" href="#main">Aller au contenu</a>
     <main id="main" role="main">
       <article>
         <header>
-          <h1 class="main-heading" id="h1"></h1>
+          <h1 class="main-heading" id="h1">Calendarium Romanum Generale</h1>
         </header>
         <p id="status">Chargement…</p>
         <!-- Vue annuelle -->
-        <table class="table" id="cal-table" hidden>
+        <table class="table liturgical-calendar" id="cal-table" hidden>
           <thead>
             <tr>
               <th>Doy</th>
@@ -71,6 +61,6 @@
         </div>
       </noscript>
     </div>
-    <script type="module" src="app.js"></script>
+    <script type="module" src="/app/liturgical-calendar/app.js?v=20260517"></script>
   </body>
 </html>
