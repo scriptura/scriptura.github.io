@@ -1,9 +1,8 @@
 table.liturgical-calendar {
-  & > * > :first-child,
-  & > * > :nth-child(2) {
+  & :where(.doy, .date) {
     width: 3em;
   }
-  th {
+  thead th {
     text-align: start;
   }
   .feasts {

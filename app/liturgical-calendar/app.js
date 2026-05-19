@@ -245,71 +245,73 @@ function renderDay(year, month, day, exports, memory) {
   const occFlags = ev.getUint8(4)
   const secCount = ev.getUint8(5)
 
-  if (primaryIndex === 0) {
-    container.textContent = '(aucune fête)'
-    container.hidden = false
-    return
-  }
-
-  let feastFlags = 0,
-    feastId = 0
-  if (exports.kal_wasm_read_feast(primaryIndex) === KAL_ENGINE_OK) {
-    const fv = new DataView(memory.buffer, feastPtr, 4)
-    feastId = fv.getUint16(0, true)
-    feastFlags = fv.getUint16(2, true)
-  }
-
-  const { precedence, color, period, nature, hasVigil } = decodeFeastFlags(feastFlags)
-  const { hasVesperaeI, hasVigilia } = decodeOccurrenceFlags(occFlags)
-
-  // Alignement structurel : Résolution sécurisée via l'ID de la célébration principale
-  const res = resolveById(exports, memory, feastId, year)
-  const label = res ? res.label : `Fête inconnue (0x${feastId.toString(16).toUpperCase()})`
-  const annotation = res ? res.annotation : null
-
   let html = ''
-  html += `<section class="feast primary color-${COLOR_CSS[color] ?? ''}">
+
+  if (primaryIndex != 0) {
+    let feastFlags = 0,
+      feastId = 0
+    if (exports.kal_wasm_read_feast(primaryIndex) === KAL_ENGINE_OK) {
+      const fv = new DataView(memory.buffer, feastPtr, 4)
+      feastId = fv.getUint16(0, true)
+      feastFlags = fv.getUint16(2, true)
+    }
+
+    const { precedence, color, period, nature, hasVigil } = decodeFeastFlags(feastFlags)
+    const { hasVesperaeI, hasVigilia } = decodeOccurrenceFlags(occFlags)
+
+    // Alignement structurel : Résolution sécurisée via l'ID de la célébration principale
+    const res = resolveById(exports, memory, feastId, year)
+    const label = res ? res.label : `Fête inconnue (0x${feastId.toString(16).toUpperCase()})`
+    const annotation = res ? res.annotation : null
+
+    html = `<div class="grid4 gap">`
+    html += `<article class="card feast primary color-${COLOR_CSS[color] ?? ''}" style="text-align: left;">
         <h2>${label}</h2>`
-  if (annotation) html += `<p class="annotation">${renderMarkdown(annotation)}</p>`
-  html += `<ul>
+    if (annotation) html += `<p class="annotation">${renderMarkdown(annotation)}</p>`
+    html += `<ul>
         <li>Feast ID: 0x${feastId.toString(16).toUpperCase().padStart(4, '0')}</li>
         <li>Précédence: ${PRECEDENCE[precedence] ?? precedence} (${precedence + 1})</li>
         <li>Couleur: ${COLOR[color] ?? color}</li>
         <li>Période: ${PERIOD[period] ?? period}</li>
         <li>Nature: ${NATURE[nature] ?? nature}</li>`
-  if (hasVigil) html += `<li>Vigile propre: oui (invariant)</li>`
-  if (hasVesperaeI) html += `<li>Vêpres I: ce soir</li>`
-  if (hasVigilia) html += `<li>Vigile: ce soir</li>`
-  html += `</ul></section>`
+    if (hasVigil) html += `<li>Vigile propre: oui (invariant)</li>`
+    if (hasVesperaeI) html += `<li>Vêpres I: ce soir</li>`
+    if (hasVigilia) html += `<li>Vigile: ce soir</li>`
+    html += `</ul></article>`
 
-  if (secCount > 0 && exports.kal_wasm_read_secondary(secOffset, secCount) === KAL_ENGINE_OK) {
-    const sv = new DataView(memory.buffer, exports.kal_wasm_secondary_ptr(), secCount * 2)
-    html += `<section class="secondaries"><h2 class="sr-only">Commémorations</h2>`
-    for (let i = 0; i < secCount; i++) {
-      const ridx = sv.getUint16(i * 2, true)
-      if (ridx === 0) continue
-      const resSec = resolveSecondary(exports, memory, ridx, year)
-      if (!resSec) continue
-      const sf = decodeFeastFlags(resSec.feastFlags)
-      html += `<div class="feast secondary color-${COLOR_CSS[sf.color] ?? ''}">
-                <h3>${resSec.label}</h3>`
-      if (resSec.annotation) html += `<p class="annotation">${renderMarkdown(resSec.annotation)}</p>`
-      html += `<ul>
+    if (secCount > 0 && exports.kal_wasm_read_secondary(secOffset, secCount) === KAL_ENGINE_OK) {
+      const sv = new DataView(memory.buffer, exports.kal_wasm_secondary_ptr(), secCount * 2)
+      html += `</div><hr><div class="grid4 gap">`
+      for (let i = 0; i < secCount; i++) {
+        const ridx = sv.getUint16(i * 2, true)
+        if (ridx === 0) continue
+        const resSec = resolveSecondary(exports, memory, ridx, year)
+        if (!resSec) continue
+        const sf = decodeFeastFlags(resSec.feastFlags)
+        html += `<article class="card secondaries feast secondary color-${COLOR_CSS[sf.color] ?? ''}" style="text-align: left;">
+                <h2>${resSec.label}</h2>`
+        if (resSec.annotation) html += `<p class="annotation">${renderMarkdown(resSec.annotation)}</p>`
+        html += `<ul>
                 <li>Feast ID: 0x${ridx.toString(16).toUpperCase().padStart(4, '0')}</li>
                 <li>Précédence: ${PRECEDENCE[sf.precedence] ?? sf.precedence} (${sf.precedence + 1})</li>
                 <li>Couleur: ${COLOR[sf.color] ?? sf.color}</li>
                 <li>Nature: ${NATURE[sf.nature] ?? sf.nature}</li>
-            </ul></div>`
+            </ul></article>`
+      }
     }
-    html += `</section>`
+    html += `</div>`
+  } else {
+    html =
+      '<div class="message-highlight"><svg class="icon" role="img" focusable="false"><use href="/sprites/util.svg#pencil"></use></svg><div><p>Pas de célébration répertoriée pour cette date.</p></div></div>'
   }
 
   const prev = doyToMonthDay(Math.max(0, doy - 1))
   const next = doyToMonthDay(Math.min(365, doy + 1))
-  html += `<nav class="day-nav">
-        <a href="${APP_ROOT}${year}/${zeroPad(prev.month)}/${zeroPad(prev.day)}">← Jour précédent</a>
-        <a href="${APP_ROOT}${year}">Année ${year}</a>
-        <a href="${APP_ROOT}${year}/${zeroPad(next.month)}/${zeroPad(next.day)}">Jour suivant →</a>
+  html += `<hr>
+    <nav class="flex gap">
+        <a class="button" href="${APP_ROOT}${year}/${zeroPad(prev.month)}/${zeroPad(prev.day)}">← Jour précédent</a>
+        <a class="button" href="${APP_ROOT}${year}">Année ${year}</a>
+        <a class="button" href="${APP_ROOT}${year}/${zeroPad(next.month)}/${zeroPad(next.day)}">Jour suivant →</a>
     </nav>`
 
   container.innerHTML = html
