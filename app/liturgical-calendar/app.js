@@ -6,9 +6,9 @@
 
 const APP_ROOT = '/app/liturgical-calendar/'
 
-const WASM_URL = `${APP_ROOT}liturgical_calendar_wasm.wasm`
-const KALD_URL = `${APP_ROOT}romanus_universale.kald`
-const LITS_URL = `${APP_ROOT}romanus_universale_la.lits`
+const WASM_URL = `${APP_ROOT}liturgical_calendar_wasm.wasm?v=20260519`
+const KALD_URL = `${APP_ROOT}romanus_universale.kald?v=20260519`
+const LITS_URL = `${APP_ROOT}romanus_universale_la.lits?v=20260519`
 
 const KAL_ENGINE_OK = 0
 const KAL_ERR_BUILD_ID_MISMATCH = -22
