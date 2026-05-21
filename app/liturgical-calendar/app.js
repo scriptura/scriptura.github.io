@@ -1,14 +1,14 @@
 /**
- * app.js — Bridge JS pour liturgical-calendar-wasm v5.
+ * app.js — Bridge JS pour liturgical-calendar-wasm v6.
  * * Invariant de routage et d'accès mémoire (AOT alignment) :
  * Suppression du tag global <base> au profit d'une résolution explicite.
  */
 
 const APP_ROOT = '/app/liturgical-calendar/'
 
-const WASM_URL = `${APP_ROOT}liturgical_calendar_wasm.wasm?v=20260519`
-const KALD_URL = `${APP_ROOT}romanus_universale.kald?v=20260519`
-const LITS_URL = `${APP_ROOT}romanus_universale_la.lits?v=20260519`
+const WASM_URL = `${APP_ROOT}liturgical_calendar_wasm.wasm?v=12`
+const KALD_URL = `${APP_ROOT}romanus_universale.kald?v=12`
+const LITS_URL = `${APP_ROOT}romanus_universale_la.lits?v=12`
 
 const KAL_ENGINE_OK = 0
 const KAL_ERR_BUILD_ID_MISMATCH = -22
@@ -123,7 +123,6 @@ function decodeFeastFlags(flags) {
   return {
     precedence: flags & 0x000f,
     color: (flags >> 4) & 0x000f,
-    period: (flags >> 8) & 0x0007,
     nature: (flags >> 11) & 0x0007,
     hasVigil: !!(flags & (1 << 14)),
   }
@@ -256,7 +255,9 @@ function renderDay(year, month, day, exports, memory) {
       feastFlags = fv.getUint16(2, true)
     }
 
-    const { precedence, color, period, nature, hasVigil } = decodeFeastFlags(feastFlags)
+    const { precedence, color, nature, hasVigil } = decodeFeastFlags(feastFlags)
+    // v6 : LiturgicalPeriod dans TimelineEntry.occurrenceFlags[4:2], plus dans FeastEntry.flags[10:8].
+    const period = exports.kal_wasm_entry_liturgical_period()
     const { hasVesperaeI, hasVigilia } = decodeOccurrenceFlags(occFlags)
 
     // Alignement structurel : Résolution sécurisée via l'ID de la célébration principale
@@ -264,7 +265,7 @@ function renderDay(year, month, day, exports, memory) {
     const label = res ? res.label : `Fête inconnue (0x${feastId.toString(16).toUpperCase()})`
     const annotation = res ? res.annotation : null
 
-    html = `<div class="grid4 gap">`
+    html = `<div class="column-fix gap">`
     html += `<article class="card feast primary color-${COLOR_CSS[color] ?? ''}" style="text-align: left;">
         <h2>${label}</h2>`
     if (annotation) html += `<p class="annotation">${renderMarkdown(annotation)}</p>`
@@ -281,7 +282,10 @@ function renderDay(year, month, day, exports, memory) {
 
     if (secCount > 0 && exports.kal_wasm_read_secondary(secOffset, secCount) === KAL_ENGINE_OK) {
       const sv = new DataView(memory.buffer, exports.kal_wasm_secondary_ptr(), secCount * 2)
-      html += `</div><hr><div class="grid4 gap">`
+      html += `</div>`
+      html += `<hr>`
+      html += `<h2>Fêtes secondaires du jour :</h2>`
+      html += `<div class="column-fix gap gap-top">`
       for (let i = 0; i < secCount; i++) {
         const ridx = sv.getUint16(i * 2, true)
         if (ridx === 0) continue
