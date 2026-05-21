@@ -6,9 +6,9 @@
 
 const APP_ROOT = '/app/liturgical-calendar/'
 
-const WASM_URL = `${APP_ROOT}liturgical_calendar_wasm.wasm?v=12`
-const KALD_URL = `${APP_ROOT}romanus_universale.kald?v=12`
-const LITS_URL = `${APP_ROOT}romanus_universale_la.lits?v=12`
+const WASM_URL = `${APP_ROOT}liturgical_calendar_wasm.wasm?v=15`
+const KALD_URL = `${APP_ROOT}romanus_universale.kald?v=15`
+const LITS_URL = `${APP_ROOT}romanus_universale_la.lits?v=15`
 
 const KAL_ENGINE_OK = 0
 const KAL_ERR_BUILD_ID_MISMATCH = -22
@@ -265,45 +265,51 @@ function renderDay(year, month, day, exports, memory) {
     const label = res ? res.label : `Fête inconnue (0x${feastId.toString(16).toUpperCase()})`
     const annotation = res ? res.annotation : null
 
-    html = `<div class="column-fix gap">`
-    html += `<article class="card feast primary color-${COLOR_CSS[color] ?? ''}" style="text-align: left;">
-        <h2>${label}</h2>`
-    if (annotation) html += `<p class="annotation">${renderMarkdown(annotation)}</p>`
-    html += `<ul>
-        <li>Feast ID: 0x${feastId.toString(16).toUpperCase().padStart(4, '0')}</li>
-        <li>Précédence: ${PRECEDENCE[precedence] ?? precedence} (${precedence + 1})</li>
-        <li>Couleur: ${COLOR[color] ?? color}</li>
-        <li>Période: ${PERIOD[period] ?? period}</li>
-        <li>Nature: ${NATURE[nature] ?? nature}</li>`
-    if (hasVigil) html += `<li>Vigile propre: oui (invariant)</li>`
-    if (hasVesperaeI) html += `<li>Vêpres I: ce soir</li>`
-    if (hasVigilia) html += `<li>Vigile: ce soir</li>`
-    html += `</ul></article>`
+    html += `<div class="grid3 gap">`
+    html += `<table class="table liturgical-calendar">`
+    html += `<caption class="h4 color-${COLOR_CSS[color] ?? ''}">`
+    html += `${label}`
+    if (annotation) html += `. ${renderMarkdown(annotation)}`
+    html += `</caption>`
+    html += `<tbody>`
+    html += `<tr><td>Feast ID</td><td>0x${feastId.toString(16).toUpperCase().padStart(4, '0')}</td></tr>
+        <tr><td>Précédence</td><td>${PRECEDENCE[precedence] ?? precedence} (${precedence + 1})</td></tr>
+        <tr><td>Nature</td><td>${NATURE[nature] ?? nature}</td></tr>
+        <tr><td>Couleur</td><td>${COLOR[color] ?? color}</td></tr>`
+    if (hasVigil) html += `<tr><td>Vigile propre</td><td>oui (invariant)</td></tr>`
+    if (hasVesperaeI) html += `<tr><td>Vêpres I</td><td>ce soir</td></tr>`
+    if (hasVigilia) html += `<tr><td>Vigile</td><td>ce soir</td></tr>`
+    html += `<tr><td>Période</td><td>${PERIOD[period] ?? period}</td></tr>`
+    html += `</tbody>`
+    html += `</table>`
+    html += `</div>`
 
     if (secCount > 0 && exports.kal_wasm_read_secondary(secOffset, secCount) === KAL_ENGINE_OK) {
       const sv = new DataView(memory.buffer, exports.kal_wasm_secondary_ptr(), secCount * 2)
-      html += `</div>`
       html += `<hr>`
-      html += `<h2>Fêtes secondaires du jour :</h2>`
-      html += `<div class="column-fix gap gap-top">`
+      html += `<h2 class="h3">Fêtes secondaires du jour :</h2>`
+      html += `<div class="grid3 gap">`
       for (let i = 0; i < secCount; i++) {
         const ridx = sv.getUint16(i * 2, true)
         if (ridx === 0) continue
         const resSec = resolveSecondary(exports, memory, ridx, year)
         if (!resSec) continue
         const sf = decodeFeastFlags(resSec.feastFlags)
-        html += `<article class="card secondaries feast secondary color-${COLOR_CSS[sf.color] ?? ''}" style="text-align: left;">
-                <h2>${resSec.label}</h2>`
-        if (resSec.annotation) html += `<p class="annotation">${renderMarkdown(resSec.annotation)}</p>`
-        html += `<ul>
-                <li>Feast ID: 0x${ridx.toString(16).toUpperCase().padStart(4, '0')}</li>
-                <li>Précédence: ${PRECEDENCE[sf.precedence] ?? sf.precedence} (${sf.precedence + 1})</li>
-                <li>Couleur: ${COLOR[sf.color] ?? sf.color}</li>
-                <li>Nature: ${NATURE[sf.nature] ?? sf.nature}</li>
-            </ul></article>`
+        html += `<table class="table liturgical-calendar">`
+        html += `<caption class="h4 color-${COLOR_CSS[sf.color] ?? ''}">`
+        html += `${resSec.label}`
+        if (resSec.annotation) html += `. ${renderMarkdown(resSec.annotation)}`
+        html += `</caption>`
+        html += `<tbody>`
+        html += `<tr><td>Feast ID</td><td>0x${ridx.toString(16).toUpperCase().padStart(4, '0')}</td></tr>`
+        html += `<tr><td>Précédence</td><td>${PRECEDENCE[sf.precedence] ?? sf.precedence} (${sf.precedence + 1})</td></tr>`
+        html += `<tr><td>Nature</td><td>${NATURE[sf.nature] ?? sf.nature}</td></tr>`
+        html += `<tr><td>Couleur</td><td>${COLOR[sf.color] ?? sf.color}</td></tr>`
+        html += `</tbody>`
+        html += `</table>`
       }
+      html += `</div>`
     }
-    html += `</div>`
   } else {
     html =
       '<div class="message-highlight"><svg class="icon" role="img" focusable="false"><use href="/sprites/util.svg#pencil"></use></svg><div><p>Pas de célébration répertoriée pour cette date.</p></div></div>'

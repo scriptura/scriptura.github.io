@@ -2,45 +2,50 @@ table.liturgical-calendar {
   & :where(.doy, .date) {
     width: 3em;
   }
+
   thead th {
     text-align: start;
   }
+
   .feasts {
     padding-block: 0;
-    p {
-      margin-block: 0.5em;
-      &::before {
-        content: '';
-        display: inline-flex;
-        vertical-align: 0;
-        aspect-ratio: 1;
-        height: 0.75em;
-        background-color: var(--colorG13);
-        margin-inline-end: 0.5em;
-      }
-    }
+  }
 
-    .color-albus::before {
-      background-color: hsl(35, 45%, 84%);
-    }
+  caption {
+    margin-block: 0.5em;
+  }
 
-    .color-viridis::before {
-      background-color: hsl(120, 100%, 25%);
-    }
+  & :where(.feasts p, caption)::before {
+    content: '';
+    display: inline-flex;
+    vertical-align: 0;
+    aspect-ratio: 1;
+    height: 0.75em;
+    background-color: var(--colorG13);
+    margin-inline-end: 0.5em;
+  }
 
-    .color-violaceus::before {
-      background-color: hsl(297, 78%, 37%); /* hsl(300, 100%, 25%); */
-    }
+  .color-albus::before {
+    background-color: hsl(35, 45%, 84%);
+  }
 
-    .color-rubeus::before {
-      background-color: #d40000; /* #ff0000, #bf2329 */
-    }
+  .color-viridis::before {
+    background-color: hsl(120, 100%, 25%);
+  }
 
-    .color-rosaceus::before {
-      background-color: hsl(330, 100%, 71%);
-    }
+  .color-violaceus::before {
+    background-color: hsl(297, 78%, 37%); /* hsl(300, 100%, 25%); */
+  }
 
-    /*
+  .color-rubeus::before {
+    background-color: #d40000; /* #ff0000, #bf2329 */
+  }
+
+  .color-rosaceus::before {
+    background-color: hsl(330, 100%, 71%);
+  }
+
+  /*
     .color-black::before {
       background-color: hsl(0, 0%, 0%);
     }
@@ -49,7 +54,7 @@ table.liturgical-calendar {
 	background-color: hwb(51 0% 0%);
 	}
 	*/
-  }
+
   .doy a {
     scroll-margin-top: 3.5em;
   }

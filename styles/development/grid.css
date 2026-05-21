@@ -6,7 +6,7 @@
     container: grid/inline-size;
     width: 100%; /* @note Important si le conteneur n'a pas de largeur définie par défaut. */
   }
-  
+
   display: grid;
   grid-auto-flow: dense;
   grid-template-columns: repeat(var(--n, 1), minmax(0, 1fr));

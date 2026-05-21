@@ -66,7 +66,9 @@
     background-color: var(--color1);
     /* Compense le décalage de la "bordure" en box-shadow inset. */
     border-radius: calc(var(--r2) + 1px);
-    box-shadow: var(--shadow8), inset 0 -1px 0 1px var(--colorA1);
+    box-shadow:
+      var(--shadow8),
+      inset 0 -1px 0 1px var(--colorA1);
     transition: max-height 0.5s ease-in-out;
 
     &[aria-hidden='true'] {

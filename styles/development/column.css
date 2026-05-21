@@ -100,7 +100,8 @@
   max-width: var(--column-width);
   column-count: 1;
   margin-inline: auto;
-  @media (48.5em < width) { /* @note +3em comprend les 2 gaps plus l'épaisseur estimée de la barre de scroll vertical. */
+  @media (48.5em < width) {
+    /* @note +3em comprend les 2 gaps plus l'épaisseur estimée de la barre de scroll vertical. */
     max-width: calc(var(--column-width) * 2 + var(--gap));
     column-count: 2;
   }
