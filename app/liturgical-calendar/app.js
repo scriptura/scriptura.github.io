@@ -6,9 +6,9 @@
 
 const APP_ROOT = '/app/liturgical-calendar/'
 
-const WASM_URL = `${APP_ROOT}liturgical_calendar_wasm.wasm?v=18`
-const KALD_URL = `${APP_ROOT}romanus_universale.kald?v=18`
-const LITS_URL = `${APP_ROOT}romanus_universale_la.lits?v=18`
+const WASM_URL = `${APP_ROOT}liturgical_calendar_wasm.wasm?v=19`
+const KALD_URL = `${APP_ROOT}romanus_universale.kald?v=19`
+const LITS_URL = `${APP_ROOT}romanus_universale_la.lits?v=19`
 
 const KAL_ENGINE_OK = 0
 const KAL_ERR_BUILD_ID_MISMATCH = -22
@@ -235,13 +235,13 @@ function renderYear(year, exports, memory) {
       <tbody class="table">${rowsHtml}</tbody>
     </table>
     <hr>
-    <nav class="flex gap">
-        <a class="button" href="${APP_ROOT}${year - 50}">Année ${year - 50} (-50 ans)</a>
-        <a class="button" href="${APP_ROOT}${year - 10}">Année ${year - 10} (-10 ans)</a>
-        <a class="button" href="${APP_ROOT}${year - 1}">Année ${year - 1} (-1 ans)</a>
-        <a class="button" href="${APP_ROOT}${year + 1}">Année ${year + 1} (+1 ans)</a>
-        <a class="button" href="${APP_ROOT}${year + 10}">Année ${year + 10} (+10 ans)</a>
-        <a class="button" href="${APP_ROOT}${year + 50}">Année ${year + 50} (+50 ans)</a>
+    <nav class="flex gap text-center">
+        <a class="button" href="${APP_ROOT}${year - 50}">Année ${year - 50}<span class="scale" style="--scale:95%;display:block;margin-top:-1em">(-50 ans)</span></a>
+        <a class="button" href="${APP_ROOT}${year - 10}">Année ${year - 10}<span class="scale" style="--scale:95%;display:block;margin-top:-1em">(-10 ans)</span></a>
+        <a class="button" href="${APP_ROOT}${year - 1}">Année ${year - 1}<span class="scale" style="--scale:95%;display:block;margin-top:-1em">(-1 ans)</span></a>
+        <a class="button" href="${APP_ROOT}${year + 1}">Année ${year + 1}<span class="scale" style="--scale:95%;display:block;margin-top:-1em">(+1 ans)</span></a>
+        <a class="button" href="${APP_ROOT}${year + 10}">Année ${year + 10}<span class="scale" style="--scale:95%;display:block;margin-top:-1em">(+10 ans)</span></a>
+        <a class="button" href="${APP_ROOT}${year + 50}">Année ${year + 50}<span class="scale" style="--scale:95%;display:block;margin-top:-1em">(+50 ans)</span></a>
     </nav>`
 
   yearContent.hidden = false
