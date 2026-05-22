@@ -6,9 +6,9 @@
 
 const APP_ROOT = '/app/liturgical-calendar/'
 
-const WASM_URL = `${APP_ROOT}liturgical_calendar_wasm.wasm?v=15`
-const KALD_URL = `${APP_ROOT}romanus_universale.kald?v=15`
-const LITS_URL = `${APP_ROOT}romanus_universale_la.lits?v=15`
+const WASM_URL = `${APP_ROOT}liturgical_calendar_wasm.wasm?v=16`
+const KALD_URL = `${APP_ROOT}romanus_universale.kald?v=16`
+const LITS_URL = `${APP_ROOT}romanus_universale_la.lits?v=16`
 
 const KAL_ENGINE_OK = 0
 const KAL_ERR_BUILD_ID_MISMATCH = -22
@@ -166,9 +166,15 @@ function renderYear(year, exports, memory) {
   document.title = `Calendarium ${year}`
   document.getElementById('h1').innerHTML = `Calendarium Romanum Generale <span>. pro ${year}</span>`
 
-  const tbody = document.getElementById('cal-body')
+  // Isolation stricte des layouts
+  const yearContent = document.getElementById('year-content')
+  document.getElementById('day-content').hidden = true
+
   const entryPtr = exports.kal_wasm_entry_ptr()
   const feastPtr = exports.kal_wasm_feast_ptr()
+
+  // Buffer de chaînes pour éviter les allocations d'éléments DOM individuels dans la boucle
+  let rowsHtml = ''
 
   for (let doy = 0; doy < 366; doy++) {
     if (exports.kal_wasm_read_day(year, doy) !== KAL_ENGINE_OK) continue
@@ -190,7 +196,6 @@ function renderYear(year, exports, memory) {
     const { month, day } = doyToMonthDay(doy)
     const href = `${APP_ROOT}${year}/${zeroPad(month)}/${zeroPad(day)}`
 
-    // Correction ici : initialisation stricte sans 's' pour correspondre aux mutations suivantes
     let featsHtml = ''
 
     if (exports.kal_wasm_get_label(year, doy) === 1) {
@@ -210,20 +215,43 @@ function renderYear(year, exports, memory) {
       }
     }
 
-    const tr = document.createElement('tr')
-    tr.innerHTML = `
+    rowsHtml += `<tr>
             <td class="doy"><a id="doy-${doy}" href="#doy-${doy}">${doy}</a></td>
             <td class="date"><a href="${href}">${zeroPad(day)}/${zeroPad(month)}</a></td>
-            <td class="feasts">${featsHtml}</td>`
-    tbody.appendChild(tr)
+            <td class="feasts">${featsHtml}</td>
+        </tr>`
   }
 
-  document.getElementById('cal-table').hidden = false
+  // Flush unique du layout complet (Table + Structure + Navigation)
+  yearContent.innerHTML = `
+    <table class="table liturgical-calendar">
+      <thead>
+        <tr>
+          <th>Doy</th>
+          <th>Date</th>
+          <th>Celebrationes</th>
+        </tr>
+      </thead>
+      <tbody class="table">${rowsHtml}</tbody>
+    </table>
+    <hr>
+    <nav class="flex gap">
+        <a class="button" href="${APP_ROOT}${year - 10}">Année ${year - 10}</a>
+        <a class="button" href="${APP_ROOT}${year - 1}">Année ${year - 1}</a>
+        <a class="button" href="${APP_ROOT}${year}">Année ${year}</a>
+        <a class="button" href="${APP_ROOT}${year + 1}">Année ${year + 1}</a>
+        <a class="button" href="${APP_ROOT}${year + 10}">Année ${year + 10}</a>
+    </nav>`
+
+  yearContent.hidden = false
 }
 
-// ── Vue journalière ───────────────────────────────────────────────────────────
+// ── Vue journalière ─────────────────────────────────────────────────────────
 
 function renderDay(year, month, day, exports, memory) {
+  // Désactivation explicite du layout annuel
+  document.getElementById('year-content').hidden = true
+
   const doy = dateToDoy(year, month, day)
   document.title = `${zeroPad(day)}/${zeroPad(month)}/${year}`
   document.getElementById('h1').innerHTML = `Calendarium Romanum Generale <span>. ${formatDateLong(year, month, day)}</span>`
@@ -256,11 +284,9 @@ function renderDay(year, month, day, exports, memory) {
     }
 
     const { precedence, color, nature, hasVigil } = decodeFeastFlags(feastFlags)
-    // v6 : LiturgicalPeriod dans TimelineEntry.occurrenceFlags[4:2], plus dans FeastEntry.flags[10:8].
     const period = exports.kal_wasm_entry_liturgical_period()
     const { hasVesperaeI, hasVigilia } = decodeOccurrenceFlags(occFlags)
 
-    // Alignement structurel : Résolution sécurisée via l'ID de la célébration principale
     const res = resolveById(exports, memory, feastId, year)
     const label = res ? res.label : `Fête inconnue (0x${feastId.toString(16).toUpperCase()})`
     const annotation = res ? res.annotation : null
@@ -333,6 +359,8 @@ function renderDay(year, month, day, exports, memory) {
 function renderNotFound() {
   document.title = '404 — Page non trouvée'
   document.getElementById('h1').innerHTML = 'Calendarium Romanum Generale <span>. 404</span>'
+
+  document.getElementById('year-content').hidden = true
   const container = document.getElementById('day-content')
   container.innerHTML = `<section class="not-found">
     <p>La ressource demandée n'existe pas.</p>
