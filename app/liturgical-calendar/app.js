@@ -236,11 +236,12 @@ function renderYear(year, exports, memory) {
     </table>
     <hr>
     <nav class="flex gap">
-        <a class="button" href="${APP_ROOT}${year - 10}">Année ${year - 10}</a>
-        <a class="button" href="${APP_ROOT}${year - 1}">Année ${year - 1}</a>
-        <a class="button" href="${APP_ROOT}${year}">Année ${year}</a>
-        <a class="button" href="${APP_ROOT}${year + 1}">Année ${year + 1}</a>
-        <a class="button" href="${APP_ROOT}${year + 10}">Année ${year + 10}</a>
+        <a class="button" href="${APP_ROOT}${year - 10}">Année ${year - 50} (-50 ans)</a>
+        <a class="button" href="${APP_ROOT}${year - 10}">Année ${year - 10} (-10 ans)</a>
+        <a class="button" href="${APP_ROOT}${year - 1}">Année ${year - 1} (-1 ans)</a>
+        <a class="button" href="${APP_ROOT}${year + 1}">Année ${year + 1} (+1 ans)</a>
+        <a class="button" href="${APP_ROOT}${year + 10}">Année ${year + 10} (+10 ans)</a>
+        <a class="button" href="${APP_ROOT}${year + 50}">Année ${year + 50} (+50 ans)</a>
     </nav>`
 
   yearContent.hidden = false
