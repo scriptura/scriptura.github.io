@@ -6,9 +6,9 @@
 
 const APP_ROOT = '/app/liturgical-calendar/'
 
-const WASM_URL = `${APP_ROOT}liturgical_calendar_wasm.wasm?v=17`
-const KALD_URL = `${APP_ROOT}romanus_universale.kald?v=17`
-const LITS_URL = `${APP_ROOT}romanus_universale_la.lits?v=17`
+const WASM_URL = `${APP_ROOT}liturgical_calendar_wasm.wasm?v=18`
+const KALD_URL = `${APP_ROOT}romanus_universale.kald?v=18`
+const LITS_URL = `${APP_ROOT}romanus_universale_la.lits?v=18`
 
 const KAL_ENGINE_OK = 0
 const KAL_ERR_BUILD_ID_MISMATCH = -22
@@ -236,7 +236,7 @@ function renderYear(year, exports, memory) {
     </table>
     <hr>
     <nav class="flex gap">
-        <a class="button" href="${APP_ROOT}${year - 10}">Année ${year - 50} (-50 ans)</a>
+        <a class="button" href="${APP_ROOT}${year - 50}">Année ${year - 50} (-50 ans)</a>
         <a class="button" href="${APP_ROOT}${year - 10}">Année ${year - 10} (-10 ans)</a>
         <a class="button" href="${APP_ROOT}${year - 1}">Année ${year - 1} (-1 ans)</a>
         <a class="button" href="${APP_ROOT}${year + 1}">Année ${year + 1} (+1 ans)</a>
