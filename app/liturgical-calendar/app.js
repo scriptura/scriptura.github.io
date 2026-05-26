@@ -4,11 +4,11 @@
  * Suppression du tag global <base> au profit d'une résolution explicite.
  */
 
-const APP_ROOT = '/app/liturgical-calendar/'
+const APP_ROOT = new URL('.', import.meta.url).pathname
 
-const WASM_URL = `${APP_ROOT}liturgical_calendar_wasm.wasm?v=22`
-const KALD_URL = `${APP_ROOT}romanus_universale.kald?v=22`
-const LITS_URL = `${APP_ROOT}romanus_universale_la.lits?v=22`
+const WASM_URL = `${APP_ROOT}liturgical_calendar_wasm.wasm?v=23`
+const KALD_URL = `${APP_ROOT}romanus_universale.kald?v=23`
+const LITS_URL = `${APP_ROOT}romanus_universale_la.lits?v=23`
 
 const KAL_ENGINE_OK = 0
 const KAL_ERR_BUILD_ID_MISMATCH = -22
