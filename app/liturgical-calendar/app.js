@@ -1,7 +1,20 @@
 /**
- * app.js — Bridge JS pour liturgical-calendar-wasm v6.
- * * Invariant de routage et d'accès mémoire (AOT alignment) :
- * Suppression du tag global <base> au profit d'une résolution explicite.
+ * app.js : Bridge JS pour liturgical-calendar-wasm v5.
+ *
+ * Pattern de lecture v5 (2 appels au lieu de 1) :
+ *   kal_wasm_read_day(year, doy)         â†’ TimelineEntry dans ENTRY_BUF
+ *   kal_wasm_read_feast(primaryIndex)    â†’ FeastEntry dans FEAST_BUF (O(1))
+ *
+ * Les flags (couleur, nature, prÃ©cÃ©dence) viennent de FeastEntry.flags.
+ * Les bits d'occurrence (vesperae_i, vigilia) viennent de TimelineEntry.occurrence_flags.
+ *
+ * Routes :
+ *   /YYYY         â†’ vue annuelle (tableau 366 jours)
+ *   /YYYY/MM/DD   â†’ vue journalière (dÃ©tail complet)
+ *   /             â†’ vue journalière, date du jour
+ *
+ * Compatibilité GitHub Pages : le path est restauré par index.html
+ * (sessionStorage redirect depuis 404.html) avant l'exécution de ce module.
  */
 
 const APP_ROOT = new URL('.', import.meta.url).pathname
