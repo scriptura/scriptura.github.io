@@ -6,13 +6,11 @@
 
 const APP_ROOT = new URL('.', import.meta.url).pathname
 
-const WASM_URL = `${APP_ROOT}liturgical_calendar_wasm.wasm?v=23`
-const KALD_URL = `${APP_ROOT}romanus_universale.kald?v=23`
-const LITS_URL = `${APP_ROOT}romanus_universale_la.lits?v=23`
+const WASM_URL = `${APP_ROOT}liturgical_calendar_wasm.wasm`
+const KALD_URL = `${APP_ROOT}romanus_universale.kald`
+const LITS_URL = `${APP_ROOT}romanus_universale_la.lits`
 
 const KAL_ENGINE_OK = 0
-const KAL_ERR_BUILD_ID_MISMATCH = -22
-
 const BASE_PATH = new URL(document.baseURI).pathname
 
 // ── Lookup tables (miroir de types.rs) ───────────────────────────────────────
