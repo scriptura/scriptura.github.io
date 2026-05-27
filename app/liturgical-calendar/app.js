@@ -356,10 +356,10 @@ function renderDay(year, month, day, exports, memory) {
   const prev = doyToMonthDay(Math.max(0, doy - 1))
   const next = doyToMonthDay(Math.min(365, doy + 1))
   html += `<hr>
-    <nav class="flex gap">
-        <a class="button" href="${APP_ROOT}${year}/${zeroPad(prev.month)}/${zeroPad(prev.day)}">← Jour précédent</a>
-        <a class="button" href="${APP_ROOT}${year}">Année ${year}</a>
-        <a class="button" href="${APP_ROOT}${year}/${zeroPad(next.month)}/${zeroPad(next.day)}">Jour suivant →</a>
+    <nav class="flex gap text-center">
+        <a class="button" href="${APP_ROOT}${year}/${zeroPad(prev.month)}/${zeroPad(prev.day)}">${zeroPad(prev.day)}/${zeroPad(prev.month)}/${year}<span class="scale" style="--scale:85%;display:block;margin-top:-1em">Jour précédent</span></a>
+        <a class="button" href="${APP_ROOT}${year}">Année ${year}<span class="scale" style="--scale:85%;display:block;margin-top:-1em">↑</span></a>
+        <a class="button" href="${APP_ROOT}${year}/${zeroPad(next.month)}/${zeroPad(next.day)}">${zeroPad(next.day)}/${zeroPad(next.month)}/${year}<span class="scale" style="--scale:85%;display:block;margin-top:-1em">Jour suivant</span></a>
     </nav>`
 
   container.innerHTML = html
