@@ -1,24 +1,6 @@
-/* @note Doublage des variables Sass par les variables CSS natives impliquées dans les médias queries. @todo en attendant un support total d'usage pour les variables natives. */
-
-/* @subsection Breakpoints */
-
-/* @bugfix Nécessité de préciser deux chiffres après la virgule pour éviter un arrondissement de la valeur par les navigateurs. */
-/* @note L'idée étant d'avoir une précision au-délà du pixel, nous évitant ainsi de devoir utiliser les opérateur logiques CSS4 de type inclusifs (exemple : `<=`). @todo En test...*/
-/* @note La fonction calc() n'est pas implémentée pour les media queries, ou alors partiellement (unité de même type). @see https://stackoverflow.com/questions/23667208 @todo À réévaluer dans le temps... */
-
-$sizeXS: 35.01em;
-$sizeS: 50.01em;
-$sizeM: 70.01em;
-$sizeL: 92.01em;
-$sizeXL: 120.01em;
-$sizeXXL: 140.01em;
-/* @note Attention, il s'agit d'une valeur empirique qui tente d'anticiper la taille minimale nécessaire au menu en desktop. @todo À remplacer par une solution plus fiable à l'avenir, mais qui ne serait peut-être alors pas mobile first et pourrait poser des problèmes de reflow... */
-$sizeNav: 97.01em;
-$gap: 1em;
-
 :root {
-  --size-nav: $sizeNav; /* @note Variable CSS utilisée en JavaScript. */
-  --gap: $gap; /* Gouttière, largeur entre deux modules */
+  --size-nav: 97.01em; /* @note Variable CSS utilisée en JavaScript. */
+  --gap: 1em; /* Gouttière, largeur entre deux modules */
   --wrap: 92em; /* calc(90em + var(--gap) * 2)*/ /* Largeur maximale du contenu (+ prise en compte du padding interne) */
 
   /* @subsection  Web fonts */
@@ -33,22 +15,22 @@ $gap: 1em;
   --colorG13: hsl(0, 0%, 13%);
   --colorG15: hsl(0, 0%, 15%);
   --colorG18: hsl(0, 0%, 18%);
-  --colorG22: hsl(0, 0%, 22%);          /* gris de référence */
+  --colorG22: hsl(0, 0%, 22%); /* gris de référence */
   --colorG27: hsl(0, 0%, 27%);
   --colorG33: hsl(0, 0%, 33%);
   --colorG38: hsl(0, 0%, 38%);
   --colorG45: hsl(0, 0%, 45%);
   --colorG60: hsl(0, 0%, 60%);
-  --colorW: hsl(0, 0%, 100%);           /* blanc de référence */
-  --colorB: hsl(0, 0%, 0%);             /* noir de référence */
-  --colorT: hsl(35, 45%, 84%);          /* couleur primaire du texte */
-  --colorT2: hsl(34, 44%, 69%);         /* couleur secondaire du texte */
-  --color1: var(--colorG22);            /* couleur de fond */
-  --color2: hsl(9, 100%, 64%);          /* couleur dominante 2 (tomato) */
-  --color3: hsl(12, 63%, 49%);          /* couleur secondaire */
-  --color4: hsl(96, 41%, 29%);          /* couleur secondaire */
-  --color5: hsl(39, 100%, 50%);         /* couleur secondaire */
-  --color6: hsl(207, 22%, 39%);         /* couleur secondaire */
+  --colorW: hsl(0, 0%, 100%); /* blanc de référence */
+  --colorB: hsl(0, 0%, 0%); /* noir de référence */
+  --colorT: hsl(35, 45%, 84%); /* couleur primaire du texte */
+  --colorT2: hsl(34, 44%, 69%); /* couleur secondaire du texte */
+  --color1: var(--colorG22); /* couleur de fond */
+  --color2: hsl(9, 100%, 64%); /* couleur dominante 2 (tomato) */
+  --color3: hsl(12, 63%, 49%); /* couleur secondaire */
+  --color4: hsl(96, 41%, 29%); /* couleur secondaire */
+  --color5: hsl(39, 100%, 50%); /* couleur secondaire */
+  --color6: hsl(207, 22%, 39%); /* couleur secondaire */
   --colorA003: hsla(0, 0%, 100%, 0.03);
   --colorA005: hsla(0, 0%, 100%, 0.05);
   --colorA1: hsla(0, 0%, 100%, 0.1);
@@ -67,7 +49,7 @@ $gap: 1em;
   --colorAB5: hsla(0, 0%, 0%, 0.5);
   --colorAB7: hsla(0, 0%, 0%, 0.7);
   --colorAB8: hsla(0, 0%, 0%, 0.8);
-  --colorAS2: hsl(9, 100%, 64%, 0.5);   /* dérivée de `--color2` */
+  --colorAS2: hsl(9, 100%, 64%, 0.5); /* dérivée de `--color2` */
   --colorAS22: hsla(0, 100%, 50%, 0.3);
   --colorS4: hsl(96, 41%, 53%);
   --colorS5: hsla(30, 31%, 54%);
@@ -131,8 +113,8 @@ $gap: 1em;
   /* @subsection Shadows */
   /* @note Seules les ombres de référence - et donc redontantes - sont placées ici, les autres sont directement intégrées à leur propriété. */
   --shadow1: 0.5rem 0.5rem 2rem hsla(0, 0%, 0%, 0.15);
-  --shadow2: inset 0 0 0.1em hsla(0, 0%, 0%, 0.3),
-    0 0.5rem 2rem hsla(0, 0%, 0%, 0.3); /* ombres interieures en em, ombres exterieures en rem */
+  --shadow2:
+    inset 0 0 0.1em hsla(0, 0%, 0%, 0.3), 0 0.5rem 2rem hsla(0, 0%, 0%, 0.3); /* ombres interieures en em, ombres exterieures en rem */
   --shadow3: 0 0 1.5rem hsla(0, 0%, 0%, 0.2);
   --shadow4: 0 1.5rem 2rem hsla(0, 0%, 0%, 0.4);
   --shadow5: 0 0 2rem hsla(0, 0%, 0%, 0.2);
@@ -144,5 +126,5 @@ $gap: 1em;
   /* @subsection Rounds */
   --r1: 0.3em; /* Boites */
   --r2: 0.3em; /* Éléments internes */
-  --r3: .2em; /* Éléments de liste */
+  --r3: 0.2em; /* Éléments de liste */
 }

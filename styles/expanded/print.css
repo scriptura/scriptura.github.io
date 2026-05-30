@@ -1,4 +1,4 @@
-@charset "utf-8"; /* Les guillemets doubles évitents une erreur au validateur du W3C. @see https:/* validator.w3.org/ */ /* @note Doublage des variables Sass par les variables CSS natives impliquées dans les médias queries. @todo en attendant un support total d'usage pour les variables natives. */ /* @subsection Breakpoints */ /* @bugfix Nécessité de préciser deux chiffres après la virgule pour éviter un arrondissement de la valeur par les navigateurs. */ /* @note L'idée étant d'avoir une précision au-délà du pixel, nous évitant ainsi de devoir utiliser les opérateur logiques CSS4 de type inclusifs (exemple : `<=`). @todo En test...*/ /* @note La fonction calc() n'est pas implémentée pour les media queries, ou alors partiellement (unité de même type). @see https://stackoverflow.com/questions/23667208 @todo À réévaluer dans le temps... */ /* @note Attention, il s'agit d'une valeur empirique qui tente d'anticiper la taille minimale nécessaire au menu en desktop. @todo À remplacer par une solution plus fiable à l'avenir, mais qui ne serait peut-être alors pas mobile first et pourrait poser des problèmes de reflow... */ :root {
+@charset "utf-8"; /* Les guillemets doubles évitents une erreur au validateur du W3C. @see https:/* validator.w3.org/ */ :root {
   --size-nav: 97.01em; /* @note Variable CSS utilisée en JavaScript. */
   --gap: 1em; /* Gouttière, largeur entre deux modules */
   --wrap: 92em; /* calc(90em + var(--gap) * 2)*/ /* Largeur maximale du contenu (+ prise en compte du padding interne) */
@@ -15,22 +15,22 @@
   --colorG13: hsl(0, 0%, 13%);
   --colorG15: hsl(0, 0%, 15%);
   --colorG18: hsl(0, 0%, 18%);
-  --colorG22: hsl(0, 0%, 22%);          /* gris de référence */
+  --colorG22: hsl(0, 0%, 22%); /* gris de référence */
   --colorG27: hsl(0, 0%, 27%);
   --colorG33: hsl(0, 0%, 33%);
   --colorG38: hsl(0, 0%, 38%);
   --colorG45: hsl(0, 0%, 45%);
   --colorG60: hsl(0, 0%, 60%);
-  --colorW: hsl(0, 0%, 100%);           /* blanc de référence */
-  --colorB: hsl(0, 0%, 0%);             /* noir de référence */
-  --colorT: hsl(35, 45%, 84%);          /* couleur primaire du texte */
-  --colorT2: hsl(34, 44%, 69%);         /* couleur secondaire du texte */
-  --color1: var(--colorG22);            /* couleur de fond */
-  --color2: hsl(9, 100%, 64%);          /* couleur dominante 2 (tomato) */
-  --color3: hsl(12, 63%, 49%);          /* couleur secondaire */
-  --color4: hsl(96, 41%, 29%);          /* couleur secondaire */
-  --color5: hsl(39, 100%, 50%);         /* couleur secondaire */
-  --color6: hsl(207, 22%, 39%);         /* couleur secondaire */
+  --colorW: hsl(0, 0%, 100%); /* blanc de référence */
+  --colorB: hsl(0, 0%, 0%); /* noir de référence */
+  --colorT: hsl(35, 45%, 84%); /* couleur primaire du texte */
+  --colorT2: hsl(34, 44%, 69%); /* couleur secondaire du texte */
+  --color1: var(--colorG22); /* couleur de fond */
+  --color2: hsl(9, 100%, 64%); /* couleur dominante 2 (tomato) */
+  --color3: hsl(12, 63%, 49%); /* couleur secondaire */
+  --color4: hsl(96, 41%, 29%); /* couleur secondaire */
+  --color5: hsl(39, 100%, 50%); /* couleur secondaire */
+  --color6: hsl(207, 22%, 39%); /* couleur secondaire */
   --colorA003: hsla(0, 0%, 100%, 0.03);
   --colorA005: hsla(0, 0%, 100%, 0.05);
   --colorA1: hsla(0, 0%, 100%, 0.1);
@@ -49,7 +49,7 @@
   --colorAB5: hsla(0, 0%, 0%, 0.5);
   --colorAB7: hsla(0, 0%, 0%, 0.7);
   --colorAB8: hsla(0, 0%, 0%, 0.8);
-  --colorAS2: hsl(9, 100%, 64%, 0.5);   /* dérivée de `--color2` */
+  --colorAS2: hsl(9, 100%, 64%, 0.5); /* dérivée de `--color2` */
   --colorAS22: hsla(0, 100%, 50%, 0.3);
   --colorS4: hsl(96, 41%, 53%);
   --colorS5: hsla(30, 31%, 54%);
@@ -113,8 +113,8 @@
   /* @subsection Shadows */
   /* @note Seules les ombres de référence - et donc redontantes - sont placées ici, les autres sont directement intégrées à leur propriété. */
   --shadow1: 0.5rem 0.5rem 2rem hsla(0, 0%, 0%, 0.15);
-  --shadow2: inset 0 0 0.1em hsla(0, 0%, 0%, 0.3),
-    0 0.5rem 2rem hsla(0, 0%, 0%, 0.3); /* ombres interieures en em, ombres exterieures en rem */
+  --shadow2:
+    inset 0 0 0.1em hsla(0, 0%, 0%, 0.3), 0 0.5rem 2rem hsla(0, 0%, 0%, 0.3); /* ombres interieures en em, ombres exterieures en rem */
   --shadow3: 0 0 1.5rem hsla(0, 0%, 0%, 0.2);
   --shadow4: 0 1.5rem 2rem hsla(0, 0%, 0%, 0.4);
   --shadow5: 0 0 2rem hsla(0, 0%, 0%, 0.2);
@@ -126,7 +126,7 @@
   /* @subsection Rounds */
   --r1: 0.3em; /* Boites */
   --r2: 0.3em; /* Éléments internes */
-  --r3: .2em; /* Éléments de liste */
+  --r3: 0.2em; /* Éléments de liste */
 } @font-face {
   font-family: 'Noto Sans';
   src: url('../fonts/notoSans-Regular.woff2') format('woff2'),
@@ -148,17 +148,7 @@
  * @see https://github.com/necolas/normalize.css
  * @see https://github.com/alsacreations/KNACSS/blob/v8/sass/base/_reset.scss
  * @see https://github.com/alsacreations/KNACSS/blob/master/sass/_vendor/_reboot.scss
- */ /* 1. Activation du moteur de transition inter-documents */ @view-transition {
-  navigation: auto;
-} /* 2. Mapping des discriminants sur les invariants de la structure Pug */ .nav {
-  view-transition-name: layout-nav;
-} #main {
-  view-transition-name: layout-main;
-} .footer {
-  view-transition-name: layout-footer;
-} .alert {
-  view-transition-name: layout-alert;
-} :root {
+ */ :root {
   color-scheme: var(--color-scheme);
   /* Ability to the value of the root font sizes, affecting the value of `rem`. Null by default, thus nothing is generated. */
   /*font-size: 1rem; */
@@ -453,8 +443,7 @@ template {
     content: ' ↩';
   }
   /* Liens externes */
-  &[href*='//']::after
-  {
+  &[href*='//']::after {
     content: ' ↗';
   }
 } .text-center {
@@ -466,7 +455,7 @@ template {
     text-align: start;
   }
 
-  @media (width > 35.01em) {
+  @media (width > 35em) {
     text-align: justify;
   }
 } /* @import 'layout'; */ /* @note Utiliser .grid2 pour avoir deux colonnes, etc., au-delà de .grid4 utiliser .grid-auto (qui par défaut aura 5 colonnes max pour la largeur prévue de notre site). */ /* @note Avec `minmax` la grille ne sera pas tributaire de son contenu en responsive @see https://css-tricks.com/equal-width-columns-in-css-grid-are-kinda-weird/ */ [class^='grid'] {
@@ -524,22 +513,26 @@ template {
     /* @todo Valeur arbitraire à redéfinir. */
     grid-template-columns: repeat(auto-fit, minmax(var(--xs-size-column, 11em), 1fr));
   }
-} @container grid (35.01em < width) {
+} @container grid (width > 35.01em) {
+  .xs-grid-auto {
+    /* @todo Valeur arbitraire à redéfinir. */
+    grid-template-columns: repeat(auto-fit, minmax(var(--xs-size-column, 11em), 1fr));
+  }
   .grid2,
   .grid3,
   .grid4 {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
-} @container grid (50.01em < width) {
+} @container grid (width > 50.01em) {
   .grid3,
   .grid4 {
     grid-template-columns: repeat(3, minmax(0, 1fr));
   }
-} @container grid (70.01em < width) {
+} @container grid (width > 70.01em) {
   .grid4 {
     grid-template-columns: repeat(4, minmax(0, 1fr));
   }
-} @container grid (35.01em < width) {
+} @container grid (width > 35.01em) {
   /* @todo En attendant avec impatience le support de "grid-column: span minmax(1, 2)" */
   .c2,
   .c3,
@@ -554,12 +547,12 @@ template {
   .xs-c2 {
     grid-column: span 2;
   }
-} @container grid (50.01em < width) {
+} @container grid (width > 50.01em) {
   .c3,
   .c4 {
     grid-column: span 3;
   }
-} @container grid (70.01em < width) {
+} @container grid (width > 70.01em) {
   .c4 {
     grid-column: span 4;
   }
@@ -585,7 +578,7 @@ template {
   grid-row: span 3;
 } .r4 {
   grid-row: span 4;
-} @container grid (35.01em < width) {
+} @container grid (width > 35.01em) {
   :root .xs-grid2 {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
@@ -629,7 +622,7 @@ template {
   :root .l-grid4 {
     grid-template-columns: repeat(4, minmax(0, 1fr));
   }
-} @container grid (92.01em < width) {
+} @container grid (width > 92.01em) {
   :root .xl-grid2 {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
@@ -750,11 +743,11 @@ template {
     gap: 0 var(--gap);
     /* column-gap: var(--gap); */
   }
-} @container grid (35.01em > width) {
+} @container grid (width <= 35em) {
   .XS-column2 {
     column-count: 2;
   }
-} @container grid (width > 35.01em) {
+} @container grid (width > 35em) {
   .column2,
   .column3,
   .column4,
@@ -766,7 +759,7 @@ template {
   .column6 {
     column-count: 3;
   }
-} @container grid (width > 50.01em) {
+} @container grid (width > 50em) {
   .column3,
   .column4 {
     column-count: 3;
@@ -780,7 +773,7 @@ template {
   .m-column2 {
     column-count: 2;
   }
-} @container grid (width > 70.01em) {
+} @container grid (width > 70em) {
   .column4 {
     column-count: 4;
   }
@@ -1040,7 +1033,7 @@ ol {
     width: 100%;
     max-width: calc(50% - var(--gap)/2);
 
-    @media (width < 50.01em) {
+    @media (width <= 50em) {
       max-width: 20em;
       margin-inline: auto;
     }
@@ -1060,7 +1053,7 @@ ol {
     }
   }
 
-  @media (width > 50.01em) {
+  @media (width > 50em) {
     &[class*='-alignleft'] {
       float: left;
       margin-inline-end: var(--gap);
@@ -1223,7 +1216,7 @@ ol {
     object-fit: contain;
   }
 
-  @media (width < 50.01em) {
+  @media (width <= 50em) {
     &,
     & img {
       max-width: 20em;
@@ -1471,7 +1464,7 @@ samp {
     max-width: 92em;
     margin: 0 auto;
 
-    @media (width < 35.01em) {
+    @media (width <= 35em) {
       flex-direction: column;
       align-items: center;
       text-align: center;
@@ -1479,7 +1472,7 @@ samp {
       padding: 1em;
     }
 
-    @media (width > 35.01em) {
+    @media (width > 35em) {
       justify-content: space-between;
       align-items: center;
     }
@@ -1523,7 +1516,7 @@ samp {
   }
 
   & > :where(.comment, form) {
-    @media (50.01em < width) {
+    @media (width > 50em) {
       &:nth-child(even) {
         /* @note Limitation à 2 rangées car impression visuelle d'un désordre à partir de 3 rangées. */
         margin-inline-start: auto;
@@ -1532,34 +1525,32 @@ samp {
   }
 
   & > :where(.wrapper, .comment) {
-    @media (35.01em < width) {
+    @media (width > 35em) {
       border-radius: var(--r1);
       box-shadow: var(--shadow3);
     }
   }
 
   & > .wrapper {
-
-    @media (width < 35.01em) {
+    @media (width <= 35em) {
       padding-block-start: 1em;
     }
 
-    @media (35.01em < width < 50.01em) {
+    @media (35em < width <= 50em) {
       padding: 4em;
     }
 
-    @media (50.01em < width) {
+    @media (width > 50em) {
       padding: 4em 6em;
     }
   }
 
   & > .comment {
-
-    @media (35.01em < width < 50.01em) {
+    @media (35em < width <= 50em) {
       padding: 2.5em 4em;
     }
 
-    @media (50.01em < width) {
+    @media (width > 50em) {
       padding: 4em 6em 2.5em;
     }
   }
@@ -1586,7 +1577,7 @@ samp {
     position: relative;
     width: 100%;
 
-    @media (width < 35.01em) {
+    @media (width <= 35em) {
       padding-block: var(--gap);
     }
   }
@@ -1642,7 +1633,7 @@ samp {
       color: var(--colorT);
       background-color: var(--colorG27); /* --colorG33 */
       clip-path: polygon(0.75em 0, 100% 0, 100% 100%, 0.75em 100%, 0 50%);
-      transition: background-color .3s;
+      transition: background-color 0.3s;
 
       &:where(:focus, :hover, :active) {
         color: var(--colorW);
@@ -1671,21 +1662,21 @@ samp {
     gap: var(--gap);
     max-width: 55em;
 
-    @media (35.01em < width < 50.01em) {
+    @media (35em < width <= 50em) {
       padding-inline: 4em;
     }
 
-    @media (50.01em < width) {
+    @media (width > 50em) {
       padding-inline: 6em;
     }
   }
 
-  @media (width < 35.01em) {
+  @media (width <= 35em) {
     & .wrapper {
       margin-block-start: calc(var(--gap)*-1);
     }
   }
-} @media (width > 35.01em) {
+} @media (width > 35em) {
   .boxx {
     padding: 4em 6em;
     border-radius: var(--r1);
@@ -1856,19 +1847,19 @@ samp {
 } /* @import 'forum'; */ /* @import 'skin'; */ /* @import 'demo'; */ /* @note Les helpers s'appliquent à la fin dans le but d'écraser des styles tels que font-size. */ .hidden,
 [hidden]:not([hidden='until-found']) {
   display: none !important;
-} @container grid (width < 35.01em) {
+} @container grid (--to-xs) {
   .xs-hidden {
     display: none !important;
   }
-} @container grid (35.01em < width < 50.01em) {
+} @container grid (--from-xs-to-s) {
   .s-hidden {
     display: none !important;
   }
-} @container grid (50.01em < width < 70.01em) {
+} @container grid (--from-s--to-m) {
   .m-hidden {
     display: none !important;
   }
-} @container grid (70.01em < width < 92.01em) {
+} @container grid (--from-m-to-l) {
   .l-hidden {
     display: none !important;
   }
@@ -1921,7 +1912,7 @@ samp {
     place-self: center;
   }
   */
-} @container grid (width < 35.01em) {
+} @container grid (--to-xs) {
   .xs-center {
     display: grid;
     place-items: center;
@@ -1953,19 +1944,19 @@ samp {
   width: calc(var(--size)*0.8);
 } .scale {
   font-size: var(--scale, 100%);
-} @container grid (width < 35.01em) {
+} @container grid (--to-xs) {
   .xs-scale {
     font-size: var(--xs-scale, 100%);
   }
-} @container grid (35.01em < width) {
+} @container grid (--from-xs) {
   .s-scale {
     font-size: var(--s-scale, 100%);
   }
-} @container grid (50.01em < width) {
+} @container grid (--from-s) {
   .m-scale {
     font-size: var(--m-scale, 100%);
   }
-} @container grid (70.01em < width) {
+} @container grid (--from-m) {
   .l-scale {
     font-size: var(--l-scale, 100%);
   }
@@ -1991,7 +1982,10 @@ samp {
   visibility: hidden;
   opacity: 0;
   transform: scale(0);
-  transition: opacity 1s ease-out, visibility 0s 1s ease-out, transform 0s 1s ease-out;
+  transition:
+    opacity 1s ease-out,
+    visibility 0s 1s ease-out,
+    transform 0s 1s ease-out;
 } /*
 @keyframes anim-fade-in {
   from {

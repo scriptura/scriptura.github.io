@@ -15,12 +15,12 @@
   box-shadow: var(--shadow1);
   gap: 0 1em;
 
-  @media (width < $sizeXS) {
+  @media (--to-xs) {
     grid-template-columns: minmax(0, 1fr) 2em;
     grid-template-areas: 'ttt ttt' 'uuu aaa';
   }
 
-  @media (width > $sizeXS) {
+  @media (--from-xs) {
     grid-template-columns: 4em minmax(0, 1fr);
     grid-template-areas: 'aaa ttt' 'aaa uuu';
   }
@@ -128,7 +128,7 @@
   position: relative;
   margin: auto;
 
-  @media (width < $sizeXS) {
+  @media (--to-xs) {
     /* @note Valeur obtenue de manière un peu empirique, liée à la propriété font-size définie ci après. */
     margin-block-end: 2em;
     font-size: 0.5em;

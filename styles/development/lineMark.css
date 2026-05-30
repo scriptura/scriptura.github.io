@@ -1,11 +1,11 @@
-@media (width < $sizeS) {
+@media (--to-s) {
   .line-mark {
     /* @note Un match media javascript peutconditionner le script, mais cette solution est moins modulable et surtout moins robuste que la solution CSS. */
     display: none;
   }
 }
 
-@media (width > $sizeS) {
+@media (--from-s) {
   .add-line-marks > * {
     position: relative;
   }

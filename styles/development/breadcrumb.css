@@ -58,7 +58,7 @@
     }
   }
 
-  @media (width < $sizeNav) {
+  @media (--to-nav) {
     & li > * {
       line-height: 3;
       padding: 0 2.25em;

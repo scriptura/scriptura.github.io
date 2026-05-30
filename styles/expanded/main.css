@@ -1,4 +1,10 @@
-@charset "utf-8"; /* Les guillemets doubles évitents une erreur au validateur du W3C. @see https://validator.w3.org/ */ /* @note Doublage des variables Sass par les variables CSS natives impliquées dans les médias queries. @todo en attendant un support total d'usage pour les variables natives. */ /* @subsection Breakpoints */ /* @bugfix Nécessité de préciser deux chiffres après la virgule pour éviter un arrondissement de la valeur par les navigateurs. */ /* @note L'idée étant d'avoir une précision au-délà du pixel, nous évitant ainsi de devoir utiliser les opérateur logiques CSS4 de type inclusifs (exemple : `<=`). @todo En test...*/ /* @note La fonction calc() n'est pas implémentée pour les media queries, ou alors partiellement (unité de même type). @see https://stackoverflow.com/questions/23667208 @todo À réévaluer dans le temps... */ /* @note Attention, il s'agit d'une valeur empirique qui tente d'anticiper la taille minimale nécessaire au menu en desktop. @todo À remplacer par une solution plus fiable à l'avenir, mais qui ne serait peut-être alors pas mobile first et pourrait poser des problèmes de reflow... */ :root {
+@charset "utf-8";
+@layer tokens, base, layout, transitions, components, helpers;
+/* Les guillemets doubles évitent une erreur au validateur du W3C. @see https://validator.w3.org/ */
+/* DÉCLARATION DE L'INDEX DE LA CASCADE (Ordre de priorité croissant) */
+/* 1. COUCHE TOKENS (Variables de Runtime & Déclarations de ressources) */
+/* Ingestion globale (Hors-couche pour résolution globale par l'AST) */
+:root {
   --size-nav: 97.01em; /* @note Variable CSS utilisée en JavaScript. */
   --gap: 1em; /* Gouttière, largeur entre deux modules */
   --wrap: 92em; /* calc(90em + var(--gap) * 2)*/ /* Largeur maximale du contenu (+ prise en compte du padding interne) */
@@ -15,22 +21,22 @@
   --colorG13: hsl(0, 0%, 13%);
   --colorG15: hsl(0, 0%, 15%);
   --colorG18: hsl(0, 0%, 18%);
-  --colorG22: hsl(0, 0%, 22%);          /* gris de référence */
+  --colorG22: hsl(0, 0%, 22%); /* gris de référence */
   --colorG27: hsl(0, 0%, 27%);
   --colorG33: hsl(0, 0%, 33%);
   --colorG38: hsl(0, 0%, 38%);
   --colorG45: hsl(0, 0%, 45%);
   --colorG60: hsl(0, 0%, 60%);
-  --colorW: hsl(0, 0%, 100%);           /* blanc de référence */
-  --colorB: hsl(0, 0%, 0%);             /* noir de référence */
-  --colorT: hsl(35, 45%, 84%);          /* couleur primaire du texte */
-  --colorT2: hsl(34, 44%, 69%);         /* couleur secondaire du texte */
-  --color1: var(--colorG22);            /* couleur de fond */
-  --color2: hsl(9, 100%, 64%);          /* couleur dominante 2 (tomato) */
-  --color3: hsl(12, 63%, 49%);          /* couleur secondaire */
-  --color4: hsl(96, 41%, 29%);          /* couleur secondaire */
-  --color5: hsl(39, 100%, 50%);         /* couleur secondaire */
-  --color6: hsl(207, 22%, 39%);         /* couleur secondaire */
+  --colorW: hsl(0, 0%, 100%); /* blanc de référence */
+  --colorB: hsl(0, 0%, 0%); /* noir de référence */
+  --colorT: hsl(35, 45%, 84%); /* couleur primaire du texte */
+  --colorT2: hsl(34, 44%, 69%); /* couleur secondaire du texte */
+  --color1: var(--colorG22); /* couleur de fond */
+  --color2: hsl(9, 100%, 64%); /* couleur dominante 2 (tomato) */
+  --color3: hsl(12, 63%, 49%); /* couleur secondaire */
+  --color4: hsl(96, 41%, 29%); /* couleur secondaire */
+  --color5: hsl(39, 100%, 50%); /* couleur secondaire */
+  --color6: hsl(207, 22%, 39%); /* couleur secondaire */
   --colorA003: hsla(0, 0%, 100%, 0.03);
   --colorA005: hsla(0, 0%, 100%, 0.05);
   --colorA1: hsla(0, 0%, 100%, 0.1);
@@ -49,7 +55,7 @@
   --colorAB5: hsla(0, 0%, 0%, 0.5);
   --colorAB7: hsla(0, 0%, 0%, 0.7);
   --colorAB8: hsla(0, 0%, 0%, 0.8);
-  --colorAS2: hsl(9, 100%, 64%, 0.5);   /* dérivée de `--color2` */
+  --colorAS2: hsl(9, 100%, 64%, 0.5); /* dérivée de `--color2` */
   --colorAS22: hsla(0, 100%, 50%, 0.3);
   --colorS4: hsl(96, 41%, 53%);
   --colorS5: hsla(30, 31%, 54%);
@@ -113,8 +119,8 @@
   /* @subsection Shadows */
   /* @note Seules les ombres de référence - et donc redontantes - sont placées ici, les autres sont directement intégrées à leur propriété. */
   --shadow1: 0.5rem 0.5rem 2rem hsla(0, 0%, 0%, 0.15);
-  --shadow2: inset 0 0 0.1em hsla(0, 0%, 0%, 0.3),
-    0 0.5rem 2rem hsla(0, 0%, 0%, 0.3); /* ombres interieures en em, ombres exterieures en rem */
+  --shadow2:
+    inset 0 0 0.1em hsla(0, 0%, 0%, 0.3), 0 0.5rem 2rem hsla(0, 0%, 0%, 0.3); /* ombres interieures en em, ombres exterieures en rem */
   --shadow3: 0 0 1.5rem hsla(0, 0%, 0%, 0.2);
   --shadow4: 0 1.5rem 2rem hsla(0, 0%, 0%, 0.4);
   --shadow5: 0 0 2rem hsla(0, 0%, 0%, 0.2);
@@ -126,8 +132,11 @@
   /* @subsection Rounds */
   --r1: 0.3em; /* Boites */
   --r2: 0.3em; /* Éléments internes */
-  --r3: .2em; /* Éléments de liste */
-} @font-face {
+  --r3: 0.2em; /* Éléments de liste */
+}
+@layer tokens{
+
+@font-face {
   font-family: 'Noto Sans';
   src: url('../fonts/notoSans-Regular.woff2') format('woff2'),
        url('../fonts/notoSans-Regular.woff') format('woff');
@@ -135,38 +144,41 @@
   font-style: normal;
   /* @see https://css-tricks.com/almanac/properties/f/font-display/ */
   font-display: swap;
-} @font-face {
+}
+
+@font-face {
   font-family: 'Noto Serif';
   src: url('../fonts/notoSerif-Regular.woff2') format('woff2'),
        url('../fonts/notoSerif-Regular.woff') format('woff');
   font-weight: normal;
   font-style: normal;
   font-display: swap;
-} /**
+}
+}
+/* 2. COUCHE BASE (Règles génériques et sémantique brute) */
+@layer base{
+
+/**
  * @note Les ressets CSS sont inspiré de Bootstrap Reboot et Normalize CSS 8.0.1 puis étendu par nos soins.
  * @see https://github.com/twbs/bootstrap/blob/v4-dev/scss/_reboot.scss
  * @see https://github.com/necolas/normalize.css
  * @see https://github.com/alsacreations/KNACSS/blob/v8/sass/base/_reset.scss
  * @see https://github.com/alsacreations/KNACSS/blob/master/sass/_vendor/_reboot.scss
- */ /* 1. Activation du moteur de transition inter-documents */ @view-transition {
-  navigation: auto;
-} /* 2. Mapping des discriminants sur les invariants de la structure Pug */ .nav {
-  view-transition-name: layout-nav;
-} #main {
-  view-transition-name: layout-main;
-} .footer {
-  view-transition-name: layout-footer;
-} .alert {
-  view-transition-name: layout-alert;
-} :root {
+ */
+
+:root {
   color-scheme: var(--color-scheme);
   /* Ability to the value of the root font sizes, affecting the value of `rem`. Null by default, thus nothing is generated. */
   /*font-size: 1rem; */
-} *,
+}
+
+*,
 ::before,
 ::after {
   box-sizing: border-box;
-} html {
+}
+
+html {
   /* @bugfix Prevent adjustments of font size after orientation changes @affected iOS. */
   -webkit-text-size-adjust: 100%;
   /* -webkit-tap-highlight-color: transparent */
@@ -185,10 +197,14 @@
   @media (prefers-reduced-motion: no-preference) {
     scroll-behavior: smooth;
   }
-} ::selection {
+}
+
+::selection {
   color: var(--colorW);
   background-color: var(--colorAS2);
-} a {
+}
+
+a {
   color: var(--colorT2);
   text-underline-offset: 10%;
 
@@ -197,9 +213,13 @@
     text-decoration: none;
     outline: none;
   }
-} p {
+}
+
+p {
   margin-block: 0.75em;
-} hr {
+}
+
+hr {
   /* @bugfix Show the overflow @affected Edge and IE. */
   overflow: visible;
   /* @bugfix Add the correct box sizing @affected Firefox. */
@@ -211,7 +231,9 @@
   color: transparent;
   background-image: repeating-linear-gradient(-45deg, transparent 0 5px, var(--colorA1) 5px 10px);
   border: none;
-} h1,
+}
+
+h1,
 h2,
 h3,
 h4,
@@ -226,37 +248,55 @@ h6,
   font-family: var(--font-list2);
   text-align: start; /* @note Permet d'écraser le placement en justifié si besoin car conflit de cette dernière définition avec "text-wrap: balance". @todo À évaluer. */
   text-wrap: balance;
-} :where(.h2, .h3, .h4, .h5, .h6) {
+}
+
+:where(.h2, .h3, .h4, .h5, .h6) {
   /* @note Important à redéfinir pour les classes aposées sur d'autres éléments que des titres, comme <legend> ou <label> par exemple. */
   margin-block: 0.83em;
   fieldset > legend& {
     /* @bugfix @affected Chrome @note Si pas de correctif la marge passe en dessous du fieldset conteneur. */
     padding-block-start: 0.83em;
   }
-} h1,
+}
+
+h1,
 .h1 {
   margin-block: clamp(0.83em, 5vw, 0.67em); /* 0.83em */
   font-size: clamp(2em, 5vw, 2.5em); /* 2.5em */
-} h2,
+}
+
+h2,
 .h2 {
   font-size: 2em;
-} h3,
+}
+
+h3,
 .h3 {
   font-size: 1.75em;
-} h4,
+}
+
+h4,
 .h4 {
   font-size: 1.5em;
-} h5,
+}
+
+h5,
 .h5 {
   font-size: 1.25em;
-} h6,
+}
+
+h6,
 .h6 {
   font-size: 1em;
-} hgroup {
+}
+
+hgroup {
   & h1 {
     margin-block-end: 0;
   }
-} pre {
+}
+
+pre {
   margin: 0;
   /* @bugfix Correct the inheritance and scaling of font size @affected All browsers. */
   font-family: monospace, monospace;
@@ -264,45 +304,69 @@ h6,
   font-size: 1em;
   white-space: pre-wrap;
   /* word-break: keep-all; */
-} abbr[title] {
+}
+
+abbr[title] {
   /* @bugfix Add the correct text decoration @affected Chrome, Edge, IE, Opera, and Safari. */
   text-decoration: underline;
   /* @bugfix Idem */
   text-decoration: underline dotted;
-} b,
+}
+
+b,
 strong {
   /* @bugfix Add the correct font weight @affected Chrome, Edge, and Safari. */
   font-weight: bold;
-} i,
+}
+
+i,
 em {
   font-style: italic;
-} blockquote {
+}
+
+blockquote {
   margin: 0;
-} q {
+}
+
+q {
   /* Harmonisation des citations. */
   quotes: '\201C' '\201D' '\2018' '\2019';
-} mark {
+}
+
+mark {
   color: currentcolor;
   background-color: var(--color3); /* --color2 */
-} small {
+}
+
+small {
   /* @bugfix Add the correct font size @affected All browsers. */
   font-size: 80%;
-} sub,
+}
+
+sub,
 sup {
   /* @bugfix Prevent `sub` and `sup` elements from affecting the line height @affected All browsers. */
   position: relative;
   line-height: 0;
   font-size: 75%;
   vertical-align: baseline;
-} sub {
+}
+
+sub {
   /* @bugfix Prevent `sub` and `sup` elements from affecting the line height @affected All browsers. */
   bottom: -0.25em;
-} sup {
+}
+
+sup {
   /* @bugfix Prevent `sub` and `sup` elements from affecting the line height @affected All browsers. */
   top: -0.5em;
-} ins {
+}
+
+ins {
   text-underline-offset: 10%;
-} details {
+}
+
+details {
   /* @note Tentative de reproduire avec les marges l'espacement des items d'une liste. */
   display: block;
 
@@ -325,7 +389,9 @@ sup {
       margin-block-end: 0;
     }
   }
-} summary {
+}
+
+summary {
   /* @bugfix Add the correct display @affected All browsers. */
   display: list-item;
   list-style: none;
@@ -353,7 +419,9 @@ sup {
   details[open] > &::before {
     transform: rotate(90deg);
   }
-} /*
+}
+
+/*
 template {
   display: none; /* @bugfix Add the correct display @affected IE 10+.
 }
@@ -361,27 +429,41 @@ template {
 [hidden] {
   display: none; /* @bugfix Add the correct display @affected IE 10.
 }
-*/ iframe {
+*/
+
+iframe {
   overflow: hidden;
   width: 100%;
   height: 100%;
   border: none;
-} ruby {
+}
+
+ruby {
   display: grid;
   gap: 0.5em;
 
   & * {
     margin: auto;
   }
-} ::marker {
+}
+}
+@layer base{
+
+::marker {
   color: var(--color2);
-} .main-heading {
+}
+
+.main-heading {
   /* @note Alias de overflow-wrap @see https://developer.mozilla.org/fr/docs/Web/CSS/overflow-wrap */
   word-wrap: break-word;
   text-shadow: 0.2em 0.2em 0.2em var(--colorAB3);
-} .main-heading span {
+}
+
+.main-heading span {
   color: var(--color2);
-} hr[data-hr],
+}
+
+hr[data-hr],
 .decorative-hr hr {
   display: block;
   /* clear: both: */
@@ -401,9 +483,13 @@ template {
     text-align: center;
     color: var(--colorA2);
   }
-} .decorative-hr hr::after {
+}
+
+.decorative-hr hr::after {
   content: '✻ ✻ ✻';
-} .blockquote blockquote {
+}
+
+.blockquote blockquote {
   position: relative;
   margin: 0;
   padding-inline-start: 2em;
@@ -442,34 +528,50 @@ template {
   & footer::after {
     content: '.';
   }
-} /* @note Grec ancien (grc), grec moderne ('el'). */ :lang(he) {
+}
+
+/* @note Grec ancien (grc), grec moderne ('el'). */
+
+:lang(he) {
   direction: rtl;
   /* font-family: $font-list; */
-} .verse {
+}
+
+.verse {
   color: var(--color2);
-} .links p a {
+}
+
+.links p a {
   &:not([href^='#'])::after {
     /* @note Liens internes, sauf pour les ancres. */
     content: ' ↩';
   }
   /* Liens externes */
-  &[href*='//']::after
-  {
+  &[href*='//']::after {
     content: ' ↗';
   }
-} .text-center {
+}
+
+.text-center {
   text-align: center;
-} .text-justify {
+}
+
+.text-justify {
   hyphens: auto;
 
   & li {
     text-align: start;
   }
 
-  @media (width > 35.01em) {
+  @media (width > 35em) {
     text-align: justify;
   }
-} html,
+}
+}
+/* 3. COUCHE LAYOUT (Invariants structurels et systèmes de grilles) */
+@layer layout{
+
+html,
 body {
   /* @note Pour des éléments en clip-path dont l'élément d'origine dépasse de la page, tel que les Ribbons @bugfixed @affected Android @note La sélection du couple `html/body` est nécessaire pour couper les dépassements sous ce navigateur, la sélection d'un seul des deux serait insufisant. La valeur hidden pourrait faire l'affaire, mais elle entre en conflit avec `position: sticky`. */
   overflow-x: clip;
@@ -477,7 +579,9 @@ body {
   height: 100%;
   /* @note Pas d'effet associé sur les zones de défilement environnantes et on empêche le comportement normal de se produire sur l'élément lorsqu'on dépasse de la zone de défilement. */
   /* overscroll-behavior-x: none; */
-} body {
+}
+
+body {
   display: grid;
   grid-template-rows: repeat(3, auto) 1fr;
   grid-template-columns: minmax(var(--gap), 1fr) minmax(0, var(--wrap)) minmax(var(--gap), 1fr);
@@ -490,25 +594,45 @@ body {
     'f f f';
   /* @bugfix Suppression des marges @affected All browser. */
   margin: 0;
-} main {
+}
+
+main {
   grid-area: m;
   word-break: break-word;
   /* @note Ne pas définir de padding latéral à ce niveau pour éviter de devoir rattraper ce padding sur les élements enfants */
   padding-block-end: var(--gap);
-} .nav {
+}
+
+.nav {
   grid-area: n;
-} .header {
+}
+
+.header {
   grid-area: h;
-} .alert {
+}
+
+.alert {
   grid-area: i;
-} .aside {
+}
+
+.aside {
   grid-area: a;
-} .footer {
+}
+
+.footer {
   grid-area: f;
-} [tabindex='-1']:focus:not(:focus-visible) {
+}
+
+[tabindex='-1']:focus:not(:focus-visible) {
   /* Future-proof rule: in browsers that support :focus-visible, suppress the focus outline on elements that programmatically receive focus but wouldn't normally show a visible focus outline. In general, this would mean that the outline is only applied if the interaction that led to the element receiving programmatic focus was a keyboard interaction, or the browser has somehow determined that the user is primarily a keyboard user and/or wants focus outlines to always be presented. @see https://developer.mozilla.org/en-US/docs/Web/CSS/:focus-visible @see https://developer.paciellogroup.com/blog/2018/03/focus-visible-and-backwards-compatibility/ */
   outline: 0 !important;
-} /* @note Utiliser .grid2 pour avoir deux colonnes, etc., au-delà de .grid4 utiliser .grid-auto (qui par défaut aura 5 colonnes max pour la largeur prévue de notre site). */ /* @note Avec `minmax` la grille ne sera pas tributaire de son contenu en responsive @see https://css-tricks.com/equal-width-columns-in-css-grid-are-kinda-weird/ */ [class^='grid'] {
+}
+}
+@layer layout{
+/* @note Utiliser .grid2 pour avoir deux colonnes, etc., au-delà de .grid4 utiliser .grid-auto (qui par défaut aura 5 colonnes max pour la largeur prévue de notre site). */
+/* @note Avec `minmax` la grille ne sera pas tributaire de son contenu en responsive @see https://css-tricks.com/equal-width-columns-in-css-grid-are-kinda-weird/ */
+
+[class^='grid'] {
   :has(> &) {
     container: grid/inline-size;
     width: 100%; /* @note Important si le conteneur n'a pas de largeur définie par défaut. */
@@ -551,34 +675,52 @@ body {
     grid-template-rows: masonry; /* @note Implémentation future en CSS @todo À surveiller.
   }
   */
-} .grid-auto,
+}
+
+.grid-auto,
 .grid-auto-min {
   /* @note Ne pas définir la variable au-dessus de sa valeur par défaut afin d'éviter des dépassement sur les écrans de petites définitions. Préférer alors les grilles prédéfinies. @todo min() en test pour éviter justement ce problème. */
   grid-template-columns: repeat(auto-fit, minmax(min(var(--size-grid, 20em), 100%), 1fr));
-} .grid-auto-min {
+}
+
+.grid-auto-min {
   /* @note Valeur réduite évitant de définir trop fréquement la variable de .grid-auto via du style en ligne. */
   --size-grid: 10em;
-} @container grid (width < 35.01em) {
+}
+
+@container grid (width < 35.01em) {
   .xs-grid-auto {
     /* @todo Valeur arbitraire à redéfinir. */
     grid-template-columns: repeat(auto-fit, minmax(var(--xs-size-column, 11em), 1fr));
   }
-} @container grid (35.01em < width) {
+}
+
+@container grid (width > 35.01em) {
+  .xs-grid-auto {
+    /* @todo Valeur arbitraire à redéfinir. */
+    grid-template-columns: repeat(auto-fit, minmax(var(--xs-size-column, 11em), 1fr));
+  }
   .grid2,
   .grid3,
   .grid4 {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
-} @container grid (50.01em < width) {
+}
+
+@container grid (width > 50.01em) {
   .grid3,
   .grid4 {
     grid-template-columns: repeat(3, minmax(0, 1fr));
   }
-} @container grid (70.01em < width) {
+}
+
+@container grid (width > 70.01em) {
   .grid4 {
     grid-template-columns: repeat(4, minmax(0, 1fr));
   }
-} @container grid (35.01em < width) {
+}
+
+@container grid (width > 35.01em) {
   /* @todo En attendant avec impatience le support de "grid-column: span minmax(1, 2)" */
   .c2,
   .c3,
@@ -593,16 +735,22 @@ body {
   .xs-c2 {
     grid-column: span 2;
   }
-} @container grid (50.01em < width) {
+}
+
+@container grid (width > 50.01em) {
   .c3,
   .c4 {
     grid-column: span 3;
   }
-} @container grid (70.01em < width) {
+}
+
+@container grid (width > 70.01em) {
   .c4 {
     grid-column: span 4;
   }
-} @container grid (35.01em < width < 50.01em) {
+}
+
+@container grid (35.01em < width < 50.01em) {
   .s-c1 {
     grid-column: span 1;
   }
@@ -610,7 +758,9 @@ body {
   .s-c2 {
     grid-column: span 2;
   }
-} @container grid (50.01em < width < 70.01em) {
+}
+
+@container grid (50.01em < width < 70.01em) {
   .m-c1 {
     grid-column: span 1;
   }
@@ -618,17 +768,27 @@ body {
   .m-c2 {
     grid-column: span 2;
   }
-} .r2 {
+}
+
+.r2 {
   grid-row: span 2;
-} .r3 {
+}
+
+.r3 {
   grid-row: span 3;
-} .r4 {
+}
+
+.r4 {
   grid-row: span 4;
-} @container grid (35.01em < width) {
+}
+
+@container grid (width > 35.01em) {
   :root .xs-grid2 {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
-} @container grid (35.01em < width < 50.01em) {
+}
+
+@container grid (35.01em < width < 50.01em) {
   :root .s-grid1 {
     grid-template-columns: repeat(1, minmax(0, 1fr));
   }
@@ -636,7 +796,9 @@ body {
   :root .s-grid2 {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
-} @container grid (50.01em < width < 70.01em) {
+}
+
+@container grid (50.01em < width < 70.01em) {
   :root .m-grid1 {
     grid-template-columns: repeat(1, minmax(0, 1fr));
   }
@@ -652,7 +814,9 @@ body {
   :root .m-grid4 {
     grid-template-columns: repeat(4, minmax(0, 1fr));
   }
-} @container grid (70.01em < width < 92.01em) {
+}
+
+@container grid (70.01em < width < 92.01em) {
   :root .l-grid1 {
     grid-template-columns: repeat(1, minmax(0, 1fr));
   }
@@ -668,11 +832,15 @@ body {
   :root .l-grid4 {
     grid-template-columns: repeat(4, minmax(0, 1fr));
   }
-} @container grid (92.01em < width) {
+}
+
+@container grid (width > 92.01em) {
   :root .xl-grid2 {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
-} .flex {
+}
+
+.flex {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
@@ -696,22 +864,33 @@ body {
   & .push {
     margin-inline-start: auto;
   }
-} .order {
+}
+
+.order {
   /* @note Valeur négative car l'utilisation de cette classe est souvent utilisée pour une monté des éléments frères plutôt qu'une descente. */
   order: var(--o, -1);
-} @container grid (width < 35.01em) {
+}
+
+@container grid (width < 35.01em) {
   .xs-order {
     order: var(--o, -1);
   }
-} @container grid (35.01em < width < 50.01em) {
+}
+
+@container grid (35.01em < width < 50.01em) {
   .s-order {
     order: var(--o, -1);
   }
-} @container grid (50.01em < width < 70.01em) {
+}
+
+@container grid (50.01em < width < 70.01em) {
   .m-order {
     order: var(--o, -1);
   }
-} /* @note Mémento de nos (presques) équivalences grid/flex codées ultérieurement : */ /* with Grid layout: */ /*
+} /* @note Mémento de nos (presques) équivalences grid/flex codées ultérieurement : */
+
+/* with Grid layout: */
+/*
 .summary {
   display: grid;
   gap: var(--gap);
@@ -728,7 +907,9 @@ body {
     grid-template-columns: repeat(4, 1fr);
   }
 }
-*/ /* with flexbox: */ /*
+*/
+/* with flexbox: */
+/*
 .summary {
   display: flex;
   flex-wrap: wrap;
@@ -750,7 +931,13 @@ body {
     }
   }
 }
-*/ /* @bug @affected Chrome @note Nombreux bugs : éléments html ou effets d'ombre tronqués s'ils dépassent des colonnes, drop-shadow utilisé sur des éléments internes aux colonnes créé des artefacts. */ [class^='column'] {
+*/
+}
+@layer layout{
+
+/* @bug @affected Chrome @note Nombreux bugs : éléments html ou effets d'ombre tronqués s'ils dépassent des colonnes, drop-shadow utilisé sur des éléments internes aux colonnes créé des artefacts. */
+
+[class^='column'] {
   :has(> &) {
     container: grid/inline-size;
     width: 100%; /* @note Important si le conteneur n'a pas de largeur définie par défaut. */
@@ -789,11 +976,15 @@ body {
     gap: 0 var(--gap);
     /* column-gap: var(--gap); */
   }
-} @container grid (35.01em > width) {
+}
+
+@container grid (width <= 35em) {
   .XS-column2 {
     column-count: 2;
   }
-} @container grid (width > 35.01em) {
+}
+
+@container grid (width > 35em) {
   .column2,
   .column3,
   .column4,
@@ -805,7 +996,9 @@ body {
   .column6 {
     column-count: 3;
   }
-} @container grid (width > 50.01em) {
+}
+
+@container grid (width > 50em) {
   .column3,
   .column4 {
     column-count: 3;
@@ -819,7 +1012,9 @@ body {
   .m-column2 {
     column-count: 2;
   }
-} @container grid (width > 70.01em) {
+}
+
+@container grid (width > 70em) {
   .column4 {
     column-count: 4;
   }
@@ -835,7 +1030,9 @@ body {
   .l-column3 {
     column-count: 3;
   }
-} .column-fix {
+}
+
+.column-fix {
   --column-width: 22.25em; /* = 356px, donc 4 colonnes pour les 92em quand wrap au max. */
   max-width: var(--column-width);
   column-count: 1;
@@ -853,7 +1050,36 @@ body {
     max-width: calc(var(--column-width)*4 + var(--gap)*3);
     column-count: 4;
   }
-} .nav {
+}
+}
+/* 4. COUCHE TRANSITIONS (Animations et transitions) */
+@layer transitions{
+/* 1. Activation du moteur de transition inter-documents */
+@view-transition {
+  navigation: auto;
+}
+
+/* 2. Mapping des discriminants sur les invariants de la structure HTML */
+.nav {
+  view-transition-name: layout-nav;
+}
+
+#main {
+  view-transition-name: layout-main;
+}
+
+.footer {
+  view-transition-name: layout-footer;
+}
+
+.alert {
+  view-transition-name: layout-alert;
+}
+}
+/* 5. COUCHE COMPONENTS (Logique modulaire et blocs atomiques) */
+@layer components{
+
+.nav {
   position: relative;
   /* @note Permet de passer au-dessus du pseudo élément de body (ce dernier faisant un effet d'ombrage sur le contenu en version mobile) et aussi de certains éléments définis par des sources externes (comme les Maps Leaflet). */
   z-index: 2000;
@@ -861,13 +1087,13 @@ body {
   user-select: none;
   background-color: var(--colorG15);
 
-  @media (width < 97.01em) {
+  @media (width <= 97em) {
     grid-template-rows: 3em;
     grid-template-columns: 3em minmax(0, 1fr) 3em;
     grid-template-areas: 'logo breadcrumb cmd';
   }
 
-  @media (width > 97.01em) {
+  @media (width > 97em) {
     grid-template-rows: repeat(2, 2.5em);
     grid-template-columns: 5em minmax(0, 1fr);
     grid-template-areas: 'logo subnav' 'logo breadcrumb';
@@ -884,7 +1110,9 @@ body {
     background-size: cover;
     border-radius: 50%;
   }
-} .logo-nav {
+}
+
+.logo-nav {
   grid-area: logo;
   display: block;
   box-shadow: 0.5rem 0.5rem 0.5rem var(--colorAB2);
@@ -909,15 +1137,29 @@ body {
       animation: anim-logo 0.5s ease-in-out;
     }
   }
-} .service-unavailable .logo-nav {
-  background-image: repeating-linear-gradient(45deg, transparent, transparent 5px, hsla(0, 100%, 0%, 0.25) 5px, hsla(0, 100%, 0%, 0.25) 10px); /* @note Hachures non scalables. */
-} .offline .logo-nav {
+}
+
+.service-unavailable .logo-nav {
+  background-image: repeating-linear-gradient(
+    45deg,
+    transparent,
+    transparent 5px,
+    hsla(0, 100%, 0%, 0.25) 5px,
+    hsla(0, 100%, 0%, 0.25) 10px
+  ); /* @note Hachures non scalables. */
+}
+
+.offline .logo-nav {
   background-color: var(--color6);
-} @keyframes anim-logo {
+}
+
+@keyframes anim-logo {
   30% {
     transform: rotate(-30deg);
   }
-} .sub-nav {
+}
+
+.sub-nav {
   grid-area: subnav;
   box-shadow: 0.5rem 0.5rem 0.5rem var(--colorAB2);
   display: flex;
@@ -928,7 +1170,7 @@ body {
   & .current {
     background-color: var(--color2);
 
-    @media (width > 97.01em) {
+    @media (width > 97em) {
       position: relative;
       /* @note La valeur doit être suffisante pour passer au-dessus des items de ".breadcrumb." */
       z-index: 10;
@@ -946,13 +1188,13 @@ body {
     }
   }
 
-  @media (width > 97.01em) {
+  @media (width > 97em) {
     & > :last-child {
       margin-inline-start: auto;
     }
   }
 
-  @media (width < 97.01em) {
+  @media (width <= 97em) {
     position: absolute;
     z-index: 800;
     top: 3em;
@@ -964,7 +1206,7 @@ body {
 
   & li {
     list-style: none;
-    @media (width < 97.01em) {
+    @media (width <= 97em) {
       flex: 1;
       flex-basis: 50%;
       background-color: var(--colorG15);
@@ -1018,11 +1260,11 @@ body {
         }
     }
 
-    @media (35.01em < width < 50.01em) {
+    @media (35em < width <= 50em) {
       flex-basis: 33%;
     }
 
-    @media (50.01em < width < 97.01em) {
+    @media (50 < width <=97em) {
       flex-basis: 25%;
     }
 
@@ -1032,11 +1274,11 @@ body {
       padding: 0 1em;
       box-shadow: inset 0.5rem 0.5rem 0.5rem var(--colorAB2);
 
-      @media (width < 97.01em) {
+      @media (width <= 97em) {
         line-height: 3;
       }
 
-      @media (width > 97.01em) {
+      @media (width > 97em) {
         line-height: 2.5;
       }
 
@@ -1062,7 +1304,9 @@ body {
       }
     }
   }
-} @media (width < 97.01em) {
+}
+
+@media (width <= 97em) {
   :where(html, body).active {
     overflow: clip;
   }
@@ -1082,21 +1326,25 @@ body {
       filter: blur(2px) grayscale(1);
     }
   }
-} @media (width > 97.01em) {
+}
+
+@media (width > 97em) {
   @keyframes anim-jump {
     30% {
       transform: translateY(-0.3em);
     }
   }
-} .cmd-nav {
+}
+
+.cmd-nav {
   all: unset;
   grid-area: cmd;
 
-  @media (scripting: none), (width > 97.01em) {
+  @media (scripting: none),(width > 97em) {
     display: none;
   }
 
-  @media (width < 97.01em) {
+  @media (width <= 97em) {
     padding: 0.5em;
     background-color: var(--colorG15);
     transition: background-color 0.3s;
@@ -1142,7 +1390,10 @@ body {
       }
     }
   }
-} .breadcrumb {
+}
+}
+@layer components{
+.breadcrumb {
   grid-area: breadcrumb;
   display: flex;
   margin: 0;
@@ -1202,7 +1453,7 @@ body {
     }
   }
 
-  @media (width < 97.01em) {
+  @media (width <= 97em) {
     & li > * {
       line-height: 3;
       padding: 0 2.25em;
@@ -1222,7 +1473,10 @@ body {
       }
     }
   }
-} .alert {
+}
+}
+@layer components{
+.alert {
   --alert-color: var(--colorG13);
   --alert-bg-color: var(--colorT);
   --alert-color-link: var(--colorW);
@@ -1258,23 +1512,37 @@ body {
       clip-path: circle(50%);
     }
   }
-} ul,
+}
+}
+@layer components{
+
+ul,
 ol {
   padding-inline-start: var(--list-start, 2.5em);
-} ul :where(ul, ol) {
+}
+
+ul :where(ul, ol) {
   padding-inline-start: 2.5em;
-} ul {
+}
+
+ul {
   list-style-type: square;
-} ol ol {
+}
+
+ol ol {
   list-style-type: lower-latin;
 
   & ol {
     list-style-type: lower-greek;
   }
-} .list-gap {
+}
+
+.list-gap {
   display: grid;
   gap: 0.75em; /* @note Écart calé sur les paragraphes. */
-} .list-stripe,
+}
+
+.list-stripe,
 .list-stripe-links {
   /* @note Ne pas utiliser : ne travaille pas de concert avec la classe `.grid`. */
   /* all: unset; */
@@ -1291,7 +1559,9 @@ ol {
     background-color: var(--colorG27);
     box-shadow: var(--shadow6);
   }
-} .list-stripe-links {
+}
+
+.list-stripe-links {
   & a {
     display: block;
     color: var(--colorT);
@@ -1304,7 +1574,9 @@ ol {
     outline: none;
     animation: anim-list 0.05s ease-in-out;
   }
-} .list-straight,
+}
+
+.list-straight,
 .list-rounded {
   margin: 0;
   padding-inline-start: 0;
@@ -1359,7 +1631,9 @@ ol {
       /* text-decoration: none; */
     }
   }
-} .list-straight {
+}
+
+.list-straight {
   & li {
     box-shadow: var(--shadow6);
   }
@@ -1394,7 +1668,9 @@ ol {
     border-radius: 0 var(--r3) var(--r3) 0;
     clip-path: polygon(100% 0, 100% 100%, 0% 100%, 1em 50%, 0% 0%);
   }
-} .list-rounded {
+}
+
+.list-rounded {
   & li:focus-within svg,
   & li:hover svg,
   & li:focus-within::before,
@@ -1424,37 +1700,58 @@ ol {
   & a {
     border-radius: 1.25em;
   }
-} ol:where(.list-straight, .list-rounded) li {
+}
+
+ol:where(.list-straight, .list-rounded) li {
   counter-increment: li;
 
   &::before {
     content: counter(li);
   }
-} [class^='grid'][class*='list-'] {
+}
+
+[class^='grid'][class*='list-'] {
   gap: var(--gap);
-} [start] > .chorus {
+}
+
+[start] > .chorus {
   /* @note Pour les refrains. Pour la cohérence de la liste les numéros doivent être définis avec l'attribut `start="0" afin de commencer par "1".` */
   list-style-type: 'R. ';
-} @keyframes anim-list {
+}
+
+@keyframes anim-list {
   50% {
     transform: scale(1.03) translateZ(0);
   }
-} svg {
+}
+}
+@layer components{
+
+svg {
   display: block; /* @note display: inline par défaut */
   max-width: 100%;
   fill: currentcolor;
-} .decorative-svg {
+}
+
+.decorative-svg {
   fill: var(--colorT2);
   filter: drop-shadow(0.2em 0.2em 0.2em var(--colorAB3));
-} /* @note Éviter un espace de nom trop générique qui pourrait engendrer des effets de bord. */ .icon,
+}
+
+/* @note Éviter un espace de nom trop générique qui pourrait engendrer des effets de bord. */
+.icon,
 .icon-inline {
   display: inline-block;
   vertical-align: sub;
   height: 1.2em;
   aspect-ratio: 1;
-} .icon-inline {
+}
+
+.icon-inline {
   margin-inline-end: 0.5em;
-} img {
+}
+
+img {
   /* @note Évite un décalage possible de l'élément suivant. */
   vertical-align: middle;
   /* @bugfix @todo Depuis l'introduction des attributs 'srcset' et 'sizes' la largeur ne doit plus dépendre de l'image par défaut. */
@@ -1468,10 +1765,14 @@ ol {
   &:fullscreen {
     object-fit: contain;
   }
-} figure {
+}
+
+figure {
   /* @bugfix @affected All browers. */
   margin: 0;
-} [class*='figure-image'] {
+}
+
+[class*='figure-image'] {
   width: 100%;
   padding: 0.5em;
   color: var(--colorT);
@@ -1484,7 +1785,7 @@ ol {
     width: 100%;
     max-width: calc(50% - var(--gap)/2);
 
-    @media (width < 50.01em) {
+    @media (width <= 50em) {
       max-width: 20em;
       margin-inline: auto;
     }
@@ -1504,7 +1805,7 @@ ol {
     }
   }
 
-  @media (width > 50.01em) {
+  @media (width > 50em) {
     &[class*='-alignleft'] {
       float: left;
       margin-inline-end: var(--gap);
@@ -1528,7 +1829,9 @@ ol {
     padding-block-start: 0.5em;
     text-align: center;
   }
-} @media (scripting: enabled) {
+}
+
+@media (scripting: enabled) {
   [class*='-focus'] {
     position: relative;
     /* @note Évite un conflit avec d'autres éléments HTML positionnés en relatifs dans la mise en page, tel que les ancres line-mark. */
@@ -1540,7 +1843,8 @@ ol {
       transform: scale(1.01);
     }
   }
-} @media (hover: hover) and (pointer: fine) {
+}
+@media (hover: hover) and (pointer: fine) {
   [class*='-focus']:focus-within {
     background-color: var(--color5);
 
@@ -1548,7 +1852,9 @@ ol {
       color: var(--color5);
     }
   }
-} [class*='-focus'] button,
+}
+
+[class*='-focus'] button,
 .picture-area button {
   all: unset;
   position: absolute;
@@ -1561,13 +1867,17 @@ ol {
     width: 100%;
     height: 100%;
   }
-} [class*='-focus'] button {
+}
+
+[class*='-focus'] button {
   top: 1em;
   right: 1em;
   width: 1.2em;
   height: 1.2em;
   color: var(--colorG60);
-} .picture-area {
+}
+
+.picture-area {
   position: fixed;
   /* @note Doit passer au dessus de tout autre élément, notamment le scroll top. */
   z-index: 4001;
@@ -1607,7 +1917,9 @@ ol {
     }
     */
   }
-} .mosaic {
+}
+
+.mosaic {
   & a {
     &:where(:focus, :hover, :active) figure {
       background-color: var(--colorW);
@@ -1639,7 +1951,9 @@ ol {
     width: 1em;
     height: 1em;
   }
-} .preview-container {
+}
+
+.preview-container {
   display: grid;
   background-color: #222;
 
@@ -1667,14 +1981,17 @@ ol {
     object-fit: contain;
   }
 
-  @media (width < 50.01em) {
+  @media (width <= 50em) {
     &,
     & img {
       max-width: 20em;
       margin-inline: auto;
     }
   }
-} @media (scripting: enabled) and (prefers-reduced-motion: no-preference) {
+}
+}
+@layer components{
+@media (scripting: enabled) and (prefers-reduced-motion: no-preference) {
   .invisible-if-animation {
     visibility: hidden;
   }
@@ -1697,18 +2014,28 @@ ol {
       stroke: var(--colorT2);
     }
   }
-} audio,
+}
+}
+@layer components{
+
+audio,
 video,
 canvas {
   width: 100%;
-} audio,
+}
+
+audio,
 video {
   outline: none;
-} video {
+}
+
+video {
   height: auto;
   aspect-ratio: 16/9;
   object-fit: cover;
-} ::cue {
+}
+
+::cue {
   /*  @note Les propriétés CSS applicables à ce sélecteur sont limitées. @see https://developer.mozilla.org/en-US/docs/Web/CSS/::cue */
   /* @note Empêche le chevauchement des sous-titres si plus d'une ligne. */
   line-height: 1.5;
@@ -1717,10 +2044,12 @@ video {
   /*color: #fff; */
   background-color: var(--colorAB4);
 
-  @container grid (width > 35.01em) {
+  @container grid (--from-xs) {
     font-size: 1.5em;
   }
-} .media {
+}
+
+.media {
   audio& {
     /* @note Hauteur calculée empiriquement pour une harmonisation au plus proche de notre propre player personnalisé. Ce qui évite un saut désagréable lors du remplacement. */
     height: 3.05em;
@@ -1733,7 +2062,9 @@ video {
     background-color: var(--colorB);
     box-shadow: 0.5rem 0.5rem 2rem var(--colorAB25);
   }
-} .media-player {
+}
+
+.media-player {
   position: relative;
   display: flex;
   justify-content: space-between;
@@ -1858,7 +2189,8 @@ video {
     --position: 0%;
     --position-buffer: 100%;
     --color-buffer: var(--colorG33);
-    background-image: linear-gradient(90deg, var(--color-slide) 0, var(--color-slide) var(--position), transparent var(--position)),
+    background-image:
+      linear-gradient(90deg, var(--color-slide) 0, var(--color-slide) var(--position), transparent var(--position)),
       linear-gradient(90deg, var(--color-buffer) var(--position-buffer), transparent var(--position-buffer)),
       repeating-linear-gradient(90deg, transparent 0, transparent 2px, var(--colorG33) 2px, var(--colorG33) 4px);
   }
@@ -2041,7 +2373,7 @@ video {
   background-color: transparent;
   border-radius: 50%;
   }
-  
+
   & ::-moz-range-thumb {
     /* @affected Firefox @note Définition obligatoire de cette règle malgré sa déclaration en globale. */
     box-sizing: border-box;
@@ -2060,7 +2392,9 @@ video {
   &.waiting .media-play-pause.active {
     animation: anim-waiting 1s infinite;
   }
-} .video-youtube {
+}
+
+.video-youtube {
   /* @note Évite un léger resize entre le thumbnail et le chargement de la vidéo. */
   position: relative;
   aspect-ratio: 16/9;
@@ -2114,7 +2448,9 @@ video {
     text-overflow: ellipsis;
     text-shadow: 0 0 0.2em var(--colorAB8);
   }
-} @keyframes anim-play {
+}
+
+@keyframes anim-play {
   from {
     transform: rotate(0deg);
   }
@@ -2122,19 +2458,29 @@ video {
   to {
     transform: rotate(359deg);
   }
-} @keyframes anim-button {
+}
+
+@keyframes anim-button {
   50% {
     background-color: var(--colorG38);
   }
-} @keyframes anim-mute {
+}
+
+@keyframes anim-mute {
   50% {
     color: var(--colorG33);
   }
-} @keyframes anim-waiting {
+}
+
+@keyframes anim-waiting {
   50% {
     background-color: var(--color2);
   }
-} .map {
+}
+}
+@layer components{
+
+.map {
   position: relative;
   width: 100%;
   /* @bugfix @affected Old browsers. */
@@ -2150,11 +2496,17 @@ video {
   @media (orientation: landscape) {
     aspect-ratio: 16/9;
   }
-} .map-grayscale .leaflet-layer {
+}
+
+.map-grayscale .leaflet-layer {
   filter: grayscale(1);
-} .map-dark .leaflet-layer {
+}
+
+.map-dark .leaflet-layer {
   filter: grayscale(1) invert(1) brightness(1.1) contrast(0.7);
-} .map-vintage {
+}
+
+.map-vintage {
   & .leaflet-layer {
     filter: sepia(0.5);
   }
@@ -2176,7 +2528,9 @@ video {
   &::after {
     filter: url('../sprites/filter.svg#noise') sepia(1) opacity(0.4);
   }
-} :root .map {
+}
+
+:root .map {
   & .leaflet-control {
     border: none;
     box-shadow: var(--shadow6);
@@ -2189,11 +2543,17 @@ video {
     border-radius: 0.2em;
     box-shadow: var(--shadow6);
   }
-} .leaflet-popup-content {
+}
+
+.leaflet-popup-content {
   max-width: calc(100vw - 6em);
-} .leaflet-popup-tip {
+}
+
+.leaflet-popup-tip {
   box-shadow: var(--shadow6);
-} .leaflet-marker-icon {
+}
+
+.leaflet-marker-icon {
   /* @note Pour prévenir l'effet sur :focus et :hover. */
   outline: none;
 
@@ -2214,7 +2574,9 @@ video {
   &:where(:focus, :hover) .marker-icon {
     animation: anim-bounce 0.35s ease infinite alternate;
   }
-} .marker-icon {
+}
+
+.marker-icon {
   filter: drop-shadow(0.3em 0.3em 0.3em var(--colorAB5));
 
   & > :first-child {
@@ -2229,11 +2591,15 @@ video {
   .start-map & {
     animation: anim-drop 1s ease;
   }
-} @keyframes anim-bounce {
+}
+
+@keyframes anim-bounce {
   to {
     transform: translate(0, -16px);
   }
-} @keyframes anim-drop {
+}
+
+@keyframes anim-drop {
   0% {
     transform: translate(0, -100vh);
   }
@@ -2249,7 +2615,11 @@ video {
   100% {
     transform: translate(0, 0);
   }
-} .card:not(.flip) {
+}
+}
+@layer components{
+
+.card:not(.flip) {
   & {
     padding: 1.5em;
     background-color: var(--colorG27);
@@ -2304,7 +2674,9 @@ video {
       background-image: linear-gradient(to left, var(--colorG27) 0%, transparent 50%, var(--colorG27) 100%);
     }
   }
-} .flip.card {
+}
+
+.flip.card {
   & > * {
     padding: 1.5em;
     background-color: var(--colorG27);
@@ -2366,7 +2738,9 @@ video {
       background-image: linear-gradient(to left, var(--colorG27) 0%, transparent 50%, var(--colorG27) 100%);
     }
   }
-} .user-def {
+}
+
+.user-def {
   --avatar-size: 3.5em;
   display: grid;
   grid-template-columns: var(--avatar-size) minmax(0, 1fr);
@@ -2409,7 +2783,10 @@ video {
     font-weight: bold;
     font-variant: small-caps;
   }
-} .flip {
+}
+}
+@layer components{
+.flip {
   display: grid;
   perspective: 60em;
   transform-style: preserve-3d; /* Utile pour les éléments enfants */
@@ -2443,7 +2820,11 @@ video {
       transform: rotateY(0deg);
     }
   }
-} code,
+}
+}
+@layer components{
+
+code,
 kbd,
 samp {
   font-family: monospace, monospace;
@@ -2451,10 +2832,14 @@ samp {
   word-break: break-all;
   color: var(--colorT2);
   border-radius: 0.3em;
-} :not(pre) > code {
+}
+
+:not(pre) > code {
   padding: 0.2em;
   background-color: var(--colorG15);
-} .pre {
+}
+
+.pre {
   overflow: auto;
   position: relative;
   min-height: 3em;
@@ -2518,13 +2903,21 @@ samp {
       outline: none;
     }
   }
-} .copy-offset + div {
+}
+
+.copy-offset + div {
   right: 2.5em;
-} @keyframes anim-blink-empty {
+}
+
+@keyframes anim-blink-empty {
   50% {
     content: '';
   }
-} [class^='message'] {
+}
+}
+@layer components{
+
+[class^='message'] {
   --color: currentcolor;
   --bg-color: var(--colorG27);
   padding: 0.15em 1em;
@@ -2553,21 +2946,37 @@ samp {
       clip-path: circle(50%);
     }
   }
-} .message-info {
+}
+
+.message-info {
   --bg-color: var(--color6);
-} .message-success {
+}
+
+.message-success {
   --bg-color: var(--color4);
-} .message-error {
+}
+
+.message-error {
   --bg-color: var(--color3);
-} .message-warning {
+}
+
+.message-warning {
   --bg-color: var(--colorS52);
-} [role='region'][aria-labelledby][tabindex]:has([class^='table']) {
+}
+}
+@layer components{
+
+[role='region'][aria-labelledby][tabindex]:has([class^='table']) {
   overflow-x: auto;
   box-shadow: var(--shadow5);
   max-height: 80vh;
-} [role='region'][aria-labelledby][tabindex]:focus-visible {
+}
+
+[role='region'][aria-labelledby][tabindex]:focus-visible {
   outline: 0.1em solid var(--color5);
-} [class^='table'] {
+}
+
+[class^='table'] {
   width: 100%;
   border-collapse: collapse;
   font-weight: normal;
@@ -2608,7 +3017,9 @@ samp {
   & tbody :empty::after {
     content: '/';
   }
-} @container (35em > width) {
+}
+
+@container (35em > width) {
   [role='region'][aria-labelledby][tabindex]:has(.table-responsive) {
     all: unset;
   }
@@ -2662,12 +3073,20 @@ samp {
       content: '...';
     }
   }
-} /* @note En raison de leurs éventails d'utilisations les inputs ne sont pas stylés par défaut. Ne sont placées ici que des règles d'harmonisation. */ fieldset {
+}
+}
+@layer components{
+
+/* @note En raison de leurs éventails d'utilisations les inputs ne sont pas stylés par défaut. Ne sont placées ici que des règles d'harmonisation. */
+
+fieldset {
   margin: 0;
   /* @bugfix @affected Firefox. */
   padding: 0;
   border: none;
-} legend {
+}
+
+legend {
   /* @bugfix Correct the text wrapping @affected Edge and IE. */
   box-sizing: border-box;
   /* @bugfix Correct the text wrapping @affected Edge and IE. */
@@ -2679,9 +3098,13 @@ samp {
   /* @bugfix Correct the text wrapping @affected Edge and IE. */
   white-space: normal;
   font-weight: bold;
-} label:where(:focus, :hover, :active, :checked) {
+}
+
+label:where(:focus, :hover, :active, :checked) {
   cursor: pointer;
-} button,
+}
+
+button,
 input,
 optgroup,
 select,
@@ -2694,19 +3117,27 @@ textarea {
   line-height: 1.15;
   /* @bugfix Remove the margin @affected Firefox and Safari. */
   margin: 0;
-} button,
+}
+
+button,
 input {
   overflow: visible; /* @bugfix Show the overflow @affected Edge. */
   /* line-height: normal; /* @affected Firefox 4+. */
   /* border-radius: 0; /* @affected Chrome 62+/OS X. */
-} button:disabled,
+}
+
+button:disabled,
 html input:disabled {
   cursor: default;
-} button,
+}
+
+button,
 select {
   /* @bugfix Remove the inheritance of text transform. @affected Edge, Firefox, and IE. */
   text-transform: none;
-} button,
+}
+
+button,
 input[type='button'],
 input[type='reset'],
 input[type='submit'] {
@@ -2715,7 +3146,9 @@ input[type='submit'] {
   /* outline: none; */
   /* @todo Test du 10.10.2020 */
   cursor: pointer;
-} button::-moz-focus-inner,
+}
+
+button::-moz-focus-inner,
 input[type='button']::-moz-focus-inner,
 input[type='reset']::-moz-focus-inner,
 input[type='submit']::-moz-focus-inner {
@@ -2723,43 +3156,67 @@ input[type='submit']::-moz-focus-inner {
   border-style: none;
   /* @bugfix Remove the inner padding @affected Firefox. */
   padding: 0;
-} button:-moz-focusring,
+}
+
+button:-moz-focusring,
 input[type='button']:-moz-focusring,
 input[type='reset']:-moz-focusring,
 input[type='submit']:-moz-focusring {
   /* @bugfix Restore the focus styles unset by the previous rule. */
   outline: 1px dotted ButtonText;
-} select {
+}
+
+select {
   white-space: nowrap;
   text-overflow: ellipsis;
-} select {
+}
+
+select {
   /* appearance: none; */
   border-radius: 0;
   vertical-align: baseline;
-} select[multiple] option {
+}
+
+select[multiple] option {
   padding-block: 0;
-} select[multiple] option {
+}
+
+select[multiple] option {
   color: var(--colorT) !important;
-} select[multiple] option:checked {
+}
+
+select[multiple] option:checked {
   /* @see https://stackoverflow.com/a/50618702/4960244 */
   background: var(--color2) linear-gradient(0deg, var(--color2) 0%, var(--color2) 100%);
-} textarea {
+}
+
+textarea {
   /* @note inline-block par défaut. */
   display: block;
-} input[type='radio'],
+}
+
+input[type='radio'],
 input[type='checkbox'] {
   /* @bugfix @tofo À évaluer. */
   box-sizing: border-box;
-} input[type='number'] {
+}
+
+input[type='number'] {
   -moz-appearance: textfield;
   appearance: textfield;
-} input[type='number']::-webkit-inner-spin-button {
+}
+
+input[type='number']::-webkit-inner-spin-button {
   -webkit-appearance: none;
-} input[type='number']::-webkit-inner-spin-button,
+}
+
+input[type='number']::-webkit-inner-spin-button,
 input[type='number']::-webkit-outer-spin-button {
   /* @bugfix Correct the cursor style of increment and decrement buttons. @affected Chrome. */
   height: auto;
-} input[type='search'] {
+}
+
+input[type='search'] {
   /* @bugfix Correct the odd appearance @affected Chrome and Safari. */
   -webkit-appearance: textfield;
   /* @bugfix Correct the outline style @affected Safari. */
@@ -2783,7 +3240,9 @@ input[type='number']::-webkit-outer-spin-button {
   &::-webkit-search-cancel-button:active {
     background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='hsl(39, 100%, 50%)'><path d='M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z'/></svg>");
   }
-} input[type='file'],
+}
+
+input[type='file'],
 input[type='date'],
 input[type='time'],
 input[type='datetime-local'],
@@ -2795,7 +3254,9 @@ select {
   background-size: 1.5em 1.5em;
   background-repeat: no-repeat;
   background-position: calc(100% - 0.6em) 50%;
-} @supports (-moz-appearance: none) {
+}
+
+@supports (-moz-appearance: none) {
   input[type='date'],
   input[type='time'],
   input[type='datetime-local'],
@@ -2803,17 +3264,23 @@ select {
   input[type='month'] {
     cursor: pointer;
   }
-} ::-webkit-datetime-edit-fields-wrapper,
+}
+
+::-webkit-datetime-edit-fields-wrapper,
 input[type='file'],
 input[type='color'],
 select {
   cursor: pointer;
-} ::-webkit-file-upload-button,
+}
+
+::-webkit-file-upload-button,
 ::file-selector-button {
   display: none;
   /* -webkit-appearance: button /* @bugfix Correct the inability to style clickable types @affected iOS and Safari. */
   /* font: inherit /* @bugfix Change font properties to `inherit` @affected Safari. */
-} ::-webkit-calendar-picker-indicator {
+}
+
+::-webkit-calendar-picker-indicator {
   /* opacity: 0; */
   font-size: 1.4em;
   filter: brightness(0.5);
@@ -2821,13 +3288,19 @@ select {
   &:hover {
     filter: brightness(0.7) sepia(100%);
   }
-} [list]::-webkit-calendar-picker-indicator {
+}
+
+[list]::-webkit-calendar-picker-indicator {
   opacity: 0;
-} /*
+}
+
+/*
 ::-webkit-inner-spin-button {
   display: none;
 }
-*/ ::-webkit-clear-button {
+*/
+
+::-webkit-clear-button {
   -webkit-appearance: none;
   /* @affected Chrome mobile */
   height: 24px;
@@ -2843,20 +3316,30 @@ select {
   [type='time']& {
     transform: translateX(-1.4em);
   }
-} :-webkit-autofill {
+}
+
+:-webkit-autofill {
   /* @note Préremplissage des champs par le navigateur. @affected Chrome. */
   -webkit-text-fill-color: var(--colorT);
   /* @note Hack pour éviter l'affichage par défaut de l'autoremplissage, car les autres solutions se sont montrées inefficaces @todo Solution temporaire à évaluer. */
   transition-property: background-color;
   /* @note Idem. */
   transition-delay: 1000000s;
-} ::placeholder {
+}
+
+::placeholder {
   color: var(--colorG60);
-} :focus::placeholder {
+}
+
+:focus::placeholder {
   opacity: 0.5;
-} .invalid + [class*='message'] {
+}
+
+.invalid + [class*='message'] {
   position: relative;
-} .invalid + [class*='message']::before {
+}
+
+.invalid + [class*='message']::before {
   content: '';
   position: absolute;
   /* @note Légère correction de la position car décalage visible du pseudo-élément dans certaines situations. */
@@ -2866,7 +3349,11 @@ select {
   height: 0.8em;
   background-color: var(--colorS52);
   clip-path: polygon(50% 0%, 0% 100%, 100% 100%);
-} .input {
+}
+}
+@layer components{
+
+.input {
   & label {
     display: inline-block;
     margin-block-end: 0.5em;
@@ -2892,7 +3379,7 @@ select {
     height: 3em;
     max-height: 3em;
     line-height: 3em;
-    padding-inline: 1em .5em;
+    padding-inline: 1em 0.5em;
   }
 
   & input[type='color'] {
@@ -2999,7 +3486,9 @@ select {
       pointer-events: none;
     }
   }
-} .input-group {
+}
+
+.input-group {
   display: flex;
   align-items: stretch;
 
@@ -3012,7 +3501,7 @@ select {
     text-overflow: ellipsis;
     background-color: var(--color6);
     border-radius: var(--r2) 0 0 var(--r2);
-    @container grid (35.01em < width) {
+    @container grid (--from-xs) {
       flex-shrink: 0;
     }
   }
@@ -3021,19 +3510,27 @@ select {
     padding-inline-start: 0.5em !important;
     border-radius: 0 var(--r2) var(--r2) 0;
   }
-} .autosize {
+}
+
+.autosize {
   overflow: hidden;
   field-sizing: content; /* @note Impacte la hauteur des champs par défaut */
-} legend.h2,
+}
+
+legend.h2,
 h2.legend {
   /* @note personnalisation de l'élément, optimisé pour un `.h2` @todo À évaluer dans le temps. */
   /* Pertinence d'une classe ".legend" à évaluer dans le temps. */
   margin-block: 0.83em 0.415em;
-} :root .input-password input {
+}
+
+:root .input-password input {
   /* @note Évite que le texte saisit ne passe sous l'icône. */
   padding-inline-end: 3em;
   letter-spacing: 0.4em;
-} .input-password {
+}
+
+.input-password {
   position: relative;
 
   & button {
@@ -3060,11 +3557,15 @@ h2.legend {
       height: 100%;
     }
   }
-} @media (scripting: none) {
+}
+
+@media (scripting: none) {
   .input-add-terms {
     display: none;
   }
-} @media (scripting: enabled) {
+}
+
+@media (scripting: enabled) {
   .input-terms {
     display: none;
   }
@@ -3105,7 +3606,9 @@ h2.legend {
       background-color: var(--color6);
     }
   }
-} .search form {
+}
+
+.search form {
   display: flex;
   width: 100%;
   height: 3em;
@@ -3149,11 +3652,17 @@ h2.legend {
       height: 1em;
     }
   }
-} @keyframes anim-invalid-input {
+}
+
+@keyframes anim-invalid-input {
   50% {
     border-color: var(--color5);
   }
-} :where(input[type='checkbox'], input[type='radio']):not([role='switch']) {
+}
+}
+@layer components{
+
+:where(input[type='checkbox'], input[type='radio']):not([role='switch']) {
   /* all: unset */
   appearance: none;
   display: inline-grid;
@@ -3195,12 +3704,18 @@ h2.legend {
   &:not(:checked) + label {
     color: var(--colorG45);
   }
-} input[type='checkbox']:not([role='switch'])::before {
+}
+
+input[type='checkbox']:not([role='switch'])::before {
   clip-path: polygon(12% 41%, 4% 50%, 38% 84%, 95% 26%, 87% 17%, 37% 67%);
   transition: transform 0.2s;
-} input[type='checkbox']:not([role='switch']):checked::before {
+}
+
+input[type='checkbox']:not([role='switch']):checked::before {
   transform: scale(1.5);
-} input[type='radio']:not([role='switch']) {
+}
+
+input[type='radio']:not([role='switch']) {
   border-radius: 50%;
 
   &::before {
@@ -3215,7 +3730,10 @@ h2.legend {
       transform: scale(1);
     }
   }
-} /* :where(input[type='checkbox'], input[type='radio'])[role='switch'] */ [role='switch'] {
+}
+
+/* :where(input[type='checkbox'], input[type='radio'])[role='switch'] */
+[role='switch'] {
   all: unset;
   /* appearance: none; */
   /* @todo À évaluer, dans un contexte géré par les éléments parents... */
@@ -3272,7 +3790,9 @@ h2.legend {
     /* @note "!important" est nécessaire pour les boutons radio, sinon le focus ne surclasse pas la bordure définie plus haut. */
     border-color: var(--color5) !important;
   }
-} .switch-custom {
+}
+
+.switch-custom {
   /* @note Le design d'un switch accessible à l'aide des seuls pseudo-éléments est techniquement possible, mais cette solution rend la modularité du style délicate. Le label n'étant pas indépendant du switch, son positionnement serait alors limité, des pseudo-éléments utilisants déjà background-image ne peuvent plus être texturés, l'effets "zoom" via font-size serait problématique. */
   position: relative;
   width: 5em;
@@ -3337,7 +3857,13 @@ h2.legend {
   &:has(:disabled) + label {
     cursor: default;
   }
-} /* Les mixins suivantes sont utilisées pour des sélecteurs propriétaires à des navigateurs et qui ne peuvent être regroupés entre eux sans bugs. */ [class^='range'] {
+}
+}
+@layer components{
+
+/* Les mixins suivantes sont utilisées pour des sélecteurs propriétaires à des navigateurs et qui ne peuvent être regroupés entre eux sans bugs. */
+
+[class^='range'] {
   --color: var(--color2);
   --percent: 0;
   display: grid;
@@ -3345,6 +3871,14 @@ h2.legend {
   margin-block-end: 1em;
 
   & input {
+    /* [PATCH VIEW TRANSITIONS] 
+       Isolation du Shadow DOM pour le compositeur matériel Blink/WebKit.
+       Garantit que l'allocation mémoire du curseur n'interfère pas avec 
+       la capture de la texture du parent (#main) lors d'une transition. */
+    isolation: isolate;
+    will-change: transform;
+    contain: layout paint;
+
     /* @see https://css-tricks.com/multi-thumb-sliders-particular-two-thumb-case/ */
     grid-column: 1;
     grid-row: 2;
@@ -3353,7 +3887,8 @@ h2.legend {
     width: 100%;
     height: 0.3em;
     max-width: 100%;
-    background: linear-gradient(90deg, var(--color) 0, var(--color) var(--percent), transparent var(--percent)),
+    background:
+      linear-gradient(90deg, var(--color) 0, var(--color) var(--percent), transparent var(--percent)),
       linear-gradient(
         to top,
         var(--colorA005) 0,
@@ -3478,20 +4013,17 @@ h2.legend {
   background: var(--colorG18) repeating-linear-gradient(-45deg, transparent 0 3px, var(--color1) 3px 6px);
   border-color: var(--colorG33);
   }
-} .range-multithumb {
+}
+
+.range-multithumb {
   --start: 0;
   /* @note `--stop: 0` Évite une apparition flash de la barre au chargement de la page, il vaut mieux que la couleur apparaisse après le calcul par le script. */
   --stop: 0;
   --color: var(--color2);
 
   & input {
-    background: linear-gradient(
-        90deg,
-        transparent var(--start),
-        var(--color) var(--start),
-        var(--color) var(--stop),
-        transparent var(--stop)
-      ),
+    background:
+      linear-gradient(90deg, transparent var(--start), var(--color) var(--start), var(--color) var(--stop), transparent var(--stop)),
       linear-gradient(
         to top,
         var(--colorA005) 0,
@@ -3502,7 +4034,13 @@ h2.legend {
         var(--colorA005)
       );
   }
-} /* @note Toujours privilégier l'élément HTML <button> sur l'élément <input type=button> car il permet de réaliser des rendus plus complexe en acceptant des éléments enfants. */ .button,
+}
+}
+@layer components{
+
+/* @note Toujours privilégier l'élément HTML <button> sur l'élément <input type=button> car il permet de réaliser des rendus plus complexe en acceptant des éléments enfants. */
+
+.button,
 .round-button {
   /* [class*=button] @deprecated Espace de nom trop généraliste. Conflits avec les styles de certaines classes de plugins tels que Leaflet. */
   all: unset;
@@ -3575,13 +4113,17 @@ h2.legend {
       content: none;
     }
   }
-} .button {
+}
+
+.button {
   padding: 0.5em 1em;
   line-height: 2;
   white-space: nowrap;
   text-overflow: ellipsis;
   border-radius: 0.3em;
-} .round-button {
+}
+
+.round-button {
   display: grid;
   height: 4em;
   width: 4em;
@@ -3597,7 +4139,9 @@ h2.legend {
   &::before {
     border-radius: 50%;
   }
-} .button2 {
+}
+
+.button2 {
   --color: var(--colorG38);
   all: unset;
   width: 3em;
@@ -3615,7 +4159,11 @@ h2.legend {
     --color: var(--color5);
     transform: rotate(360deg);
   }
-} .accordion {
+}
+}
+@layer components{
+
+.accordion {
   display: flex;
   flex-direction: column;
   gap: 0.5em;
@@ -3701,11 +4249,16 @@ h2.legend {
   & .accordion-summary[aria-expanded='true']::after {
     transform: rotate(-90deg);
   }
-} @keyframes anim-accordion {
+}
+
+@keyframes anim-accordion {
   to {
     transform: scale(1.01) translateZ(0);
   }
-} .tabs {
+}
+}
+@layer components{
+.tabs {
   & .tab-list {
     display: flex;
     padding: 0;
@@ -3776,7 +4329,10 @@ h2.legend {
       display: none;
     }
   }
-} .scroll-top {
+}
+}
+@layer components{
+.scroll-top {
   /* display: none; /* @note Apparition de l'élément au scrool de la page via JS. */
   position: fixed;
   /* @todo Fallback car la variable env() est encore très récente. */
@@ -3805,7 +4361,10 @@ h2.legend {
   &:where(:hover, :active) svg {
     fill: var(--colorG60);
   }
-} .footer {
+}
+}
+@layer components{
+.footer {
   padding: 0 1em;
   color: var(--colorT2);
   background-color: var(--colorG15);
@@ -3827,7 +4386,7 @@ h2.legend {
     max-width: 92em;
     margin: 0 auto;
 
-    @media (width < 35.01em) {
+    @media (width <= 35em) {
       flex-direction: column;
       align-items: center;
       text-align: center;
@@ -3835,7 +4394,7 @@ h2.legend {
       padding: 1em;
     }
 
-    @media (width > 35.01em) {
+    @media (width > 35em) {
       justify-content: space-between;
       align-items: center;
     }
@@ -3859,7 +4418,11 @@ h2.legend {
   & .wrap > :nth-child(2) {
     text-align: center;
   }
-} .article {
+}
+}
+@layer components{
+
+.article {
   display: grid;
   grid-template-columns: minmax(0, 60em) minmax(0, 1fr);
   gap: var(--gap) 0;
@@ -3879,7 +4442,7 @@ h2.legend {
   }
 
   & > :where(.comment, form) {
-    @media (50.01em < width) {
+    @media (width > 50em) {
       &:nth-child(even) {
         /* @note Limitation à 2 rangées car impression visuelle d'un désordre à partir de 3 rangées. */
         margin-inline-start: auto;
@@ -3888,34 +4451,32 @@ h2.legend {
   }
 
   & > :where(.wrapper, .comment) {
-    @media (35.01em < width) {
+    @media (width > 35em) {
       border-radius: var(--r1);
       box-shadow: var(--shadow3);
     }
   }
 
   & > .wrapper {
-
-    @media (width < 35.01em) {
+    @media (width <= 35em) {
       padding-block-start: 1em;
     }
 
-    @media (35.01em < width < 50.01em) {
+    @media (35em < width <= 50em) {
       padding: 4em;
     }
 
-    @media (50.01em < width) {
+    @media (width > 50em) {
       padding: 4em 6em;
     }
   }
 
   & > .comment {
-
-    @media (35.01em < width < 50.01em) {
+    @media (35em < width <= 50em) {
       padding: 2.5em 4em;
     }
 
-    @media (50.01em < width) {
+    @media (width > 50em) {
       padding: 4em 6em 2.5em;
     }
   }
@@ -3942,7 +4503,7 @@ h2.legend {
     position: relative;
     width: 100%;
 
-    @media (width < 35.01em) {
+    @media (width <= 35em) {
       padding-block: var(--gap);
     }
   }
@@ -3998,7 +4559,7 @@ h2.legend {
       color: var(--colorT);
       background-color: var(--colorG27); /* --colorG33 */
       clip-path: polygon(0.75em 0, 100% 0, 100% 100%, 0.75em 100%, 0 50%);
-      transition: background-color .3s;
+      transition: background-color 0.3s;
 
       &:where(:focus, :hover, :active) {
         color: var(--colorW);
@@ -4027,27 +4588,35 @@ h2.legend {
     gap: var(--gap);
     max-width: 55em;
 
-    @media (35.01em < width < 50.01em) {
+    @media (35em < width <= 50em) {
       padding-inline: 4em;
     }
 
-    @media (50.01em < width) {
+    @media (width > 50em) {
       padding-inline: 6em;
     }
   }
 
-  @media (width < 35.01em) {
+  @media (width <= 35em) {
     & .wrapper {
       margin-block-start: calc(var(--gap)*-1);
     }
   }
-} @media (width > 35.01em) {
+}
+
+@media (width > 35em) {
   .boxx {
     padding: 4em 6em;
     border-radius: var(--r1);
     box-shadow: var(--shadow3);
   }
-} /* @note Les propriétés applicables au sélecteur ::first-letter varient d'un navigateur à l'autre ; la solution retenue pour l'instant est un wrapper en javascript 'span.dropcap' sur la première lettre. */ .add-drop-cap > p:first-child::first-letter {
+}
+}
+@layer components{
+
+/* @note Les propriétés applicables au sélecteur ::first-letter varient d'un navigateur à l'autre ; la solution retenue pour l'instant est un wrapper en javascript 'span.dropcap' sur la première lettre. */
+
+.add-drop-cap > p:first-child::first-letter {
   /* @todo Fallback ":first-child::first-letter" pour Firefox, en attendant ":initial-letter" déjà disponible sous Chrome/Edge/Safari. @see https://caniuse.com/css-initial-letter */
   float: left;
   margin-bottom: -.2em;
@@ -4058,7 +4627,9 @@ h2.legend {
   font-family: var(--font-list2);
   color: var(--color2);
   transform: translateY(0.5em);
-} /*
+}
+
+/*
 .add-drop-cap > p:first-child::first-letter {
   /* @todo Fallback ":first-child::first-letter" pour Firefox, en attendant ":initial-letter" déjà disponible sous Chrome/Edge/Safari. @see https://caniuse.com/css-initial-letter
   float: left;
@@ -4078,12 +4649,18 @@ h2.legend {
     padding: 0.32em 0.2em 0.32em;
   }
 }
-*/ @media (width < 50.01em) {
+*/
+}
+@layer components{
+
+@media (width <= 50em) {
   .line-mark {
     /* @note Un match media javascript peutconditionner le script, mais cette solution est moins modulable et surtout moins robuste que la solution CSS. */
     display: none;
   }
-} @media (width > 50.01em) {
+}
+
+@media (width > 50em) {
   .add-line-marks > * {
     position: relative;
   }
@@ -4124,30 +4701,58 @@ h2.legend {
   h3 .line-mark {
     top: 0.5em;
   }
-} .calendar-color {
+}
+}
+@layer components{
+
+.calendar-color {
   vertical-align: sub;
   display: inline-block;
   height: 1.3em;
   width: 1.3em;
   margin-inline-end: 0.5em;
   /* background-color: var(--colorG); */
-} .calendar-white {
+}
+
+.calendar-white {
   background-color: hsl(0, 0%, 100%);
-} .calendar-green {
+}
+
+.calendar-green {
   background-color: hsl(120, 100%, 25%);
-} .calendar-red {
+}
+
+.calendar-red {
   background-color: hsl(0, 100%, 42%);
-} .calendar-purple {
+}
+
+.calendar-purple {
   background-color: hsl(300, 100%, 25%);
-} .calendar-pink {
+}
+
+.calendar-pink {
   background-color: hsl(330, 100%, 71%);
-} .calendar-black {
+}
+
+.calendar-black {
   background-color: var(--colorB);
-} /*
+}
+
+/*
 .calendar-gold {
   background-color: hsl(51, 100%, 50%);
 }
-*/ /* @note Impossible d'animer la couleur de la barre avec une animation classique sur background-position. @see https://codepen.io/olivier-c/pen/vYvEjmb */ /* Solution de contournement. @see https://codepen.io/olivier-c/pen/poqvVqw */ /* @see https://www.w3docs.com/snippets/css/how-to-animate-the-background-of-the-progress-bar.html */ /* @see https://www.w3docs.com/tools/code-editor/18675 */ /* La mixins suivante est utilisée pour des sélecteurs propriétaires à des navigateurs et qui ne peuvent être regroupés entre eux sans bugs. */ .progress {
+*/
+}
+@layer components{
+/* @note Impossible d'animer la couleur de la barre avec une animation classique sur background-position. @see https://codepen.io/olivier-c/pen/vYvEjmb */
+/* Solution de contournement. @see https://codepen.io/olivier-c/pen/poqvVqw */
+/* @see https://www.w3docs.com/snippets/css/how-to-animate-the-background-of-the-progress-bar.html */
+/* @see https://www.w3docs.com/tools/code-editor/18675 */
+
+/* La mixins suivante est utilisée pour des sélecteurs propriétaires à des navigateurs et qui ne peuvent être regroupés entre eux sans bugs. */
+
+.progress {
   --color: var(--color2);
   /* @todo La déclaration suivante ne semble plus nécessaire si définition de l'élément, à évaluer. */
   /* appearance: none; */
@@ -4187,14 +4792,20 @@ h2.legend {
   box-shadow: inset 0 2px 9px var(--colorA3), inset 0 -2px 6px var(--colorAB4);
   border-radius: 0.5em;
   }
-} @keyframes anim-progress {
+}
+
+@keyframes anim-progress {
   0% {
     background-position: 0 0;
   }
   100% {
     background-position: calc(10rem/cos(45deg)) 100%;
   }
-} .loader {
+}
+}
+@layer components{
+
+.loader {
   --frame: 1s;
   --color: var(--color2);
   position: relative;
@@ -4231,32 +4842,56 @@ h2.legend {
     /* @note Multiplicateur arbitraire. */
     animation: anim-loader calc(var(--frame)*1.51) ease infinite;
   }
-} @keyframes anim-loader {
+}
+
+@keyframes anim-loader {
   from {
     transform: rotate(0deg);
   }
   to {
     transform: rotate(359deg);
   }
-} pie-chart {
+}
+}
+@layer components{
+
+pie-chart {
   --pie-chart-color-label: var(--color1);
   filter: drop-shadow(var(--shadow4));
-} bar-chart {
+}
+
+bar-chart {
   --bar-chart-color-label: var(--color1);
   filter: drop-shadow(var(--shadow4));
-} ::-webkit-scrollbar {
+}
+}
+@layer components{
+
+::-webkit-scrollbar {
   /* @affected Chrome, Edge, and Safari. */
   /* @note Ne doit pas être scalable. */
   width: 11px;
-} ::-webkit-scrollbar-track {
+}
+
+::-webkit-scrollbar-track {
   background: var(--colorA003);
-} ::-webkit-scrollbar-thumb {
+}
+
+::-webkit-scrollbar-thumb {
   background-color: var(--color2);
-} * {
+}
+
+* {
   /* @affected Firefox @todo Standard futur ? */
   scrollbar-color: var(--color2) var(--colorA003);
-} /* @bug @affected Chrome @note Effet de bord indésirables si utilisation avec la propriété column-count sur l'élément parent (sauf pour le premier item). 1/ Bandeau tronqué si placé sur un élément avec la propriété. 2/ Liens non cliquables si utilisation de clip-path.
- */ .ribbon-content {
+}
+}
+@layer components{
+
+/* @bug @affected Chrome @note Effet de bord indésirables si utilisation avec la propriété column-count sur l'élément parent (sauf pour le premier item). 1/ Bandeau tronqué si placé sur un élément avec la propriété. 2/ Liens non cliquables si utilisation de clip-path.
+ */
+
+.ribbon-content {
   position: relative;
   /* @note Pas de hauteur minimum, celle-ci doit être gérée en fonction de la boite. */
   /* min-height: 7.5em */
@@ -4380,12 +5015,18 @@ h2.legend {
       }
     }
   }
-} .forum {
+}
+}
+@layer components{
+
+.forum {
   all: unset;
   display: grid;
   grid-template-columns: minmax(0, 1fr);
   gap: 1em;
-} .topic-item {
+}
+
+.topic-item {
   position: relative;
   display: grid;
   grid-template-rows: repeat(2, auto);
@@ -4395,12 +5036,12 @@ h2.legend {
   box-shadow: var(--shadow1);
   gap: 0 1em;
 
-  @media (width < 35.01em) {
+  @media (width <= 35em) {
     grid-template-columns: minmax(0, 1fr) 2em;
     grid-template-areas: 'ttt ttt' 'uuu aaa';
   }
 
-  @media (width > 35.01em) {
+  @media (width > 35em) {
     grid-template-columns: 4em minmax(0, 1fr);
     grid-template-areas: 'aaa ttt' 'aaa uuu';
   }
@@ -4501,12 +5142,14 @@ h2.legend {
   &.topic-solved > :nth-child(2) svg:first-child {
     color: var(--colorS4);
   }
-} .avatars {
+}
+
+.avatars {
   grid-area: aaa;
   position: relative;
   margin: auto;
 
-  @media (width < 35.01em) {
+  @media (width <= 35em) {
     /* @note Valeur obtenue de manière un peu empirique, liée à la propriété font-size définie ci après. */
     margin-block-end: 2em;
     font-size: 0.5em;
@@ -4538,7 +5181,11 @@ h2.legend {
   & > :nth-child(3) {
     transform: translate(1.2em, -0.6em) scale(0.5);
   }
-} html,
+}
+}
+@layer components{
+
+html,
 .nav,
 .cmd-nav,
 .cmd-nav:not(:focus, :hover, [aria-expanded='true']) svg,
@@ -4590,7 +5237,9 @@ h2.legend {
   background-size: 58px 61px;
   /* @note Propriété nécéssaire pour les éléments avec clip-path. */
   background-repeat: repeat;
-} /*
+}
+
+/*
 html {
   position: relative;
   &::before {
@@ -4600,7 +5249,11 @@ html {
     filter: url('../sprites/filter.svg#noise') sepia(1) opacity(.2); /* @affected All browsers @note Très mauvaise performance de SVG <feTurbulence>.
   }
 }
-*/ [class*='demo-items'] {
+*/
+}
+@layer components{
+
+[class*='demo-items'] {
   --itemHeight: 2em;
 
   & > * {
@@ -4614,9 +5267,13 @@ html {
     margin-left: 0.2em;
     background-color: var(--colorAB2);
   }
-} .demo-items-empty > * {
+}
+
+.demo-items-empty > * {
   min-height: var(--itemHeight);
-} .demo-item {
+}
+
+.demo-item {
   box-sizing: border-box;
   padding: 1em;
   background-color: var(--colorG27);
@@ -4626,7 +5283,9 @@ html {
     /* @note Si ribbon, alors une hauteur minimum doit être présente sur les éléments parents vides. */
     min-height: 7.5em;
   }
-} .demo-items-color {
+}
+
+.demo-items-color {
   color: var(--colorG18);
     & > :nth-child(1n) {
       background-color: hsl(15, 100%, 50%);
@@ -4677,7 +5336,8 @@ html {
   & code {
     background-color: var(--colorG27);
   }
-} .demo-counter > * {
+}
+.demo-counter > * {
   counter-increment: div;
 
   &::before {
@@ -4688,19 +5348,27 @@ html {
   & :first-child {
     display: inline;
   }
-} .type-components .box2 {
+}
+
+.type-components .box2 {
   scroll-margin-block-start: 1em;
-} @media (width < 50.01em) {
+}
+
+@media (width <= 50em) {
   .type-components .box2 {
     position: relative;
     padding: 0;
   }
-} @media (width > 50.01em) {
+}
+
+@media (width > 50em) {
   .type-components .box2 {
     padding: 4em 6em;
     box-shadow: var(--shadow3);
   }
-} @media (width < 50.01em) {
+}
+
+@media (width <= 50em) {
   .type-components .box2.ribbon-content::before {
     content: '';
     position: absolute;
@@ -4709,20 +5377,20 @@ html {
     width: 100%;
     max-width: 20em;
     aspect-ratio: 1/1;
-    background-image: linear-gradient(
-      -135deg,
-      var(--colorA005),
-      transparent 50%
-    );
+    background-image: linear-gradient(-135deg, var(--colorA005), transparent 50%);
     background-repeat: no-repeat;
     background-position: 100% 0%;
     pointer-events: none;
   }
-} @media (width < 50.01em) {
+}
+
+@media (width <= 50em) {
   .type-components .box2 > .ribbon-top-right {
     transform: translate(2.85em, 0.9em) rotate(45deg) !important;
   }
-} .demo-icons {
+}
+
+.demo-icons {
   & ruby {
     padding: 1em 0 0.5em;
     background-color: var(--color1);
@@ -4743,7 +5411,9 @@ html {
     text-align: center;
     color: var(--colorG38);
   }
-} /*
+}
+
+/*
 body::after {
   content: 'XS';
   position: fixed;
@@ -4773,40 +5443,62 @@ body::after {
     content: 'XXL';
   }
 }
-*/ .hidden,
+*/
+}
+/* 6. COUCHE HELPERS (Surcharges de commodité / Utilitaires) */
+/* @note Les helpers s'appliquent à la fin dans le but d'écraser des styles tels que font-size. */
+@layer helpers{
+
+.hidden,
 [hidden]:not([hidden='until-found']) {
   display: none !important;
-} @container grid (width < 35.01em) {
+}
+
+@container grid (--to-xs) {
   .xs-hidden {
     display: none !important;
   }
-} @container grid (35.01em < width < 50.01em) {
+}
+
+@container grid (--from-xs-to-s) {
   .s-hidden {
     display: none !important;
   }
-} @container grid (50.01em < width < 70.01em) {
+}
+
+@container grid (--from-s--to-m) {
   .m-hidden {
     display: none !important;
   }
-} @container grid (70.01em < width < 92.01em) {
+}
+
+@container grid (--from-m-to-l) {
   .l-hidden {
     display: none !important;
   }
-} .invisible {
+}
+
+.invisible {
   /* @note Cacher l'élément en laissant son emplacement @affected Lecteurs d'écran inclus. */
   visibility: hidden;
-} a[aria-disabled='true'] {
+}
+
+a[aria-disabled='true'] {
   /* @todo En expérimentation. */
   cursor: default; /* not-allowed */
 
   &:active {
     pointer-events: none;
   }
-} .sr-only {
+}
+
+.sr-only {
   /* @note Caché visuellement mais disponible pour les lecteurs d'écran. */
   position: absolute;
   transform: scale(0);
-} /* @see https://github.com/h5bp/html5-boilerplate/blob/master/dist/css/style.css
+}
+
+/* @see https://github.com/h5bp/html5-boilerplate/blob/master/dist/css/style.css
 .sr-only {
   position: absolute;
   overflow: hidden;
@@ -4818,21 +5510,31 @@ body::after {
   border: 0;
   clip-path: rect(0, 0, 0, 0);
 }
-*/ /*
+*/
+
+/*
 .relative {
   /* @note Classe habituellement ajoutée en js sur des éléments parents
   position: relative;
 }
-*/ .protected {
+*/
+
+.protected {
   user-select: none;
-} .onaline {
+}
+
+.onaline {
   /* @note Texte sur une ligne sans dépassement. */
   overflow: hidden;
   white-space: nowrap;
   text-overflow: ellipsis;
-} .balance {
+}
+
+.balance {
   text-wrap: balance;
-} .center {
+}
+
+.center {
   display: grid;
   place-items: center;
   /* @note Alternative : */
@@ -4841,7 +5543,9 @@ body::after {
     place-self: center;
   }
   */
-} @container grid (width < 35.01em) {
+}
+
+@container grid (--to-xs) {
   .xs-center {
     display: grid;
     place-items: center;
@@ -4851,15 +5555,21 @@ body::after {
     /* @note un 'br' volontairement non sémantique à destination des petites définitions d'écran, à placer sur un span englobant un espace. */
     display: block;
   }
-} .rotate90 {
+}
+  .rotate90 {
     /* prettier-ignore */
     transform: rotate(90deg);
-  } .rotate180 {
+  }
+  .rotate180 {
     /* prettier-ignore */
     transform: rotate(180deg);
-  } .reverse {
+  }
+
+.reverse {
   transform: scaleX(-1);
-} .size {
+}
+
+.size {
   --size: 25em;
   --size-width: var(--size);
   --size-height: var(--size);
@@ -4867,52 +5577,81 @@ body::after {
   height: var(--size-height);
   max-width: 100%;
   max-height: 100vh;
-} .vw80 {
+}
+
+.vw80 {
   --size: 25em;
   --size-width: var(--size);
   width: calc(var(--size)*0.8);
-} .scale {
+}
+
+.scale {
   font-size: var(--scale, 100%);
-} @container grid (width < 35.01em) {
+}
+
+@container grid (--to-xs) {
   .xs-scale {
     font-size: var(--xs-scale, 100%);
   }
-} @container grid (35.01em < width) {
+}
+
+@container grid (--from-xs) {
   .s-scale {
     font-size: var(--s-scale, 100%);
   }
-} @container grid (50.01em < width) {
+}
+
+@container grid (--from-s) {
   .m-scale {
     font-size: var(--m-scale, 100%);
   }
-} @container grid (70.01em < width) {
+}
+
+@container grid (--from-m) {
   .l-scale {
     font-size: var(--l-scale, 100%);
   }
-} .rescale {
+}
+
+.rescale {
   font-size: 1rem;
-} /*
+}
+
+/*
 .no-overscroll {
   overscroll-behavior-x: none;
 }
-*/ .blink {
+*/
+
+.blink {
   animation: anim-blink 1.2s infinite;
-} @keyframes anim-blink {
+}
+
+@keyframes anim-blink {
   50% {
     display: none;
     filter: invert(1);
   }
-} .fade-in {
+}
+
+.fade-in {
   visibility: visible;
   opacity: 1;
   transform: scale(1);
   transition: opacity 1s ease-in;
-} .fade-out {
+}
+
+.fade-out {
   visibility: hidden;
   opacity: 0;
   transform: scale(0);
-  transition: opacity 1s ease-out, visibility 0s 1s ease-out, transform 0s 1s ease-out;
-} /*
+  transition:
+    opacity 1s ease-out,
+    visibility 0s 1s ease-out,
+    transform 0s 1s ease-out;
+}
+
+/*
 @keyframes anim-fade-in {
   from {
     opacity: 0;
@@ -4930,8 +5669,11 @@ body::after {
     opacity: 0;
   }
 }
-*/ .freeze {
+*/
+
+.freeze {
   overflow: clip;
-} /* @note Les helpers s'appliquent à la fin dans le but d'écraser des styles tels que font-size. */
+}
+}
 
 /*# sourceMappingURL=main.css.map */

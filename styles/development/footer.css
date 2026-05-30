@@ -20,7 +20,7 @@
     max-width: 92em;
     margin: 0 auto;
 
-    @media (width < $sizeXS) {
+    @media (--to-xs) {
       flex-direction: column;
       align-items: center;
       text-align: center;
@@ -28,7 +28,7 @@
       padding: 1em;
     }
 
-    @media (width > $sizeXS) {
+    @media (--from-xs) {
       justify-content: space-between;
       align-items: center;
     }

@@ -8,7 +8,7 @@
   "author": "Olivier Chavarin",
   "license": "MIT",
   "devDependencies": {
-    "browser-sync": "^3.0.4",
+    "@csstools/postcss-global-data": "^4.0.0",
     "eslint": "^10.2.0",
     "image-size": "^2.0.2",
     "ora": "^9.3.0",
@@ -16,6 +16,7 @@
     "postcss-advanced-variables": "^5.0.0",
     "postcss-calc": "^10.1.1",
     "postcss-cli": "^11.0.1",
+    "postcss-custom-media": "^12.0.1",
     "postcss-import": "^16.1.1",
     "postcss-minify": "^1.2.0",
     "postcss-preset-env": "^11.2.0",
@@ -44,8 +45,7 @@
     "spriteutil": "svg-symbol-sprite -p '' -a 'xmlns=\"http://www.w3.org/2000/svg\"' -s '' -c false -i medias/icons/utilDest -o sprites/util.svg",
     "spriteplayer": "svg-symbol-sprite -p '' -a 'xmlns=\"http://www.w3.org/2000/svg\"' -s '' -c false -i medias/icons/playerDest -o sprites/player.svg",
     "img": "node tasks/images",
-    "imglist": "node tasks/imageList",
-    "bs": "browser-sync start --proxy 'scriptura.github.io.localhost' --port 9010 --reload-debounce 2000 --files 'assets' 'views' --no-notify"
+    "imglist": "node tasks/imageList"
   },
   "pnpm": {
     "ignoredBuiltDependencies": [

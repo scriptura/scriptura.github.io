@@ -58,7 +58,7 @@
   }
 }
 
-@media (max-width: 45.01em) {
+@media (width <= 35em) {
   .xs-button-full .button {
     width: 100%;
   }

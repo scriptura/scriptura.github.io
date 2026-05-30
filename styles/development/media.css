@@ -1,0 +1,22 @@
+/* Dictionnaire des macros de configuration globale (media queries level 5) */
+
+/* Vecteurs ascendants (Mobile First) */
+@custom-media --from-xs (width > 35em);
+@custom-media --from-s (width > 50em);
+@custom-media --from-m (width > 70em);
+@custom-media --from-l (width > 92em);
+@custom-media --from-nav (width > 97em);
+
+/* Vecteurs descendents (Surcharges ciblées) */
+@custom-media --to-xs (width <= 35em);
+@custom-media --to-s (width <= 50em);
+@custom-media --to-m (width <= 70em);
+@custom-media --to-l (width <= 92em);
+@custom-media --to-nav (width <= 97em);
+
+/* Segments (Intervalles stricts) */
+@custom-media --from-xs-to-s (35em < width <= 50em);
+@custom-media --from-s-to-m (50em < width <= 70em);
+@custom-media --from-m-to-l (70 < width <= 92em);
+
+@custom-media --from-s-to-nav (50 < width <=97em);

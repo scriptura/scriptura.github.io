@@ -24,7 +24,7 @@
     height: 3em;
     max-height: 3em;
     line-height: 3em;
-    padding-inline: 1em .5em;
+    padding-inline: 1em 0.5em;
   }
 
   & input[type='color'] {
@@ -146,7 +146,7 @@
     text-overflow: ellipsis;
     background-color: var(--color6);
     border-radius: var(--r2) 0 0 var(--r2);
-    @container grid ($sizeXS < width) {
+    @container grid (--from-xs) {
       flex-shrink: 0;
     }
   }

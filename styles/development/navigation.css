@@ -6,13 +6,13 @@
   user-select: none;
   background-color: var(--colorG15);
 
-  @media (width < $sizeNav) {
+  @media (--to-nav) {
     grid-template-rows: 3em;
     grid-template-columns: 3em minmax(0, 1fr) 3em;
     grid-template-areas: 'logo breadcrumb cmd';
   }
 
-  @media (width > $sizeNav) {
+  @media (--from-nav) {
     grid-template-rows: repeat(2, 2.5em);
     grid-template-columns: 5em minmax(0, 1fr);
     grid-template-areas: 'logo subnav' 'logo breadcrumb';
@@ -59,7 +59,13 @@
 }
 
 .service-unavailable .logo-nav {
-  background-image: repeating-linear-gradient(45deg, transparent, transparent 5px, hsla(0, 100%, 0%, 0.25) 5px, hsla(0, 100%, 0%, 0.25) 10px); /* @note Hachures non scalables. */
+  background-image: repeating-linear-gradient(
+    45deg,
+    transparent,
+    transparent 5px,
+    hsla(0, 100%, 0%, 0.25) 5px,
+    hsla(0, 100%, 0%, 0.25) 10px
+  ); /* @note Hachures non scalables. */
 }
 
 .offline .logo-nav {
@@ -83,7 +89,7 @@
   & .current {
     background-color: var(--color2);
 
-    @media (width > $sizeNav) {
+    @media (--from-nav) {
       position: relative;
       /* @note La valeur doit être suffisante pour passer au-dessus des items de ".breadcrumb." */
       z-index: 10;
@@ -101,13 +107,13 @@
     }
   }
 
-  @media (width > $sizeNav) {
+  @media (--from-nav) {
     & > :last-child {
       margin-inline-start: auto;
     }
   }
 
-  @media (width < $sizeNav) {
+  @media (--to-nav) {
     position: absolute;
     z-index: 800;
     top: 3em;
@@ -119,7 +125,7 @@
 
   & li {
     list-style: none;
-    @media (width < $sizeNav) {
+    @media (--to-nav) {
       flex: 1;
       flex-basis: 50%;
       background-color: var(--colorG15);
@@ -142,11 +148,11 @@
       }
     }
 
-    @media ($sizeXS < width < $sizeS) {
+    @media (--from-xs-to-s) {
       flex-basis: 33%;
     }
 
-    @media ($sizeS < width < $sizeNav) {
+    @media (--from-s-to-nav) {
       flex-basis: 25%;
     }
 
@@ -156,11 +162,11 @@
       padding: 0 1em;
       box-shadow: inset 0.5rem 0.5rem 0.5rem var(--colorAB2);
 
-      @media (width < $sizeNav) {
+      @media (--to-nav) {
         line-height: 3;
       }
 
-      @media (width > $sizeNav) {
+      @media (--from-nav) {
         line-height: 2.5;
       }
 
@@ -188,7 +194,7 @@
   }
 }
 
-@media (width < $sizeNav) {
+@media (--to-nav) {
   :where(html, body).active {
     overflow: clip;
   }
@@ -210,7 +216,7 @@
   }
 }
 
-@media (width > $sizeNav) {
+@media (--from-nav) {
   @keyframes anim-jump {
     30% {
       transform: translateY(-0.3em);
@@ -222,11 +228,11 @@
   all: unset;
   grid-area: cmd;
 
-  @media (scripting: none), (width > $sizeNav) {
+  @media (scripting: none), (--from-nav) {
     display: none;
   }
 
-  @media (width < $sizeNav) {
+  @media (--to-nav) {
     padding: 0.5em;
     background-color: var(--colorG15);
     transition: background-color 0.3s;

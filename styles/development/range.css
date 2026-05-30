@@ -28,6 +28,14 @@
   margin-block-end: 1em;
 
   & input {
+    /* [PATCH VIEW TRANSITIONS] 
+       Isolation du Shadow DOM pour le compositeur matériel Blink/WebKit.
+       Garantit que l'allocation mémoire du curseur n'interfère pas avec 
+       la capture de la texture du parent (#main) lors d'une transition. */
+    isolation: isolate;
+    will-change: transform;
+    contain: layout paint;
+
     /* @see https://css-tricks.com/multi-thumb-sliders-particular-two-thumb-case/ */
     grid-column: 1;
     grid-row: 2;
@@ -36,7 +44,8 @@
     width: 100%;
     height: 0.3em;
     max-width: 100%;
-    background: linear-gradient(90deg, var(--color) 0, var(--color) var(--percent), transparent var(--percent)),
+    background:
+      linear-gradient(90deg, var(--color) 0, var(--color) var(--percent), transparent var(--percent)),
       linear-gradient(
         to top,
         var(--colorA005) 0,
@@ -154,13 +163,8 @@
   --color: var(--color2);
 
   & input {
-    background: linear-gradient(
-        90deg,
-        transparent var(--start),
-        var(--color) var(--start),
-        var(--color) var(--stop),
-        transparent var(--stop)
-      ),
+    background:
+      linear-gradient(90deg, transparent var(--start), var(--color) var(--start), var(--color) var(--stop), transparent var(--stop)),
       linear-gradient(
         to top,
         var(--colorA005) 0,

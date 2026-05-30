@@ -56,7 +56,7 @@ figure {
     width: 100%;
     max-width: calc(50% - var(--gap) / 2);
 
-    @media (width < $sizeS) {
+    @media (--to-s) {
       max-width: 20em;
       margin-inline: auto;
     }
@@ -76,7 +76,7 @@ figure {
     }
   }
 
-  @media (width > $sizeS) {
+  @media (--from-s) {
     &[class*='-alignleft'] {
       float: left;
       margin-inline-end: var(--gap);
@@ -252,7 +252,7 @@ figure {
     object-fit: contain;
   }
 
-  @media (width < $sizeS) {
+  @media (--to-s) {
     &,
     & img {
       max-width: 20em;

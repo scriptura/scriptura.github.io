@@ -3,25 +3,25 @@
   display: none !important;
 }
 
-@container grid (width < $sizeXS) {
+@container grid (--to-xs) {
   .xs-hidden {
     display: none !important;
   }
 }
 
-@container grid ($sizeXS < width < $sizeS) {
+@container grid (--from-xs-to-s) {
   .s-hidden {
     display: none !important;
   }
 }
 
-@container grid ($sizeS < width < $sizeM) {
+@container grid (--from-s--to-m) {
   .m-hidden {
     display: none !important;
   }
 }
 
-@container grid ($sizeM < width < $sizeL) {
+@container grid (--from-m-to-l) {
   .l-hidden {
     display: none !important;
   }
@@ -94,7 +94,7 @@ a[aria-disabled='true'] {
   */
 }
 
-@container grid (width < $sizeXS) {
+@container grid (--to-xs) {
   .xs-center {
     display: grid;
     place-items: center;
@@ -137,25 +137,25 @@ a[aria-disabled='true'] {
   font-size: var(--scale, 100%);
 }
 
-@container grid (width < $sizeXS) {
+@container grid (--to-xs) {
   .xs-scale {
     font-size: var(--xs-scale, 100%);
   }
 }
 
-@container grid ($sizeXS < width) {
+@container grid (--from-xs) {
   .s-scale {
     font-size: var(--s-scale, 100%);
   }
 }
 
-@container grid ($sizeS < width) {
+@container grid (--from-s) {
   .m-scale {
     font-size: var(--m-scale, 100%);
   }
 }
 
-@container grid ($sizeM < width) {
+@container grid (--from-m) {
   .l-scale {
     font-size: var(--l-scale, 100%);
   }
@@ -193,7 +193,10 @@ a[aria-disabled='true'] {
   visibility: hidden;
   opacity: 0;
   transform: scale(0);
-  transition: opacity 1s ease-out, visibility 0s 1s ease-out, transform 0s 1s ease-out;
+  transition:
+    opacity 1s ease-out,
+    visibility 0s 1s ease-out,
+    transform 0s 1s ease-out;
 }
 
 /*

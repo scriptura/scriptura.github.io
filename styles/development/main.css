@@ -1,44 +1,61 @@
-@charset "utf-8"; /* Les guillemets doubles évitents une erreur au validateur du W3C. @see https://validator.w3.org/ */
+@charset "utf-8"; /* Les guillemets doubles évitent une erreur au validateur du W3C. @see https://validator.w3.org/ */
 
-@import 'variable';
-@import 'font';
-@import 'base';
-@import 'typography';
-@import 'layout';
-@import 'grid';
-@import 'column';
-@import 'navigation';
-@import 'breadcrumb';
-@import 'alert';
-@import 'list';
-@import 'image';
-@import 'imageAnimation';
-@import 'mediaPlayer';
-@import 'map';
-@import 'card';
-@import 'flip';
-@import 'codeBlock';
-@import 'messageBox';
-@import 'table';
-@import 'form';
-@import 'input';
-@import 'checkbox';
-@import 'range';
-@import 'button';
-@import 'accordion';
-@import 'tab';
-@import 'scrollTop';
-@import 'footer';
-@import 'article';
-@import 'dropCap';
-@import 'lineMark';
-@import 'calendar';
-@import 'progress';
-@import 'loader';
-@import 'chart';
-@import 'scrollBar';
-@import 'ribbon';
-@import 'forum';
-@import 'skin';
-@import 'demo';
-@import 'helper'; /* @note Les helpers s'appliquent à la fin dans le but d'écraser des styles tels que font-size. */
+/* DÉCLARATION DE L'INDEX DE LA CASCADE (Ordre de priorité croissant) */
+@layer tokens, base, layout, transitions, components, helpers;
+
+/* 1. COUCHE TOKENS (Variables de Runtime & Déclarations de ressources) */
+/* Ingestion globale (Hors-couche pour résolution globale par l'AST) */
+@import 'variable.css';
+@import 'font.css' layer(tokens);
+
+/* 2. COUCHE BASE (Règles génériques et sémantique brute) */
+@import 'base.css' layer(base);
+@import 'typography.css' layer(base);
+
+/* 3. COUCHE LAYOUT (Invariants structurels et systèmes de grilles) */
+@import 'layout.css' layer(layout);
+@import 'grid.css' layer(layout);
+@import 'column.css' layer(layout);
+
+/* 4. COUCHE TRANSITIONS (Animations et transitions) */
+@import 'transitions.css' layer(transitions);
+
+/* 5. COUCHE COMPONENTS (Logique modulaire et blocs atomiques) */
+@import 'navigation.css' layer(components);
+@import 'breadcrumb.css' layer(components);
+@import 'alert.css' layer(components);
+@import 'list.css' layer(components);
+@import 'image.css' layer(components);
+@import 'imageAnimation.css' layer(components);
+@import 'mediaPlayer.css' layer(components);
+@import 'map.css' layer(components);
+@import 'card.css' layer(components);
+@import 'flip.css' layer(components);
+@import 'codeBlock.css' layer(components);
+@import 'messageBox.css' layer(components);
+@import 'table.css' layer(components);
+@import 'form.css' layer(components);
+@import 'input.css' layer(components);
+@import 'checkbox.css' layer(components);
+@import 'range.css' layer(components);
+@import 'button.css' layer(components);
+@import 'accordion.css' layer(components);
+@import 'tab.css' layer(components);
+@import 'scrollTop.css' layer(components);
+@import 'footer.css' layer(components);
+@import 'article.css' layer(components);
+@import 'dropCap.css' layer(components);
+@import 'lineMark.css' layer(components);
+@import 'calendar.css' layer(components);
+@import 'progress.css' layer(components);
+@import 'loader.css' layer(components);
+@import 'chart.css' layer(components);
+@import 'scrollBar.css' layer(components);
+@import 'ribbon.css' layer(components);
+@import 'forum.css' layer(components);
+@import 'skin.css' layer(components);
+@import 'demo.css' layer(components);
+
+/* 6. COUCHE HELPERS (Surcharges de commodité / Utilitaires) */
+/* @note Les helpers s'appliquent à la fin dans le but d'écraser des styles tels que font-size. */
+@import 'helper.css' layer(helpers);

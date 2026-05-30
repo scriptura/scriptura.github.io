@@ -6,28 +6,6 @@
  * @see https://github.com/alsacreations/KNACSS/blob/master/sass/_vendor/_reboot.scss
  */
 
-/* 1. Activation du moteur de transition inter-documents */
-@view-transition {
-  navigation: auto;
-}
-
-/* 2. Mapping des discriminants sur les invariants de la structure Pug */
-.nav {
-  view-transition-name: layout-nav;
-}
-
-#main {
-  view-transition-name: layout-main;
-}
-
-.footer {
-  view-transition-name: layout-footer;
-}
-
-.alert {
-  view-transition-name: layout-alert;
-}
-
 :root {
   color-scheme: var(--color-scheme);
   /* Ability to the value of the root font sizes, affecting the value of `rem`. Null by default, thus nothing is generated. */

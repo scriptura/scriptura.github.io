@@ -62,21 +62,21 @@
   scroll-margin-block-start: 1em;
 }
 
-@media (width < $sizeS) {
+@media (--to-s) {
   .type-components .box2 {
     position: relative;
     padding: 0;
   }
 }
 
-@media (width > $sizeS) {
+@media (--from-s) {
   .type-components .box2 {
     padding: 4em 6em;
     box-shadow: var(--shadow3);
   }
 }
 
-@media (width < $sizeS) {
+@media (--to-s) {
   .type-components .box2.ribbon-content::before {
     content: '';
     position: absolute;
@@ -85,18 +85,14 @@
     width: 100%;
     max-width: 20em;
     aspect-ratio: 1/1;
-    background-image: linear-gradient(
-      -135deg,
-      var(--colorA005),
-      transparent 50%
-    );
+    background-image: linear-gradient(-135deg, var(--colorA005), transparent 50%);
     background-repeat: no-repeat;
     background-position: 100% 0%;
     pointer-events: none;
   }
 }
 
-@media (width < $sizeS) {
+@media (--to-s) {
   .type-components .box2 > .ribbon-top-right {
     transform: translate(2.85em, 0.9em) rotate(45deg) !important;
   }

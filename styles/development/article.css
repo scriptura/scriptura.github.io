@@ -18,7 +18,7 @@
   }
 
   & > :where(.comment, form) {
-    @media ($sizeS < width) {
+    @media (--from-s) {
       &:nth-child(even) {
         /* @note Limitation à 2 rangées car impression visuelle d'un désordre à partir de 3 rangées. */
         margin-inline-start: auto;
@@ -27,34 +27,32 @@
   }
 
   & > :where(.wrapper, .comment) {
-    @media ($sizeXS < width) {
+    @media (--from-xs) {
       border-radius: var(--r1);
       box-shadow: var(--shadow3);
     }
   }
 
   & > .wrapper {
-
-    @media (width < $sizeXS) {
+    @media (--to-xs) {
       padding-block-start: 1em;
     }
 
-    @media ($sizeXS < width < $sizeS) {
+    @media (--from-xs-to-s) {
       padding: 4em;
     }
 
-    @media ($sizeS < width) {
+    @media (--from-s) {
       padding: 4em 6em;
     }
   }
 
   & > .comment {
-
-    @media ($sizeXS < width < $sizeS) {
+    @media (--from-xs-to-s) {
       padding: 2.5em 4em;
     }
 
-    @media ($sizeS < width) {
+    @media (--from-s) {
       padding: 4em 6em 2.5em;
     }
   }
@@ -81,7 +79,7 @@
     position: relative;
     width: 100%;
 
-    @media (width < $sizeXS) {
+    @media (--to-xs) {
       padding-block: var(--gap);
     }
   }
@@ -137,7 +135,7 @@
       color: var(--colorT);
       background-color: var(--colorG27); /* --colorG33 */
       clip-path: polygon(0.75em 0, 100% 0, 100% 100%, 0.75em 100%, 0 50%);
-      transition: background-color .3s;
+      transition: background-color 0.3s;
 
       &:where(:focus, :hover, :active) {
         color: var(--colorW);
@@ -166,23 +164,23 @@
     gap: var(--gap);
     max-width: 55em;
 
-    @media ($sizeXS < width < $sizeS) {
+    @media (--from-xs-to-s) {
       padding-inline: 4em;
     }
 
-    @media ($sizeS < width) {
+    @media (--from-s) {
       padding-inline: 6em;
     }
   }
 
-  @media (width < $sizeXS) {
+  @media (--to-xs) {
     & .wrapper {
       margin-block-start: calc(var(--gap) * -1);
     }
   }
 }
 
-@media (width > $sizeXS) {
+@media (--from-xs) {
   .boxx {
     padding: 4em 6em;
     border-radius: var(--r1);
