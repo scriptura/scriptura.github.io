@@ -57,6 +57,10 @@
   --size-grid: 10em;
 }
 
+.grid-auto:has(.table) {
+  margin-block-start: var(--spacing-lg);
+}
+
 @container grid (width <= 35em) {
   .xs-grid-auto {
     /* @todo Valeur arbitraire à redéfinir. */

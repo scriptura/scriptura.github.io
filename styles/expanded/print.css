@@ -508,6 +508,8 @@ template {
 } .grid-auto-min {
   /* @note Valeur réduite évitant de définir trop fréquement la variable de .grid-auto via du style en ligne. */
   --size-grid: 10em;
+} .grid-auto:has(.table) {
+  margin-block-start: var(--spacing-lg);
 } @container grid (width <= 35em) {
   .xs-grid-auto {
     /* @todo Valeur arbitraire à redéfinir. */
@@ -1873,12 +1875,14 @@ samp {
   &:active {
     pointer-events: none;
   }
-} .sr-only {
-  /* @note Caché visuellement mais disponible pour les lecteurs d'écran. */
+} /* @bugfix @affected Chrome @note Ne fonctionne pas avec @layer : */ /*
+.sr-only {
   position: absolute;
   transform: scale(0);
-} /* @see https://github.com/h5bp/html5-boilerplate/blob/master/dist/css/style.css
-.sr-only {
+}
+*/ .sr-only {
+  /* @note Caché visuellement mais disponible pour les lecteurs d'écran. */
+  /* @see https://github.com/h5bp/html5-boilerplate/blob/master/dist/css/style.css */
   position: absolute;
   overflow: hidden;
   width: 1px;
@@ -1888,8 +1892,7 @@ samp {
   white-space: nowrap;
   border: 0;
   clip-path: rect(0, 0, 0, 0);
-}
-*/ /*
+} /*
 .relative {
   /* @note Classe habituellement ajoutée en js sur des éléments parents
   position: relative;

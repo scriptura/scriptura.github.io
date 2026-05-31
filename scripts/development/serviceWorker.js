@@ -80,7 +80,7 @@
  *   navigator.serviceWorker.addEventListener('message', handler)
  */
 
-const CACHE_NAME = 'v104'
+const CACHE_NAME = 'v105'
 const MEDIA_CACHE_NAME = `media-${CACHE_NAME}`
 const OFFLINE_URL = '/offline.html'
 
@@ -192,11 +192,7 @@ self.addEventListener('activate', event => {
     (async () => {
       try {
         const cacheNames = await caches.keys()
-        await Promise.all(
-          cacheNames
-            .filter(name => name !== CACHE_NAME && name !== MEDIA_CACHE_NAME)
-            .map(name => caches.delete(name)),
-        )
+        await Promise.all(cacheNames.filter(name => name !== CACHE_NAME && name !== MEDIA_CACHE_NAME).map(name => caches.delete(name)))
         await self.clients.claim()
       } catch (error) {
         console.error(`Erreur activation: ${error}`)

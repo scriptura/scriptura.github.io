@@ -688,6 +688,10 @@ main {
   --size-grid: 10em;
 }
 
+.grid-auto:has(.table) {
+  margin-block-start: var(--spacing-lg);
+}
+
 @container grid (width <= 35em) {
   .xs-grid-auto {
     /* @todo Valeur arbitraire à redéfinir. */
@@ -3355,13 +3359,6 @@ select {
 }
 @layer components{
 
-[type='range'] {
-  /* @bugfix View Transitions @affected Chrome @path Isolation du Shadow DOM pour le compositeur matériel Blink/WebKit. Garantit que l'allocation mémoire du curseur n'interfère pas avec la capture de la texture du parent (#main) lors d'une transition. */
-  isolation: isolate;
-  will-change: transform;
-  contain: layout paint;
-}
-
 .input {
   & label {
     display: inline-block;
@@ -3871,6 +3868,13 @@ input[type='radio']:not([role='switch']) {
 @layer components{
 
 /* Les mixins suivantes sont utilisées pour des sélecteurs propriétaires à des navigateurs et qui ne peuvent être regroupés entre eux sans bugs. */
+
+[type='range'] * {
+  /* @bugfix View Transitions @affected Chrome @path Isolation du Shadow DOM pour le compositeur matériel Blink/WebKit. Garantit que l'allocation mémoire du curseur n'interfère pas avec la capture de la texture du parent (#main) lors d'une transition. */
+  isolation: isolate;
+  will-change: transform;
+  contain: layout paint;
+}
 
 [class^='range'] {
   --color: var(--color2);
@@ -5493,14 +5497,17 @@ a[aria-disabled='true'] {
   }
 }
 
+/* @bugfix @affected Chrome @note Ne fonctionne pas avec @layer : */
+/*
 .sr-only {
-  /* @note Caché visuellement mais disponible pour les lecteurs d'écran. */
   position: absolute;
   transform: scale(0);
 }
+*/
 
-/* @see https://github.com/h5bp/html5-boilerplate/blob/master/dist/css/style.css
 .sr-only {
+  /* @note Caché visuellement mais disponible pour les lecteurs d'écran. */
+  /* @see https://github.com/h5bp/html5-boilerplate/blob/master/dist/css/style.css */
   position: absolute;
   overflow: hidden;
   width: 1px;
@@ -5511,7 +5518,6 @@ a[aria-disabled='true'] {
   border: 0;
   clip-path: rect(0, 0, 0, 0);
 }
-*/
 
 /*
 .relative {

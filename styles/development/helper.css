@@ -41,14 +41,17 @@ a[aria-disabled='true'] {
   }
 }
 
+/* @bugfix @affected Chrome @note Ne fonctionne pas avec @layer : */
+/*
 .sr-only {
-  /* @note Caché visuellement mais disponible pour les lecteurs d'écran. */
   position: absolute;
   transform: scale(0);
 }
+*/
 
-/* @see https://github.com/h5bp/html5-boilerplate/blob/master/dist/css/style.css
 .sr-only {
+  /* @note Caché visuellement mais disponible pour les lecteurs d'écran. */
+  /* @see https://github.com/h5bp/html5-boilerplate/blob/master/dist/css/style.css */
   position: absolute;
   overflow: hidden;
   width: 1px;
@@ -59,7 +62,6 @@ a[aria-disabled='true'] {
   border: 0;
   clip-path: rect(0, 0, 0, 0);
 }
-*/
 
 /*
 .relative {
