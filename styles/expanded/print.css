@@ -665,24 +665,24 @@ template {
   .m-order {
     order: var(--o, -1);
   }
-} /* @note Mémento de nos (presques) équivalences grid/flex codées ultérieurement : */ /* with Grid layout: */ /*
+} /* @note Mémento de nos (presques) équivalences grid/flex codées ultérieurement : */ /* With Grid layout: */ /*
 .summary {
   display: grid;
   gap: var(--gap);
 
-  @media (min-width: $sizeXS) {
+  @media (width < 35em) {
     grid-template-columns: repeat(2, 1fr);
   }
 
-  @media (min-width: $sizeS) {
+  @media (width < 50em) {
     grid-template-columns: repeat(3, 1fr);
   }
 
-  @media (min-width: $sizeL) {
+  @media (width < 92em) {
     grid-template-columns: repeat(4, 1fr);
   }
 }
-*/ /* with flexbox: */ /*
+*/ /* With flexbox: */ /*
 .summary {
   display: flex;
   flex-wrap: wrap;
@@ -691,15 +691,15 @@ template {
   & > * {
     flex: 1 0 100%; /* = [flex-grow flex-shrink flex-basis]
 
-    @media (min-width: $sizeXS) {
+    @media (width < 35em) {
       flex-basis: calc(50% - var(--gap));
     }
 
-    @media (min-width: $sizeS) {
+    @media (width < 50em) {
       flex-basis: calc(33% - var(--gap));
     }
 
-    @media (min-width: $sizeL) {
+    @media (width < 92em) {
       flex-basis: calc(25% - var(--gap));
     }
   }

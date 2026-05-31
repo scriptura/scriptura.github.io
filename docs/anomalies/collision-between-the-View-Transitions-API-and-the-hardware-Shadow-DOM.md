@@ -45,7 +45,11 @@ La panne est provoquée par une désynchronisation de frames (_Race Condition_) 
 Le correctif consiste à imposer une étanchéité absolue de l'allocation mémoire des widgets avant même que l'API de transition n'intercepte l'arbre de rendu :
 
 ```css
-[class^='range'] input {
+[type='range'] {
+  /* @bugfix View Transitions */
+  /* @affected Chrome */
+  /* @path Isolation du Shadow DOM pour le compositeur matériel Blink/WebKit. */
+  /* Garantit que l'allocation mémoire du curseur n'interfère pas avec la capture de la texture du parent (#main) lors d'une transition. */
   isolation: isolate;
   will-change: transform;
   contain: layout paint;

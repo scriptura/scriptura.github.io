@@ -887,28 +887,30 @@ main {
   .m-order {
     order: var(--o, -1);
   }
-} /* @note Mémento de nos (presques) équivalences grid/flex codées ultérieurement : */
+}
 
-/* with Grid layout: */
+/* @note Mémento de nos (presques) équivalences grid/flex codées ultérieurement : */
+
+/* With Grid layout: */
 /*
 .summary {
   display: grid;
   gap: var(--gap);
 
-  @media (min-width: $sizeXS) {
+  @media (width < 35em) {
     grid-template-columns: repeat(2, 1fr);
   }
 
-  @media (min-width: $sizeS) {
+  @media (width < 50em) {
     grid-template-columns: repeat(3, 1fr);
   }
 
-  @media (min-width: $sizeL) {
+  @media (width < 92em) {
     grid-template-columns: repeat(4, 1fr);
   }
 }
 */
-/* with flexbox: */
+/* With flexbox: */
 /*
 .summary {
   display: flex;
@@ -918,15 +920,15 @@ main {
   & > * {
     flex: 1 0 100%; /* = [flex-grow flex-shrink flex-basis]
 
-    @media (min-width: $sizeXS) {
+    @media (width < 35em) {
       flex-basis: calc(50% - var(--gap));
     }
 
-    @media (min-width: $sizeS) {
+    @media (width < 50em) {
       flex-basis: calc(33% - var(--gap));
     }
 
-    @media (min-width: $sizeL) {
+    @media (width < 92em) {
       flex-basis: calc(25% - var(--gap));
     }
   }
@@ -3353,6 +3355,13 @@ select {
 }
 @layer components{
 
+[type='range'] {
+  /* @bugfix View Transitions @affected Chrome @path Isolation du Shadow DOM pour le compositeur matériel Blink/WebKit. Garantit que l'allocation mémoire du curseur n'interfère pas avec la capture de la texture du parent (#main) lors d'une transition. */
+  isolation: isolate;
+  will-change: transform;
+  contain: layout paint;
+}
+
 .input {
   & label {
     display: inline-block;
@@ -3871,14 +3880,6 @@ input[type='radio']:not([role='switch']) {
   margin-block-end: 1em;
 
   & input {
-    /* [PATCH VIEW TRANSITIONS] 
-       Isolation du Shadow DOM pour le compositeur matériel Blink/WebKit.
-       Garantit que l'allocation mémoire du curseur n'interfère pas avec 
-       la capture de la texture du parent (#main) lors d'une transition. */
-    isolation: isolate;
-    will-change: transform;
-    contain: layout paint;
-
     /* @see https://css-tricks.com/multi-thumb-sliders-particular-two-thumb-case/ */
     grid-column: 1;
     grid-row: 2;
