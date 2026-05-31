@@ -130,18 +130,21 @@ p
   - for (let i = 0; i < 20; i++)
     div
 hr(data-hr='✻ ✻ ✻')
-.grid2.s-grid1.gap-top
-  div
-    .message-highlight
-      svg.icon(role='img' focusable='false')
-        use(href='/sprites/util.svg#info')
-      div
-        p Les grilles utilisent les modules CSS Grid Layout, Container Queries et les opérateurs mathématiques de comparaison (Media Queries Level 4).
-        P Voir pour les supports de 
-          a(href='https://caniuse.com/mdn-css_properties_container') Container Queries
-          |  et 
-          a(href='https://caniuse.com/css-media-range-syntax') Media Queries: Range Syntax
-          | .
-  figure.center
-    svg.size.decorative-svg.sprite-to-inline.svg-animation.invisible-if-animation(role='img' focusable='false' style='--size: 30em;--size-height: 10em')
-      use(href='/sprites/silos/39r.svg#a')
+.grid2.s-grid1.gap.gap-top
+  .message-highlight
+    svg.icon(role='img' focusable='false')
+      use(href='/sprites/util.svg#info')
+    div
+      p Les grilles utilisent les modules CSS Grid Layout, Container Queries et les opérateurs mathématiques de comparaison (Media Queries Level 4).
+      P Voir pour les supports de 
+        a(href='https://caniuse.com/mdn-css_properties_container') Container Queries
+        |  et 
+        a(href='https://caniuse.com/css-media-range-syntax') Media Queries: Range Syntax
+        | .
+  .message-highlight
+    svg.icon(role='img' focusable='false')
+      use(href='/sprites/util.svg#paperclip')
+    div
+      p Actuellement notre solution pour faire du masonry est composée de CSS + JavaScript, en attendant que les styles CSS permettent une implémentation native (prochainement avec 
+        code display: grid-lanes;
+        | ).
