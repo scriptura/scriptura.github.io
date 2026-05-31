@@ -80,7 +80,7 @@
  *   navigator.serviceWorker.addEventListener('message', handler)
  */
 
-const CACHE_NAME = 'v105'
+const CACHE_NAME = 'v106'
 const MEDIA_CACHE_NAME = `media-${CACHE_NAME}`
 const OFFLINE_URL = '/offline.html'
 
