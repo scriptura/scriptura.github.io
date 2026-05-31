@@ -10,74 +10,82 @@
  * ─────────────────────────────────────────────────────────────────────────────
  *
  * @strategy Cache First — {@link cacheFirst}
- *   Cible : assets immuables (CSS, JS, fonts, images, SVG).
- *   Pipeline : cache → [miss] → réseau → écriture disque → retour.
- *   Invariant : un asset immuable n'a aucune raison de solliciter le réseau
- *   s'il est déjà présent. Le réseau n'est atteint qu'au premier chargement
- *   ou après invalidation du cache (bump de CACHE_NAME).
+ * Cible : assets immuables (CSS, JS, fonts, images, SVG).
+ * Pipeline : cache → [miss] → réseau → écriture disque → retour.
+ * Invariant : un asset immuable n'a aucune raison de solliciter le réseau
+ * s'il est déjà présent. Le réseau n'est atteint qu'au premier chargement
+ * ou après invalidation du cache (bump de CACHE_NAME).
  *
  * @strategy Network First — {@link networkFirst}
- *   Cible : navigations et requêtes dynamiques (racine /, HTML).
- *   Pipeline : réseau → écriture disque → retour / [échec] → cache → offline.html.
- *   Invariant : la fraîcheur du contenu prime. Le cache est un fallback dégradé,
- *   pas la source canonique.
+ * Cible : navigations et requêtes dynamiques (racine /, HTML).
+ * Pipeline : réseau → écriture disque → retour / [échec] → cache → offline.html.
+ * Invariant : la fraîcheur du contenu prime. Le cache est un fallback dégradé,
+ * pas la source canonique.
  *
  * ─────────────────────────────────────────────────────────────────────────────
  * ARBITRAGES ARCHITECTURAUX NON DÉDUCTIBLES DU CODE
  * ─────────────────────────────────────────────────────────────────────────────
  *
+ * @architectural-decision Filtrage strict HTTP 200 (Exclusion des flux 206)
+ * L'API Cache Storage lève une exception de type (TypeError) sur les réponses
+ * partielles (HTTP 206 Range Requests). Remplacer la vérification globale
+ * networkResponse.ok (qui englobe la plage 200-299) par une comparaison
+ * stricte sur le code d'état 200 garantit que seuls les payloads intègres
+ * entrent dans le pipeline d'écriture. Les segments partiels transitent en direct
+ * vers le consommateur sans allocation de cache.
+ *
  * @architectural-decision Cache unique (CACHE_NAME)
- *   Assets statiques et navigations partagent le même cache.
- *   MEDIA_CACHE_NAME est conservé uniquement pour purger les entrées
- *   d'une stratégie Cache First media antérieure (activate → caches.delete).
- *   Il n'est plus alimenté. Supprimer cette constante casserait la purge
- *   sur les navigateurs ayant encore l'ancien cache en mémoire.
+ * Assets statiques et navigations partagent le même cache.
+ * MEDIA_CACHE_NAME est conservé uniquement pour purger les entrées
+ * d'une stratégie Cache First media antérieure (activate → caches.delete).
+ * Il n'est plus alimenté. Supprimer cette constante casserait la purge
+ * sur les navigateurs ayant encore l'ancien cache en mémoire.
  *
  * @architectural-decision Routing via request.destination + fallback regex
- *   request.destination est une propriété native pré-calculée par le moteur
- *   (coût O(1), zéro allocation). Elle couvre les cas canoniques
- *   ('style', 'script', 'font', 'image').
- *   Le fallback regex sur request.url (string native) traite les cas où
- *   destination vaut '' : requêtes fetch() programmatiques, SVG chargés
- *   via <use xlink:href>, workers. Ne pas supprimer ce fallback sans audit
- *   exhaustif des points de chargement SVG dans l'application.
- *   L'alternative new URL(request.url) a été écartée : elle alloue un objet
- *   par requête sur le hot path, augmentant la pression GC.
- *   L'alternative [...].includes() a été écartée pour la même raison
- *   (tableau littéral recréé à chaque appel). Le Set module-level garantit
- *   un lookup O(1) sans allocation par appel.
+ * request.destination est une propriété native pré-calculée par le moteur
+ * (coût O(1), zéro allocation). Elle couvre les cas canoniques
+ * ('style', 'script', 'font', 'image').
+ * Le fallback regex sur request.url (string native) traite les cas où
+ * destination vaut '' : requêtes fetch() programmatiques, SVG chargés
+ * via <use xlink:href>, workers. Ne pas supprimer ce fallback sans audit
+ * exhaustif des points de chargement SVG dans l'application.
+ * L'alternative new URL(request.url) a été écartée : elle alloue un objet
+ * par requête sur le hot path, augmentant la pression GC.
+ * L'alternative [...].includes() a été écartée pour la même raison
+ * (tableau littéral recréé à chaque appel). Le Set module-level garantit
+ * un lookup O(1) sans allocation par appel.
  *
  * @architectural-decision putInCache fire-and-forget + event.waitUntil()
- *   L'écriture disque est détachée du return response (non bloquante pour
- *   le rendu client), mais attachée au cycle de vie de l'événement fetch
- *   via event.waitUntil(). Sans ce rattachement, le navigateur peut terminer
- *   le processus SW entre la résolution de respondWith() et la fin de
- *   l'écriture, annulant silencieusement la mise en cache.
+ * L'écriture disque est détachée du return response (non bloquante pour
+ * le rendu client), mais attachée au cycle de vie de l'événement fetch
+ * via event.waitUntil(). Sans ce rattachement, le navigateur peut terminer
+ * le processus SW entre la résolution de respondWith() et la fin de
+ * l'écriture, annulant silencieusement la mise en cache.
  *
  * @architectural-decision Debounce de notifyServiceUnavailable (5 000 ms)
- *   En cas de perte réseau, chaque requête en vol échoue simultanément.
- *   Sans garde temporelle, chaque échec déclencherait un postMessage vers
- *   tous les clients, saturant la MessageQueue. Le seuil de 5 s est un
- *   compromis entre réactivité UI et coût CPU ; ajuster selon la densité
- *   de requêtes en vol acceptable dans l'application.
+ * En cas de perte réseau, chaque requête en vol échoue simultanément.
+ * Sans garde temporelle, chaque échec déclencherait un postMessage vers
+ * tous les clients, saturant la MessageQueue. Le seuil de 5 s est un
+ * compromis entre réactivité UI et coût CPU ; ajuster selon la densité
+ * de requêtes en vol acceptable dans l'application.
  *
  * @architectural-decision Absence d'exclusion du périmètre /app/
- *   L'exclusion explicite des requêtes '/app/' a été supprimée. L'isolation
- *   est déléguée à la mécanique de scope navigateur : tout enfant de /app/
- *   enregistrant son propre SW (scope /app/enfant/) intercepte ses requêtes
- *   avant que ce SW racine ne soit consulté. Le scope le plus spécifique
- *   gagne, indépendamment de l'ordre d'enregistrement.
- *   Les enfants de /app/ sans SW propre héritent en conséquence des
- *   stratégies de ce fichier, ce qui est le comportement souhaité.
- *   Réintroduire une exclusion URL explicite ne serait justifié que pour
- *   un périmètre devant échapper à toute interception (API, auth token)
- *   indépendamment de la présence d'un SW enfant.
+ * L'exclusion explicite des requêtes '/app/' a été supprimée. L'isolation
+ * est déléguée à la mécanique de scope navigateur : tout enfant de /app/
+ * enregistrant son propre SW (scope /app/enfant/) intercepte ses requêtes
+ * avant que ce SW racine ne soit consulté. Le scope le plus spécifique
+ * gagne, indépendamment de l'ordre d'enregistrement.
+ * Les enfants de /app/ sans SW propre héritent en conséquence des
+ * stratégies de ce fichier, ce qui est le comportement souhaité.
+ * Réintroduire une exclusion URL explicite ne serait justifié que pour
+ * un périmètre devant échapper à toute interception (API, auth token)
+ * indépendamment de la présence d'un SW enfant.
  *
  * @architectural-decision Listener 'message' absent de ce fichier
- *   La manipulation de document.documentElement est interdite dans le scope
- *   SW (pas d'accès au DOM). L'écoute des messages du SW doit être
- *   enregistrée dans le Main Thread via :
- *   navigator.serviceWorker.addEventListener('message', handler)
+ * La manipulation de document.documentElement est interdite dans le scope
+ * SW (pas d'accès au DOM). L'écoute des messages du SW doit être
+ * enregistrée dans le Main Thread via :
+ * navigator.serviceWorker.addEventListener('message', handler)
  */
 
 const CACHE_NAME = 'v110'
@@ -145,15 +153,13 @@ async function notifyServiceUnavailable() {
 }
 
 // --- Strategies ---
-// Les stratégies reçoivent l'event complet pour attacher l'I/O disque à son cycle de vie.
 async function networkFirst(event) {
   const { request } = event
 
   try {
     const networkResponse = await fetch(request)
-    if (networkResponse?.ok) {
-      // L'écriture disque est liée au cycle de vie de l'événement : le SW ne sera pas
-      // tué avant la résolution de la promesse, sans bloquer le return.
+    // Extraction stricte : évite l'interception et le clonage des fragments 206
+    if (networkResponse && networkResponse.status === 200) {
       event.waitUntil(putInCache(request, networkResponse.clone()))
     }
     return networkResponse
@@ -172,7 +178,8 @@ async function cacheFirst(event) {
 
   try {
     const networkResponse = await fetch(request)
-    if (networkResponse?.ok) {
+    // Extraction stricte : évite l'interception et le clonage des fragments 206
+    if (networkResponse && networkResponse.status === 200) {
       event.waitUntil(putInCache(request, networkResponse.clone()))
     }
     return networkResponse
