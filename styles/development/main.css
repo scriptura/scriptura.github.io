@@ -18,7 +18,7 @@
 @import 'column.css' layer(layout);
 
 /* 4. COUCHE TRANSITIONS (Animations et transitions) */
-@import 'transitions.css' layer(transitions);
+@import 'transition.css' layer(transitions);
 
 /* 5. COUCHE COMPONENTS (Logique modulaire et blocs atomiques) */
 @import 'navigation.css' layer(components);

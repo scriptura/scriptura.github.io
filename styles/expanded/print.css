@@ -516,10 +516,6 @@ template {
     grid-template-columns: repeat(auto-fit, minmax(var(--xs-size-column, 11em), 1fr));
   }
 } @container grid (width > 35em) {
-  .xs-grid-auto {
-    /* @todo Valeur arbitraire à redéfinir. */
-    grid-template-columns: repeat(auto-fit, minmax(var(--xs-size-column, 11em), 1fr));
-  }
   .grid2,
   .grid3,
   .grid4 {
@@ -672,15 +668,15 @@ template {
   display: grid;
   gap: var(--gap);
 
-  @media (width < 35em) {
+  @media (width <= 35em) {
     grid-template-columns: repeat(2, 1fr);
   }
 
-  @media (width < 50em) {
+  @media (width <= 50em) {
     grid-template-columns: repeat(3, 1fr);
   }
 
-  @media (width < 92em) {
+  @media (width <= 92em) {
     grid-template-columns: repeat(4, 1fr);
   }
 }
@@ -693,15 +689,15 @@ template {
   & > * {
     flex: 1 0 100%; /* = [flex-grow flex-shrink flex-basis]
 
-    @media (width < 35em) {
+    @media (width <= 35em) {
       flex-basis: calc(50% - var(--gap));
     }
 
-    @media (width < 50em) {
+    @media (width <= 50em) {
       flex-basis: calc(33% - var(--gap));
     }
 
-    @media (width < 92em) {
+    @media (width <= 92em) {
       flex-basis: calc(25% - var(--gap));
     }
   }
