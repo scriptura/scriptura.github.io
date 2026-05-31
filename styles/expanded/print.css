@@ -1,4 +1,10 @@
-@charset "utf-8"; /* Les guillemets doubles évitents une erreur au validateur du W3C. @see https:/* validator.w3.org/ */ :root {
+@charset "utf-8";
+@layer tokens, base, layout, transitions, components, helpers, print;
+/* Les guillemets doubles évitent une erreur au validateur du W3C. @see https://validator.w3.org/ */
+/* DÉCLARATION DE L'INDEX DE LA CASCADE (Ordre de priorité croissant) */
+/* 1. COUCHE TOKENS (Variables de Runtime & Déclarations de ressources) */
+/* Ingestion globale (Hors-couche pour résolution globale par l'AST) */
+:root {
   --size-nav: 97.01em; /* @note Variable CSS utilisée en JavaScript. */
   --gap: 1em; /* Gouttière, largeur entre deux modules */
   --wrap: 92em; /* calc(90em + var(--gap) * 2)*/ /* Largeur maximale du contenu (+ prise en compte du padding interne) */
@@ -127,7 +133,10 @@
   --r1: 0.3em; /* Boites */
   --r2: 0.3em; /* Éléments internes */
   --r3: 0.2em; /* Éléments de liste */
-} @font-face {
+}
+@layer tokens{
+
+@font-face {
   font-family: 'Noto Sans';
   src: url('../fonts/notoSans-Regular.woff2') format('woff2'),
        url('../fonts/notoSans-Regular.woff') format('woff');
@@ -135,28 +144,41 @@
   font-style: normal;
   /* @see https://css-tricks.com/almanac/properties/f/font-display/ */
   font-display: swap;
-} @font-face {
+}
+
+@font-face {
   font-family: 'Noto Serif';
   src: url('../fonts/notoSerif-Regular.woff2') format('woff2'),
        url('../fonts/notoSerif-Regular.woff') format('woff');
   font-weight: normal;
   font-style: normal;
   font-display: swap;
-} /**
+}
+}
+/* 2. COUCHE BASE (Règles génériques et sémantique brute) */
+@layer base{
+
+/**
  * @note Les ressets CSS sont inspiré de Bootstrap Reboot et Normalize CSS 8.0.1 puis étendu par nos soins.
  * @see https://github.com/twbs/bootstrap/blob/v4-dev/scss/_reboot.scss
  * @see https://github.com/necolas/normalize.css
  * @see https://github.com/alsacreations/KNACSS/blob/v8/sass/base/_reset.scss
  * @see https://github.com/alsacreations/KNACSS/blob/master/sass/_vendor/_reboot.scss
- */ :root {
+ */
+
+:root {
   color-scheme: var(--color-scheme);
   /* Ability to the value of the root font sizes, affecting the value of `rem`. Null by default, thus nothing is generated. */
   /*font-size: 1rem; */
-} *,
+}
+
+*,
 ::before,
 ::after {
   box-sizing: border-box;
-} html {
+}
+
+html {
   /* @bugfix Prevent adjustments of font size after orientation changes @affected iOS. */
   -webkit-text-size-adjust: 100%;
   /* -webkit-tap-highlight-color: transparent */
@@ -175,10 +197,14 @@
   @media (prefers-reduced-motion: no-preference) {
     scroll-behavior: smooth;
   }
-} ::selection {
+}
+
+::selection {
   color: var(--colorW);
   background-color: var(--colorAS2);
-} a {
+}
+
+a {
   color: var(--colorT2);
   text-underline-offset: 10%;
 
@@ -187,9 +213,13 @@
     text-decoration: none;
     outline: none;
   }
-} p {
+}
+
+p {
   margin-block: 0.75em;
-} hr {
+}
+
+hr {
   /* @bugfix Show the overflow @affected Edge and IE. */
   overflow: visible;
   /* @bugfix Add the correct box sizing @affected Firefox. */
@@ -201,7 +231,9 @@
   color: transparent;
   background-image: repeating-linear-gradient(-45deg, transparent 0 5px, var(--colorA1) 5px 10px);
   border: none;
-} h1,
+}
+
+h1,
 h2,
 h3,
 h4,
@@ -216,37 +248,55 @@ h6,
   font-family: var(--font-list2);
   text-align: start; /* @note Permet d'écraser le placement en justifié si besoin car conflit de cette dernière définition avec "text-wrap: balance". @todo À évaluer. */
   text-wrap: balance;
-} :where(.h2, .h3, .h4, .h5, .h6) {
+}
+
+:where(.h2, .h3, .h4, .h5, .h6) {
   /* @note Important à redéfinir pour les classes aposées sur d'autres éléments que des titres, comme <legend> ou <label> par exemple. */
   margin-block: 0.83em;
   fieldset > legend& {
     /* @bugfix @affected Chrome @note Si pas de correctif la marge passe en dessous du fieldset conteneur. */
     padding-block-start: 0.83em;
   }
-} h1,
+}
+
+h1,
 .h1 {
   margin-block: clamp(0.83em, 5vw, 0.67em); /* 0.83em */
   font-size: clamp(2em, 5vw, 2.5em); /* 2.5em */
-} h2,
+}
+
+h2,
 .h2 {
   font-size: 2em;
-} h3,
+}
+
+h3,
 .h3 {
   font-size: 1.75em;
-} h4,
+}
+
+h4,
 .h4 {
   font-size: 1.5em;
-} h5,
+}
+
+h5,
 .h5 {
   font-size: 1.25em;
-} h6,
+}
+
+h6,
 .h6 {
   font-size: 1em;
-} hgroup {
+}
+
+hgroup {
   & h1 {
     margin-block-end: 0;
   }
-} pre {
+}
+
+pre {
   margin: 0;
   /* @bugfix Correct the inheritance and scaling of font size @affected All browsers. */
   font-family: monospace, monospace;
@@ -254,45 +304,69 @@ h6,
   font-size: 1em;
   white-space: pre-wrap;
   /* word-break: keep-all; */
-} abbr[title] {
+}
+
+abbr[title] {
   /* @bugfix Add the correct text decoration @affected Chrome, Edge, IE, Opera, and Safari. */
   text-decoration: underline;
   /* @bugfix Idem */
   text-decoration: underline dotted;
-} b,
+}
+
+b,
 strong {
   /* @bugfix Add the correct font weight @affected Chrome, Edge, and Safari. */
   font-weight: bold;
-} i,
+}
+
+i,
 em {
   font-style: italic;
-} blockquote {
+}
+
+blockquote {
   margin: 0;
-} q {
+}
+
+q {
   /* Harmonisation des citations. */
   quotes: '\201C' '\201D' '\2018' '\2019';
-} mark {
+}
+
+mark {
   color: currentcolor;
   background-color: var(--color3); /* --color2 */
-} small {
+}
+
+small {
   /* @bugfix Add the correct font size @affected All browsers. */
   font-size: 80%;
-} sub,
+}
+
+sub,
 sup {
   /* @bugfix Prevent `sub` and `sup` elements from affecting the line height @affected All browsers. */
   position: relative;
   line-height: 0;
   font-size: 75%;
   vertical-align: baseline;
-} sub {
+}
+
+sub {
   /* @bugfix Prevent `sub` and `sup` elements from affecting the line height @affected All browsers. */
   bottom: -0.25em;
-} sup {
+}
+
+sup {
   /* @bugfix Prevent `sub` and `sup` elements from affecting the line height @affected All browsers. */
   top: -0.5em;
-} ins {
+}
+
+ins {
   text-underline-offset: 10%;
-} details {
+}
+
+details {
   /* @note Tentative de reproduire avec les marges l'espacement des items d'une liste. */
   display: block;
 
@@ -315,7 +389,9 @@ sup {
       margin-block-end: 0;
     }
   }
-} summary {
+}
+
+summary {
   /* @bugfix Add the correct display @affected All browsers. */
   display: list-item;
   list-style: none;
@@ -343,27 +419,41 @@ sup {
   details[open] > &::before {
     transform: rotate(90deg);
   }
-} iframe {
+}
+
+iframe {
   overflow: hidden;
   width: 100%;
   height: 100%;
   border: none;
-} ruby {
+}
+
+ruby {
   display: grid;
   gap: 0.5em;
 
   & * {
     margin: auto;
   }
-} ::marker {
+}
+}
+@layer base{
+
+::marker {
   color: var(--color2);
-} .main-heading {
+}
+
+.main-heading {
   /* @note Alias de overflow-wrap @see https://developer.mozilla.org/fr/docs/Web/CSS/overflow-wrap */
   word-wrap: break-word;
   text-shadow: 0.2em 0.2em 0.2em var(--colorAB3);
-} .main-heading span {
+}
+
+.main-heading span {
   color: var(--color2);
-} hr[data-hr],
+}
+
+hr[data-hr],
 .decorative-hr hr {
   display: block;
   /* clear: both: */
@@ -383,9 +473,13 @@ sup {
     text-align: center;
     color: var(--colorA2);
   }
-} .decorative-hr hr::after {
+}
+
+.decorative-hr hr::after {
   content: '✻ ✻ ✻';
-} .blockquote blockquote {
+}
+
+.blockquote blockquote {
   position: relative;
   margin: 0;
   padding-inline-start: 2em;
@@ -424,12 +518,20 @@ sup {
   & footer::after {
     content: '.';
   }
-} /* @note Grec ancien (grc), grec moderne ('el'). */ :lang(he) {
+}
+
+/* @note Grec ancien (grc), grec moderne ('el'). */
+
+:lang(he) {
   direction: rtl;
   /* font-family: $font-list; */
-} .verse {
+}
+
+.verse {
   color: var(--color2);
-} .links p a {
+}
+
+.links p a {
   &:not([href^='#'])::after {
     /* @note Liens internes, sauf pour les ancres. */
     content: ' ↩';
@@ -438,9 +540,13 @@ sup {
   &[href*='//']::after {
     content: ' ↗';
   }
-} .text-center {
+}
+
+.text-center {
   text-align: center;
-} .text-justify {
+}
+
+.text-justify {
   hyphens: auto;
 
   & li {
@@ -450,7 +556,15 @@ sup {
   @media (width > 35em) {
     text-align: justify;
   }
-} /* @import 'layout'; */ /* @note Utiliser .grid2 pour avoir deux colonnes, etc., au-delà de .grid4 utiliser .grid-auto (qui par défaut aura 5 colonnes max pour la largeur prévue de notre site). */ /* @note Avec `minmax` la grille ne sera pas tributaire de son contenu en responsive @see https://css-tricks.com/equal-width-columns-in-css-grid-are-kinda-weird/ */ [class^='grid'] {
+}
+}
+/* 3. COUCHE LAYOUT (Invariants structurels et systèmes de grilles) */
+/* @import 'layout.css' layer(layout); */
+@layer layout{
+/* @note Utiliser .grid2 pour avoir deux colonnes, etc., au-delà de .grid4 utiliser .grid-auto (qui par défaut aura 5 colonnes max pour la largeur prévue de notre site). */
+/* @note Avec `minmax` la grille ne sera pas tributaire de son contenu en responsive @see https://css-tricks.com/equal-width-columns-in-css-grid-are-kinda-weird/ */
+
+[class^='grid'] {
   :has(> &) {
     container: grid/inline-size;
     width: 100%; /* @note Important si le conteneur n'a pas de largeur définie par défaut. */
@@ -493,36 +607,52 @@ sup {
     grid-template-rows: masonry; /* @note Implémentation future en CSS @todo À surveiller.
   }
   */
-} .grid-auto,
+}
+
+.grid-auto,
 .grid-auto-min {
   /* @note Ne pas définir la variable au-dessus de sa valeur par défaut afin d'éviter des dépassement sur les écrans de petites définitions. Préférer alors les grilles prédéfinies. @todo min() en test pour éviter justement ce problème. */
   grid-template-columns: repeat(auto-fit, minmax(min(var(--size-grid, 20em), 100%), 1fr));
-} .grid-auto-min {
+}
+
+.grid-auto-min {
   /* @note Valeur réduite évitant de définir trop fréquement la variable de .grid-auto via du style en ligne. */
   --size-grid: 10em;
-} .grid-auto:has(.table) {
+}
+
+.grid-auto:has(.table) {
   margin-block-start: var(--spacing-lg);
-} @container grid (width <= 35em) {
+}
+
+@container grid (width <= 35em) {
   .xs-grid-auto {
     /* @todo Valeur arbitraire à redéfinir. */
     grid-template-columns: repeat(auto-fit, minmax(var(--xs-size-column, 11em), 1fr));
   }
-} @container grid (width > 35em) {
+}
+
+@container grid (width > 35em) {
   .grid2,
   .grid3,
   .grid4 {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
-} @container grid (width > 50em) {
+}
+
+@container grid (width > 50em) {
   .grid3,
   .grid4 {
     grid-template-columns: repeat(3, minmax(0, 1fr));
   }
-} @container grid (width > 70em) {
+}
+
+@container grid (width > 70em) {
   .grid4 {
     grid-template-columns: repeat(4, minmax(0, 1fr));
   }
-} @container grid (width > 35em) {
+}
+
+@container grid (width > 35em) {
   /* @todo En attendant avec impatience le support de "grid-column: span minmax(1, 2)" */
   .c2,
   .c3,
@@ -537,16 +667,22 @@ sup {
   .xs-c2 {
     grid-column: span 2;
   }
-} @container grid (width > 50em) {
+}
+
+@container grid (width > 50em) {
   .c3,
   .c4 {
     grid-column: span 3;
   }
-} @container grid (width > 70em) {
+}
+
+@container grid (width > 70em) {
   .c4 {
     grid-column: span 4;
   }
-} @container grid (35em < width <= 50em) {
+}
+
+@container grid (35em < width <= 50em) {
   .s-c1 {
     grid-column: span 1;
   }
@@ -554,7 +690,9 @@ sup {
   .s-c2 {
     grid-column: span 2;
   }
-} @container grid (50em < width <= 70em) {
+}
+
+@container grid (50em < width <= 70em) {
   .m-c1 {
     grid-column: span 1;
   }
@@ -562,17 +700,27 @@ sup {
   .m-c2 {
     grid-column: span 2;
   }
-} .r2 {
+}
+
+.r2 {
   grid-row: span 2;
-} .r3 {
+}
+
+.r3 {
   grid-row: span 3;
-} .r4 {
+}
+
+.r4 {
   grid-row: span 4;
-} @container grid (width > 35em) {
+}
+
+@container grid (width > 35em) {
   :root .xs-grid2 {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
-} @container grid (35em < width <= 50em) {
+}
+
+@container grid (35em < width <= 50em) {
   :root .s-grid1 {
     grid-template-columns: repeat(1, minmax(0, 1fr));
   }
@@ -580,7 +728,9 @@ sup {
   :root .s-grid2 {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
-} @container grid (50em < width <= 70em) {
+}
+
+@container grid (50em < width <= 70em) {
   :root .m-grid1 {
     grid-template-columns: repeat(1, minmax(0, 1fr));
   }
@@ -596,7 +746,9 @@ sup {
   :root .m-grid4 {
     grid-template-columns: repeat(4, minmax(0, 1fr));
   }
-} @container grid (70em < width <= 92em) {
+}
+
+@container grid (70em < width <= 92em) {
   :root .l-grid1 {
     grid-template-columns: repeat(1, minmax(0, 1fr));
   }
@@ -612,11 +764,15 @@ sup {
   :root .l-grid4 {
     grid-template-columns: repeat(4, minmax(0, 1fr));
   }
-} @container grid (width > 92em) {
+}
+
+@container grid (width > 92em) {
   :root .xl-grid2 {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
-} .flex {
+}
+
+.flex {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
@@ -640,22 +796,35 @@ sup {
   & .push {
     margin-inline-start: auto;
   }
-} .order {
+}
+
+.order {
   /* @note Valeur négative car l'utilisation de cette classe est souvent utilisée pour une monté des éléments frères plutôt qu'une descente. */
   order: var(--o, -1);
-} @container grid (width <= 35em) {
+}
+
+@container grid (width <= 35em) {
   .xs-order {
     order: var(--o, -1);
   }
-} @container grid (35em < width <= 50em) {
+}
+
+@container grid (35em < width <= 50em) {
   .s-order {
     order: var(--o, -1);
   }
-} @container grid (50em < width <= 70em) {
+}
+
+@container grid (50em < width <= 70em) {
   .m-order {
     order: var(--o, -1);
   }
-} /* @note Mémento de nos (presques) équivalences grid/flex codées ultérieurement : */ /* With Grid layout: */ /*
+}
+
+/* @note Mémento de nos (presques) équivalences grid/flex codées ultérieurement : */
+
+/* With Grid layout: */
+/*
 .summary {
   display: grid;
   gap: var(--gap);
@@ -672,7 +841,9 @@ sup {
     grid-template-columns: repeat(4, 1fr);
   }
 }
-*/ /* With flexbox: */ /*
+*/
+/* With flexbox: */
+/*
 .summary {
   display: flex;
   flex-wrap: wrap;
@@ -694,7 +865,13 @@ sup {
     }
   }
 }
-*/ /* @bug @affected Chrome @note Nombreux bugs : éléments html ou effets d'ombre tronqués s'ils dépassent des colonnes, drop-shadow utilisé sur des éléments internes aux colonnes créé des artefacts. */ [class^='column'] {
+*/
+}
+@layer layout{
+
+/* @bug @affected Chrome @note Nombreux bugs : éléments html ou effets d'ombre tronqués s'ils dépassent des colonnes, drop-shadow utilisé sur des éléments internes aux colonnes créé des artefacts. */
+
+[class^='column'] {
   :has(> &) {
     container: grid/inline-size;
     width: 100%; /* @note Important si le conteneur n'a pas de largeur définie par défaut. */
@@ -732,11 +909,15 @@ sup {
     gap: 0 var(--gap);
     /* column-gap: var(--gap); */
   }
-} @container grid (width <= 35em) {
+}
+
+@container grid (width <= 35em) {
   .XS-column2 {
     column-count: 2;
   }
-} @container grid (width > 35em) {
+}
+
+@container grid (width > 35em) {
   .column2,
   .column3,
   .column4,
@@ -748,7 +929,9 @@ sup {
   .column6 {
     column-count: 3;
   }
-} @container grid (width > 50em) {
+}
+
+@container grid (width > 50em) {
   .column3,
   .column4 {
     column-count: 3;
@@ -762,7 +945,9 @@ sup {
   .m-column2 {
     column-count: 2;
   }
-} @container grid (width > 70em) {
+}
+
+@container grid (width > 70em) {
   .column4 {
     column-count: 4;
   }
@@ -778,7 +963,9 @@ sup {
   .l-column3 {
     column-count: 3;
   }
-} .column-fix {
+}
+
+.column-fix {
   --column-width: 22.25em; /* = 356px, donc 4 colonnes pour les 92em quand wrap au max. */
   max-width: var(--column-width);
   column-count: 1;
@@ -796,23 +983,65 @@ sup {
     max-width: calc(var(--column-width)*4 + var(--gap)*3);
     column-count: 4;
   }
-} /* @import 'navigation'; */ /* @import 'breadcrumb'; */ /* @import 'alert'; */ ul,
+}
+}
+/* 4. COUCHE TRANSITIONS (Animations et transitions) */
+@layer transitions{
+/* 1. Activation du moteur de transition inter-documents */
+@view-transition {
+  navigation: auto;
+}
+
+/* 2. Mapping des discriminants sur les invariants de la structure HTML */
+.nav {
+  view-transition-name: layout-nav;
+}
+
+#main {
+  view-transition-name: layout-main;
+}
+
+.footer {
+  view-transition-name: layout-footer;
+}
+
+.alert {
+  view-transition-name: layout-alert;
+}
+}
+/* 5. COUCHE COMPONENTS (Logique modulaire et blocs atomiques) */
+/* @import 'navigation.css' layer(components);
+@import 'breadcrumb.css' layer(components);
+@import 'alert.css' layer(components); */
+@layer components{
+
+ul,
 ol {
   padding-inline-start: var(--list-start, 2.5em);
-} ul :where(ul, ol) {
+}
+
+ul :where(ul, ol) {
   padding-inline-start: 2.5em;
-} ul {
+}
+
+ul {
   list-style-type: square;
-} ol ol {
+}
+
+ol ol {
   list-style-type: lower-latin;
 
   & ol {
     list-style-type: lower-greek;
   }
-} .list-gap {
+}
+
+.list-gap {
   display: grid;
   gap: 0.75em; /* @note Écart calé sur les paragraphes. */
-} .list-stripe,
+}
+
+.list-stripe,
 .list-stripe-links {
   /* @note Ne pas utiliser : ne travaille pas de concert avec la classe `.grid`. */
   /* all: unset; */
@@ -829,7 +1058,9 @@ ol {
     background-color: var(--colorG27);
     box-shadow: var(--shadow6);
   }
-} .list-stripe-links {
+}
+
+.list-stripe-links {
   & a {
     display: block;
     color: var(--colorT);
@@ -842,7 +1073,9 @@ ol {
     outline: none;
     animation: anim-list 0.05s ease-in-out;
   }
-} .list-straight,
+}
+
+.list-straight,
 .list-rounded {
   margin: 0;
   padding-inline-start: 0;
@@ -897,7 +1130,9 @@ ol {
       /* text-decoration: none; */
     }
   }
-} .list-straight {
+}
+
+.list-straight {
   & li {
     box-shadow: var(--shadow6);
   }
@@ -932,7 +1167,9 @@ ol {
     border-radius: 0 var(--r3) var(--r3) 0;
     clip-path: polygon(100% 0, 100% 100%, 0% 100%, 1em 50%, 0% 0%);
   }
-} .list-rounded {
+}
+
+.list-rounded {
   & li:focus-within svg,
   & li:hover svg,
   & li:focus-within::before,
@@ -962,37 +1199,58 @@ ol {
   & a {
     border-radius: 1.25em;
   }
-} ol:where(.list-straight, .list-rounded) li {
+}
+
+ol:where(.list-straight, .list-rounded) li {
   counter-increment: li;
 
   &::before {
     content: counter(li);
   }
-} [class^='grid'][class*='list-'] {
+}
+
+[class^='grid'][class*='list-'] {
   gap: var(--gap);
-} [start] > .chorus {
+}
+
+[start] > .chorus {
   /* @note Pour les refrains. Pour la cohérence de la liste les numéros doivent être définis avec l'attribut `start="0" afin de commencer par "1".` */
   list-style-type: 'R. ';
-} @keyframes anim-list {
+}
+
+@keyframes anim-list {
   50% {
     transform: scale(1.03) translateZ(0);
   }
-} svg {
+}
+}
+@layer components{
+
+svg {
   display: block; /* @note display: inline par défaut */
   max-width: 100%;
   fill: currentcolor;
-} .decorative-svg {
+}
+
+.decorative-svg {
   fill: var(--colorT2);
   filter: drop-shadow(0.2em 0.2em 0.2em var(--colorAB3));
-} /* @note Éviter un espace de nom trop générique qui pourrait engendrer des effets de bord. */ .icon,
+}
+
+/* @note Éviter un espace de nom trop générique qui pourrait engendrer des effets de bord. */
+.icon,
 .icon-inline {
   display: inline-block;
   vertical-align: sub;
   height: 1.2em;
   aspect-ratio: 1;
-} .icon-inline {
+}
+
+.icon-inline {
   margin-inline-end: 0.5em;
-} img {
+}
+
+img {
   /* @note Évite un décalage possible de l'élément suivant. */
   vertical-align: middle;
   /* @bugfix @todo Depuis l'introduction des attributs 'srcset' et 'sizes' la largeur ne doit plus dépendre de l'image par défaut. */
@@ -1006,10 +1264,14 @@ ol {
   &:fullscreen {
     object-fit: contain;
   }
-} figure {
+}
+
+figure {
   /* @bugfix @affected All browers. */
   margin: 0;
-} [class*='figure-image'] {
+}
+
+[class*='figure-image'] {
   width: 100%;
   padding: 0.5em;
   color: var(--colorT);
@@ -1066,7 +1328,9 @@ ol {
     padding-block-start: 0.5em;
     text-align: center;
   }
-} @media (scripting: enabled) {
+}
+
+@media (scripting: enabled) {
   [class*='-focus'] {
     position: relative;
     /* @note Évite un conflit avec d'autres éléments HTML positionnés en relatifs dans la mise en page, tel que les ancres line-mark. */
@@ -1078,7 +1342,8 @@ ol {
       transform: scale(1.01);
     }
   }
-} @media (hover: hover) and (pointer: fine) {
+}
+@media (hover: hover) and (pointer: fine) {
   [class*='-focus']:focus-within {
     background-color: var(--color5);
 
@@ -1086,7 +1351,9 @@ ol {
       color: var(--color5);
     }
   }
-} [class*='-focus'] button,
+}
+
+[class*='-focus'] button,
 .picture-area button {
   all: unset;
   position: absolute;
@@ -1099,13 +1366,17 @@ ol {
     width: 100%;
     height: 100%;
   }
-} [class*='-focus'] button {
+}
+
+[class*='-focus'] button {
   top: 1em;
   right: 1em;
   width: 1.2em;
   height: 1.2em;
   color: var(--colorG60);
-} .picture-area {
+}
+
+.picture-area {
   position: fixed;
   /* @note Doit passer au dessus de tout autre élément, notamment le scroll top. */
   z-index: 4001;
@@ -1145,7 +1416,9 @@ ol {
     }
     */
   }
-} .mosaic {
+}
+
+.mosaic {
   & a {
     &:where(:focus, :hover, :active) figure {
       background-color: var(--colorW);
@@ -1177,7 +1450,9 @@ ol {
     width: 1em;
     height: 1em;
   }
-} .preview-container {
+}
+
+.preview-container {
   display: grid;
   background-color: #222;
 
@@ -1212,7 +1487,16 @@ ol {
       margin-inline: auto;
     }
   }
-} /* @import 'imageAnimation'; */ /* @import 'mediaPlayer'; */ /* @import 'map'; */ /* @import 'card'; */ /* @import 'flip'; */ code,
+}
+}
+/* @import 'imageAnimation.css' layer(components);
+@import 'mediaPlayer.css' layer(components);
+@import 'map.css' layer(components);
+@import 'card.css' layer(components);
+@import 'flip.css' layer(components); */
+@layer components{
+
+code,
 kbd,
 samp {
   font-family: monospace, monospace;
@@ -1220,10 +1504,14 @@ samp {
   word-break: break-all;
   color: var(--colorT2);
   border-radius: 0.3em;
-} :not(pre) > code {
+}
+
+:not(pre) > code {
   padding: 0.2em;
   background-color: var(--colorG15);
-} .pre {
+}
+
+.pre {
   overflow: auto;
   position: relative;
   min-height: 3em;
@@ -1287,13 +1575,21 @@ samp {
       outline: none;
     }
   }
-} .copy-offset + div {
+}
+
+.copy-offset + div {
   right: 2.5em;
-} @keyframes anim-blink-empty {
+}
+
+@keyframes anim-blink-empty {
   50% {
     content: '';
   }
-} [class^='message'] {
+}
+}
+@layer components{
+
+[class^='message'] {
   --color: currentcolor;
   --bg-color: var(--colorG27);
   padding: 0.15em 1em;
@@ -1322,21 +1618,37 @@ samp {
       clip-path: circle(50%);
     }
   }
-} .message-info {
+}
+
+.message-info {
   --bg-color: var(--color6);
-} .message-success {
+}
+
+.message-success {
   --bg-color: var(--color4);
-} .message-error {
+}
+
+.message-error {
   --bg-color: var(--color3);
-} .message-warning {
+}
+
+.message-warning {
   --bg-color: var(--colorS52);
-} [role='region'][aria-labelledby][tabindex]:has([class^='table']) {
+}
+}
+@layer components{
+
+[role='region'][aria-labelledby][tabindex]:has([class^='table']) {
   overflow-x: auto;
   box-shadow: var(--shadow5);
   max-height: 80vh;
-} [role='region'][aria-labelledby][tabindex]:focus-visible {
+}
+
+[role='region'][aria-labelledby][tabindex]:focus-visible {
   outline: 0.1em solid var(--color5);
-} [class^='table'] {
+}
+
+[class^='table'] {
   width: 100%;
   border-collapse: collapse;
   font-weight: normal;
@@ -1377,7 +1689,9 @@ samp {
   & tbody :empty::after {
     content: '/';
   }
-} @container (35em > width) {
+}
+
+@container (35em > width) {
   [role='region'][aria-labelledby][tabindex]:has(.table-responsive) {
     all: unset;
   }
@@ -1431,7 +1745,18 @@ samp {
       content: '...';
     }
   }
-} /* @import 'form'; */ /* @import 'input'; */ /* @import 'checkbox'; */ /* @import 'range'; */ /* @import 'button'; */ /* @import 'accordion'; */ /* @import 'tab'; */ /* @import 'scrollTop'; */ .footer {
+}
+}
+/* @import 'form.css' layer(components);
+@import 'input.css' layer(components);
+@import 'checkbox.css' layer(components);
+@import 'range.css' layer(components);
+@import 'button.css' layer(components);
+@import 'accordion.css' layer(components);
+@import 'tab.css' layer(components);
+@import 'scrollTop.css' layer(components); */
+@layer components{
+.footer {
   padding: 0 1em;
   color: var(--colorT2);
   background-color: var(--colorG15);
@@ -1485,7 +1810,11 @@ samp {
   & .wrap > :nth-child(2) {
     text-align: center;
   }
-} .article {
+}
+}
+@layer components{
+
+.article {
   display: grid;
   grid-template-columns: minmax(0, 60em) minmax(0, 1fr);
   gap: var(--gap) 0;
@@ -1665,13 +1994,21 @@ samp {
       margin-block-start: calc(var(--gap)*-1);
     }
   }
-} @media (width > 35em) {
+}
+
+@media (width > 35em) {
   .boxx {
     padding: 4em 6em;
     border-radius: var(--r1);
     box-shadow: var(--shadow3);
   }
-} /* @note Les propriétés applicables au sélecteur ::first-letter varient d'un navigateur à l'autre ; la solution retenue pour l'instant est un wrapper en javascript 'span.dropcap' sur la première lettre. */ .add-drop-cap > p:first-child::first-letter {
+}
+}
+@layer components{
+
+/* @note Les propriétés applicables au sélecteur ::first-letter varient d'un navigateur à l'autre ; la solution retenue pour l'instant est un wrapper en javascript 'span.dropcap' sur la première lettre. */
+
+.add-drop-cap > p:first-child::first-letter {
   /* @todo Fallback ":first-child::first-letter" pour Firefox, en attendant ":initial-letter" déjà disponible sous Chrome/Edge/Safari. @see https://caniuse.com/css-initial-letter */
   float: left;
   margin-bottom: -.2em;
@@ -1682,7 +2019,9 @@ samp {
   font-family: var(--font-list2);
   color: var(--color2);
   transform: translateY(0.5em);
-} /*
+}
+
+/*
 .add-drop-cap > p:first-child::first-letter {
   /* @todo Fallback ":first-child::first-letter" pour Firefox, en attendant ":initial-letter" déjà disponible sous Chrome/Edge/Safari. @see https://caniuse.com/css-initial-letter
   float: left;
@@ -1702,14 +2041,31 @@ samp {
     padding: 0.32em 0.2em 0.32em;
   }
 }
-*/ /* @import 'lineMark'; */ /* @import 'calendar'; */ /* @import 'progress'; */ /* @import 'loader'; */ pie-chart {
+*/
+}
+/* @import 'lineMark.css' layer(components);
+@import 'calendar.css' layer(components);
+@import 'progress.css' layer(components);
+@import 'loader.css' layer(components); */
+@layer components{
+
+pie-chart {
   --pie-chart-color-label: var(--color1);
   filter: drop-shadow(var(--shadow4));
-} bar-chart {
+}
+
+bar-chart {
   --bar-chart-color-label: var(--color1);
   filter: drop-shadow(var(--shadow4));
-} /* @import 'scrollBar'; */ /* @bug @affected Chrome @note Effet de bord indésirables si utilisation avec la propriété column-count sur l'élément parent (sauf pour le premier item). 1/ Bandeau tronqué si placé sur un élément avec la propriété. 2/ Liens non cliquables si utilisation de clip-path.
- */ .ribbon-content {
+}
+}
+/* @import 'scrollBar.css' layer(components); */
+@layer components{
+
+/* @bug @affected Chrome @note Effet de bord indésirables si utilisation avec la propriété column-count sur l'élément parent (sauf pour le premier item). 1/ Bandeau tronqué si placé sur un élément avec la propriété. 2/ Liens non cliquables si utilisation de clip-path.
+ */
+
+.ribbon-content {
   position: relative;
   /* @note Pas de hauteur minimum, celle-ci doit être gérée en fonction de la boite. */
   /* min-height: 7.5em */
@@ -1833,41 +2189,67 @@ samp {
       }
     }
   }
-} /* @import 'forum'; */ /* @import 'skin'; */ /* @import 'demo'; */ /* @note Les helpers s'appliquent à la fin dans le but d'écraser des styles tels que font-size. */ .hidden,
+}
+}
+/* @import 'forum.css' layer(components);
+@import 'skin.css' layer(components);
+@import 'demo.css' layer(components); */
+/* 6. COUCHE HELPERS (Surcharges de commodité / Utilitaires) */
+/* @note Les helpers s'appliquent à la fin dans le but d'écraser des styles tels que font-size. */
+@layer helpers{
+
+.hidden,
 [hidden]:not([hidden='until-found']) {
   display: none !important;
-} @container grid (--to-xs) {
+}
+
+@container grid (--to-xs) {
   .xs-hidden {
     display: none !important;
   }
-} @container grid (--from-xs-to-s) {
+}
+
+@container grid (--from-xs-to-s) {
   .s-hidden {
     display: none !important;
   }
-} @container grid (--from-s--to-m) {
+}
+
+@container grid (--from-s--to-m) {
   .m-hidden {
     display: none !important;
   }
-} @container grid (--from-m-to-l) {
+}
+
+@container grid (--from-m-to-l) {
   .l-hidden {
     display: none !important;
   }
-} .invisible {
+}
+
+.invisible {
   /* @note Cacher l'élément en laissant son emplacement @affected Lecteurs d'écran inclus. */
   visibility: hidden;
-} a[aria-disabled='true'] {
+}
+
+a[aria-disabled='true'] {
   /* @todo En expérimentation. */
   cursor: default; /* not-allowed */
 
   &:active {
     pointer-events: none;
   }
-} /* @bugfix @affected Chrome @note Ne fonctionne pas avec @layer : */ /*
+}
+
+/* @bugfix @affected Chrome @note Ne fonctionne pas avec @layer : */
+/*
 .sr-only {
   position: absolute;
   transform: scale(0);
 }
-*/ .sr-only {
+*/
+
+.sr-only {
   /* @note Caché visuellement mais disponible pour les lecteurs d'écran. */
   /* @see https://github.com/h5bp/html5-boilerplate/blob/master/dist/css/style.css */
   position: absolute;
@@ -1879,21 +2261,31 @@ samp {
   white-space: nowrap;
   border: 0;
   clip-path: rect(0, 0, 0, 0);
-} /*
+}
+
+/*
 .relative {
   /* @note Classe habituellement ajoutée en js sur des éléments parents
   position: relative;
 }
-*/ .protected {
+*/
+
+.protected {
   user-select: none;
-} .onaline {
+}
+
+.onaline {
   /* @note Texte sur une ligne sans dépassement. */
   overflow: hidden;
   white-space: nowrap;
   text-overflow: ellipsis;
-} .balance {
+}
+
+.balance {
   text-wrap: balance;
-} .center {
+}
+
+.center {
   display: grid;
   place-items: center;
   /* @note Alternative : */
@@ -1902,7 +2294,9 @@ samp {
     place-self: center;
   }
   */
-} @container grid (--to-xs) {
+}
+
+@container grid (--to-xs) {
   .xs-center {
     display: grid;
     place-items: center;
@@ -1912,15 +2306,21 @@ samp {
     /* @note un 'br' volontairement non sémantique à destination des petites définitions d'écran, à placer sur un span englobant un espace. */
     display: block;
   }
-} .rotate90 {
+}
+  .rotate90 {
     /* prettier-ignore */
     transform: rotate(90deg);
-  } .rotate180 {
+  }
+  .rotate180 {
     /* prettier-ignore */
     transform: rotate(180deg);
-  } .reverse {
+  }
+
+.reverse {
   transform: scaleX(-1);
-} .size {
+}
+
+.size {
   --size: 25em;
   --size-width: var(--size);
   --size-height: var(--size);
@@ -1928,47 +2328,71 @@ samp {
   height: var(--size-height);
   max-width: 100%;
   max-height: 100vh;
-} .vw80 {
+}
+
+.vw80 {
   --size: 25em;
   --size-width: var(--size);
   width: calc(var(--size)*0.8);
-} .scale {
+}
+
+.scale {
   font-size: var(--scale, 100%);
-} @container grid (--to-xs) {
+}
+
+@container grid (--to-xs) {
   .xs-scale {
     font-size: var(--xs-scale, 100%);
   }
-} @container grid (--from-xs) {
+}
+
+@container grid (--from-xs) {
   .s-scale {
     font-size: var(--s-scale, 100%);
   }
-} @container grid (--from-s) {
+}
+
+@container grid (--from-s) {
   .m-scale {
     font-size: var(--m-scale, 100%);
   }
-} @container grid (--from-m) {
+}
+
+@container grid (--from-m) {
   .l-scale {
     font-size: var(--l-scale, 100%);
   }
-} .rescale {
+}
+
+.rescale {
   font-size: 1rem;
-} /*
+}
+
+/*
 .no-overscroll {
   overscroll-behavior-x: none;
 }
-*/ .blink {
+*/
+
+.blink {
   animation: anim-blink 1.2s infinite;
-} @keyframes anim-blink {
+}
+
+@keyframes anim-blink {
   50% {
     display: none;
     filter: invert(1);
   }
-} .fade-in {
+}
+
+.fade-in {
   visibility: visible;
   opacity: 1;
   transform: scale(1);
   transition: opacity 1s ease-in;
-} .fade-out {
+}
+
+.fade-out {
   visibility: hidden;
   opacity: 0;
   transform: scale(0);
@@ -1976,7 +2400,9 @@ samp {
     opacity 1s ease-out,
     visibility 0s 1s ease-out,
     transform 0s 1s ease-out;
-} /*
+}
+
+/*
 @keyframes anim-fade-in {
   from {
     opacity: 0;
@@ -1994,77 +2420,116 @@ samp {
     opacity: 0;
   }
 }
-*/ .freeze {
+*/
+
+.freeze {
   overflow: clip;
-} body > :not(main, footer),
-form,
-fieldset,
-/* input, */
-/* textarea, */
-button,
-audio,
-video,
-[class*=player],
-/* .map, */
-.accordion,
-.card,
-pre button,
-pre div,
-.line-mark {
-  display: none !important;
-} * {
-  text-shadow: none !important;
-} *,
-::before,
-::after {
-  color: black !important;
-} body,
-.article {
-  display: block; /* @affected Firefox */
-} .footer {
-  width: 100vw;
-  box-shadow: none;
-  & > * {
-    flex-direction: column;
+}
+}
+@layer print {
+  body > :not(main, footer),
+  form,
+  fieldset,
+  /* input, */
+  /* textarea, */
+  button,
+  audio,
+  video,
+  [class*=player],
+  /* .map, */
+  .accordion,
+  .card,
+  pre button,
+  pre div,
+  .line-mark {
+    display: none !important;
   }
-} /* @note Harmonisation entre navigateurs. */ pre,
-blockquote,
-tr,
-img,
-figure,
-[class*=figure] {
-  break-inside: avoid;
-} p,
-h2,
-h3 {
-  orphans: 3;
-  widows: 3;
-} h2,
-h3 {
-  break-after: avoid;
-} a,
-h1 span {
-  color: tomato !important;
-} [class*=figure] {
-  box-shadow: none !important;
-  border: .1em solid #ddd; /* @affected Firefox @note Pas de prise en compte de la bordure si 1px. */
-} [class*=-alignleft] {
-  float: left;
-  margin-inline-end: var(--gap);
-} [class*=-alignright] {
-  float: right;
-  margin-inline-start: var(--gap);
-} .article .wrapper {
-  text-align: justify;
-  margin-block-start: var(--gap);
-  padding: 0 !important; /* @affected Firefox */
-  box-shadow: none !important; /* @affected Firefox */
-} .tags a {
-  background: #efefef !important;
-} .avatar,
-.avatars,
-.tags {
-  print-color-adjust: exact !important;
+
+  * {
+    text-shadow: none !important;
+  }
+
+  *,
+  ::before,
+  ::after {
+    color: black !important;
+  }
+
+  body,
+  .article {
+    display: block; /* @affected Firefox */
+  }
+
+  .footer {
+    width: 100vw;
+    box-shadow: none;
+    & > * {
+      flex-direction: column;
+    }
+  } /* @note Harmonisation entre navigateurs. */
+
+  pre,
+  blockquote,
+  tr,
+  img,
+  figure,
+  [class*='figure'] {
+    break-inside: avoid;
+  }
+
+  p,
+  h2,
+  h3 {
+    orphans: 3;
+    widows: 3;
+  }
+
+  h2,
+  h3 {
+    break-after: avoid;
+  }
+
+  a,
+  h1 span {
+    color: tomato !important;
+  }
+
+  [class*='figure'] {
+    box-shadow: none !important;
+    border: 0.1em solid #ddd; /* @affected Firefox @note Pas de prise en compte de la bordure si 1px. */
+  }
+
+  [class*='-alignleft'] {
+    float: left;
+    margin-inline-end: var(--gap);
+  }
+
+  [class*='-alignright'] {
+    float: right;
+    margin-inline-start: var(--gap);
+  }
+
+  .article .wrapper {
+    text-align: justify;
+    margin-block-start: var(--gap);
+    padding: 0 !important; /* @affected Firefox */
+    box-shadow: none !important; /* @affected Firefox */
+  }
+
+  .tags a {
+    background: #efefef !important;
+  }
+
+  .avatar,
+  .avatars,
+  .tags {
+    print-color-adjust: exact !important;
+  }
+
+  html,
+  footer {
+    background: white;
+  }
 }
 
 /*# sourceMappingURL=print.css.map */
