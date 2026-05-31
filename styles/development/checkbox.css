@@ -33,7 +33,7 @@
   }
 
   &:focus-visible {
-    /* @note "!important" est nécessaire pour les boutons radio, sinon le focus ne surclasse pas la bordure définie plus haut. */
+    /* @note "!important" est nécessaire pour les boutons radio, sinon la couleur du focus ne surclasse pas celle de la bordure. */
     border-color: var(--color5) !important;
   }
 
