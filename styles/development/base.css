@@ -261,16 +261,6 @@ summary {
   }
 }
 
-/*
-template {
-  display: none; /* @bugfix Add the correct display @affected IE 10+.
-}
-
-[hidden] {
-  display: none; /* @bugfix Add the correct display @affected IE 10.
-}
-*/
-
 iframe {
   overflow: hidden;
   width: 100%;

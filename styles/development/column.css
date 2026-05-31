@@ -19,8 +19,7 @@
 
   &.gap {
     column-gap: var(--gap);
-    /* @note À l'inverse de grid layout, le module columns a besoin des marges pour bien s'implémenter. */
-    margin-block-end: calc(-1 * var(--gap));
+    /* @note column-gap pour les goutières verticales, margin pour les goutières horizontales. */
 
     & > * {
       margin-block-end: var(--gap);

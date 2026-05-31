@@ -421,16 +421,6 @@ summary {
   }
 }
 
-/*
-template {
-  display: none; /* @bugfix Add the correct display @affected IE 10+.
-}
-
-[hidden] {
-  display: none; /* @bugfix Add the correct display @affected IE 10.
-}
-*/
-
 iframe {
   overflow: hidden;
   width: 100%;
@@ -958,8 +948,7 @@ main {
 
   &.gap {
     column-gap: var(--gap);
-    /* @note À l'inverse de grid layout, le module columns a besoin des marges pour bien s'implémenter. */
-    margin-block-end: calc(var(--gap)*-1);
+    /* @note column-gap pour les goutières verticales, margin pour les goutières horizontales. */
 
     & > * {
       margin-block-end: var(--gap);
