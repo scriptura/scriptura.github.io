@@ -1,5 +1,3 @@
-'use strict'
-
 /**
  * @summary Ajoute un bouton de bascule show/hide sur chaque champ password
  * ciblé par `.input > [type=password]`.
@@ -26,39 +24,39 @@
  */
 
 function initReadablePassword() {
-  const inputs = document.querySelectorAll('.input > [type=password]')
-  if (!inputs.length) return
+	const inputs = document.querySelectorAll(".input > [type=password]");
+	if (!inputs.length) return;
 
-  for (const input of inputs) {
-    input.parentElement.classList.add('input-password')
+	for (const input of inputs) {
+		input.parentElement.classList.add("input-password");
 
-    const button = document.createElement('button')
-    button.type = 'button'
+		const button = document.createElement("button");
+		button.type = "button";
 
-    const labelShow = 'See password'
-    const labelHide = 'Hide password'
+		const labelShow = "See password";
+		const labelHide = "Hide password";
 
-    button.title = labelShow
-    button.setAttribute('aria-label', labelShow)
+		button.title = labelShow;
+		button.setAttribute("aria-label", labelShow);
 
-    input.after(button)
+		input.after(button);
 
-    if (typeof injectSvgSprite === 'function') injectSvgSprite(button, 'eye')
+		if (typeof injectSvgSprite === "function") injectSvgSprite(button, "eye");
 
-    button.addEventListener('click', () => {
-      const isPassword = input.type === 'password'
-      input.type = isPassword ? 'text' : 'password'
+		button.addEventListener("click", () => {
+			const isPassword = input.type === "password";
+			input.type = isPassword ? "text" : "password";
 
-      const label = isPassword ? labelHide : labelShow
-      const icon  = isPassword ? 'eye-blocked' : 'eye'
+			const label = isPassword ? labelHide : labelShow;
+			const icon = isPassword ? "eye-blocked" : "eye";
 
-      button.title = label
-      button.setAttribute('aria-label', label)
+			button.title = label;
+			button.setAttribute("aria-label", label);
 
-      button.querySelector('svg')?.remove()
-      if (typeof injectSvgSprite === 'function') injectSvgSprite(button, icon)
-    })
-  }
+			button.querySelector("svg")?.remove();
+			if (typeof injectSvgSprite === "function") injectSvgSprite(button, icon);
+		});
+	}
 }
 
-initReadablePassword()
+initReadablePassword();

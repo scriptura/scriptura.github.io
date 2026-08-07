@@ -1,5 +1,3 @@
-'use strict'
-
 /**
  * @summary Web Component SVG de graphique en camembert (simple/donut), animé,
  *          avec labels positionnés et interaction hover par section.
@@ -38,14 +36,14 @@
  * @returns {Node}
  */
 const strToDom = (str) =>
-  document.createRange().createContextualFragment(str).firstChild
+	document.createRange().createContextualFragment(str).firstChild;
 
 /**
  * Courbe d'accélération exponentielle décroissante.
  * @param {number} x - Progression [0, 1]
  * @returns {number}
  */
-const easeOutExpo = (x) => (x === 1 ? 1 : 1 - Math.pow(2, -10 * x))
+const easeOutExpo = (x) => (x === 1 ? 1 : 1 - 2 ** (-10 * x));
 
 // ---------------------------------------------------------------------------
 // Point
@@ -57,18 +55,18 @@ const easeOutExpo = (x) => (x === 1 ? 1 : 1 - Math.pow(2, -10 * x))
  * @property {number} y
  */
 class Point {
-  constructor(x, y) {
-    this.x = x
-    this.y = y
-  }
+	constructor(x, y) {
+		this.x = x;
+		this.y = y;
+	}
 
-  toSvgPath() {
-    return `${this.x} ${this.y}`
-  }
+	toSvgPath() {
+		return `${this.x} ${this.y}`;
+	}
 
-  static fromAngle(angle) {
-    return new Point(Math.cos(angle), Math.sin(angle))
-  }
+	static fromAngle(angle) {
+		return new Point(Math.cos(angle), Math.sin(angle));
+	}
 }
 
 // ---------------------------------------------------------------------------
@@ -83,71 +81,83 @@ class Point {
  * @property {HTMLDivElement[]} labels - Labels positionnés
  */
 class PieChart extends HTMLElement {
-  constructor() {
-    super()
-    const shadow = this.attachShadow({ mode: 'open' })
+	constructor() {
+		super();
+		const shadow = this.attachShadow({ mode: "open" });
 
-    // — Lecture des attributs (AOT, avant tout rendu) —
-    const labels  = this.getAttribute('labels')?.split(';') ?? []
-    const donut   = this.getAttribute('donut') ?? '0.7'
-    const gap     = this.getAttribute('gap') ?? '0.04'
-    const colors  = this.getAttribute('colors')?.split(';') ?? [
-      'hsl(9,100%,64%)',  'hsl(29,100%,64%)', 'hsl(49,100%,64%)',
-      'hsl(69,100%,64%)', 'hsl(89,100%,64%)', 'hsl(109,100%,64%)',
-      'hsl(129,100%,64%)','hsl(149,100%,64%)','hsl(169,100%,64%)',
-      'hsl(189,100%,64%)',
-    ]
+		// — Lecture des attributs (AOT, avant tout rendu) —
+		const labels = this.getAttribute("labels")?.split(";") ?? [];
+		const donut = this.getAttribute("donut") ?? "0.7";
+		const gap = this.getAttribute("gap") ?? "0.04";
+		const colors = this.getAttribute("colors")?.split(";") ?? [
+			"hsl(9,100%,64%)",
+			"hsl(29,100%,64%)",
+			"hsl(49,100%,64%)",
+			"hsl(69,100%,64%)",
+			"hsl(89,100%,64%)",
+			"hsl(109,100%,64%)",
+			"hsl(129,100%,64%)",
+			"hsl(149,100%,64%)",
+			"hsl(169,100%,64%)",
+			"hsl(189,100%,64%)",
+		];
 
-    this.data  = this.getAttribute('data').split(';').map(parseFloat)
-    // Invariant AOT : calculé une fois, jamais recalculé dans la boucle draw()
-    this.total = this.data.reduce((acc, v) => acc + v, 0)
+		this.data = this.getAttribute("data").split(";").map(parseFloat);
+		// Invariant AOT : calculé une fois, jamais recalculé dans la boucle draw()
+		this.total = this.data.reduce((acc, v) => acc + v, 0);
 
-    // — Structure SVG —
-    const svg = strToDom(`<svg viewBox="-1 -1 2 2">
+		// — Structure SVG —
+		const svg = strToDom(`<svg viewBox="-1 -1 2 2">
       <g mask="url(#graphMask)"></g>
       <mask id="graphMask">
         <rect fill="white" x="-1" y="-1" width="2" height="2"/>
         <circle r="${donut}" fill="black"/>
       </mask>
-    </svg>`)
+    </svg>`);
 
-    const pathGroup = svg.querySelector('g')
-    const maskGroup = svg.querySelector('mask')
+		const pathGroup = svg.querySelector("g");
+		const maskGroup = svg.querySelector("mask");
 
-    // — Pré-allocation des paths (sections) —
-    this.paths = this.data.map((_, k) => {
-      const path = document.createElementNS('http://www.w3.org/2000/svg', 'path')
-      path.setAttribute('fill', colors[k % colors.length].trim())
-      path.addEventListener('mouseover', () => this.handlePathHover(k))
-      path.addEventListener('mouseout',  () => this.handlePathOut(k))
-      pathGroup.appendChild(path)
-      return path
-    })
+		// — Pré-allocation des paths (sections) —
+		this.paths = this.data.map((_, k) => {
+			const path = document.createElementNS(
+				"http://www.w3.org/2000/svg",
+				"path",
+			);
+			path.setAttribute("fill", colors[k % colors.length].trim());
+			path.addEventListener("mouseover", () => this.handlePathHover(k));
+			path.addEventListener("mouseout", () => this.handlePathOut(k));
+			pathGroup.appendChild(path);
+			return path;
+		});
 
-    // — Pré-allocation des lignes (séparateurs) —
-    this.lines = this.data.map(() => {
-      const line = document.createElementNS('http://www.w3.org/2000/svg', 'line')
-      line.setAttribute('stroke',       '#000')
-      line.setAttribute('stroke-width', gap)
-      line.setAttribute('x1', '0')
-      line.setAttribute('y1', '0')
-      maskGroup.appendChild(line)
-      return line
-    })
+		// — Pré-allocation des lignes (séparateurs) —
+		this.lines = this.data.map(() => {
+			const line = document.createElementNS(
+				"http://www.w3.org/2000/svg",
+				"line",
+			);
+			line.setAttribute("stroke", "#000");
+			line.setAttribute("stroke-width", gap);
+			line.setAttribute("x1", "0");
+			line.setAttribute("y1", "0");
+			maskGroup.appendChild(line);
+			return line;
+		});
 
-    // — Labels —
-    this.labels = labels.map((label, id) => {
-      const div = document.createElement('div')
-      div.id          = `label${id}`
-      div.textContent = label
-      div.setAttribute('tabindex', '0')
-      shadow.appendChild(div)
-      return div
-    })
+		// — Labels —
+		this.labels = labels.map((label, id) => {
+			const div = document.createElement("div");
+			div.id = `label${id}`;
+			div.textContent = label;
+			div.setAttribute("tabindex", "0");
+			shadow.appendChild(div);
+			return div;
+		});
 
-    // — Styles encapsulés —
-    const style = document.createElement('style')
-    style.textContent = `
+		// — Styles encapsulés —
+		const style = document.createElement("style");
+		style.textContent = `
 :host {
   display: block;
   position: relative;
@@ -182,88 +192,88 @@ div.active {
   opacity: 1;
   outline: none;
 }
-`
-    shadow.appendChild(style)
-    shadow.appendChild(svg)
-  }
+`;
+		shadow.appendChild(style);
+		shadow.appendChild(svg);
+	}
 
-  connectedCallback() {
-    const start    = Date.now()
-    const duration = 1000
+	connectedCallback() {
+		const start = Date.now();
+		const duration = 1000;
 
-    const tick = () => {
-      const t = (Date.now() - start) / duration
-      if (t < 1) {
-        this.draw(easeOutExpo(t))
-        requestAnimationFrame(tick)
-      } else {
-        this.draw(1)
-      }
-    }
-    requestAnimationFrame(tick)
-  }
+		const tick = () => {
+			const t = (Date.now() - start) / duration;
+			if (t < 1) {
+				this.draw(easeOutExpo(t));
+				requestAnimationFrame(tick);
+			} else {
+				this.draw(1);
+			}
+		};
+		requestAnimationFrame(tick);
+	}
 
-  /**
-   * Dessine toutes les sections du graphique à un état de progression donné.
-   * @param {number} progress - [0, 1]
-   */
-  draw(progress = 1) {
-    // Epsilon géométrique : un arc à exactement 360° produit un chemin dégénéré
-    // (point de départ === point d'arrivée) que le moteur SVG ignore visuellement.
-    const PATCH = 0.0000001
-    let angle = Math.PI / -2
-    let start = new Point(0, -1)
+	/**
+	 * Dessine toutes les sections du graphique à un état de progression donné.
+	 * @param {number} progress - [0, 1]
+	 */
+	draw(progress = 1) {
+		// Epsilon géométrique : un arc à exactement 360° produit un chemin dégénéré
+		// (point de départ === point d'arrivée) que le moteur SVG ignore visuellement.
+		const PATCH = 0.0000001;
+		let angle = Math.PI / -2;
+		let start = new Point(0, -1);
 
-    for (let k = 0; k < this.data.length; k++) {
-      this.lines[k].setAttribute('x2', start.x)
-      this.lines[k].setAttribute('y2', start.y)
+		for (let k = 0; k < this.data.length; k++) {
+			this.lines[k].setAttribute("x2", start.x);
+			this.lines[k].setAttribute("y2", start.y);
 
-      const ratio = (this.data[k] / this.total) * progress
+			const ratio = (this.data[k] / this.total) * progress;
 
-      if (progress === 1) {
-        this.positionLabel(this.labels[k], angle + ratio * Math.PI)
-      }
+			if (progress === 1) {
+				this.positionLabel(this.labels[k], angle + ratio * Math.PI);
+			}
 
-      angle += ratio * 2 * Math.PI - PATCH
-      const end       = Point.fromAngle(angle)
-      const largeFlag = ratio > 0.5 ? '1' : '0'
+			angle += ratio * 2 * Math.PI - PATCH;
+			const end = Point.fromAngle(angle);
+			const largeFlag = ratio > 0.5 ? "1" : "0";
 
-      this.paths[k].setAttribute(
-        'd',
-        `M 0 0 L ${start.toSvgPath()} A 1 1 0 ${largeFlag} 1 ${end.toSvgPath()} L 0 0`
-      )
-      start = end
-    }
-  }
+			this.paths[k].setAttribute(
+				"d",
+				`M 0 0 L ${start.toSvgPath()} A 1 1 0 ${largeFlag} 1 ${end.toSvgPath()} L 0 0`,
+			);
+			start = end;
+		}
+	}
 
-  /**
-   * Active visuellement la section k et émet un événement personnalisé.
-   * @param {number} k
-   */
-  handlePathHover(k) {
-    this.dispatchEvent(new CustomEvent('sectionhover', { detail: k }))
-    this.labels[k]?.classList.add('active')
-  }
+	/**
+	 * Active visuellement la section k et émet un événement personnalisé.
+	 * @param {number} k
+	 */
+	handlePathHover(k) {
+		this.dispatchEvent(new CustomEvent("sectionhover", { detail: k }));
+		this.labels[k]?.classList.add("active");
+	}
 
-  /**
-   * Désactive visuellement la section k.
-   * @param {number} k
-   */
-  handlePathOut(k) {
-    this.labels[k]?.classList.remove('active')
-  }
+	/**
+	 * Désactive visuellement la section k.
+	 * @param {number} k
+	 */
+	handlePathOut(k) {
+		this.labels[k]?.classList.remove("active");
+	}
 
-  /**
-   * Positionne un label sur le rayon médian de sa section.
-   * @param {HTMLDivElement|undefined} label
-   * @param {number|undefined} angle - En radians
-   */
-  positionLabel(label, angle) {
-    if (!label || angle == null) return
-    const point = Point.fromAngle(angle)
-    label.style.setProperty('top',  `${(point.y * 0.5 + 0.5) * 100}%`)
-    label.style.setProperty('left', `${(point.x * 0.5 + 0.5) * 100}%`)
-  }
+	/**
+	 * Positionne un label sur le rayon médian de sa section.
+	 * @param {HTMLDivElement|undefined} label
+	 * @param {number|undefined} angle - En radians
+	 */
+	positionLabel(label, angle) {
+		if (!label || angle == null) return;
+		const point = Point.fromAngle(angle);
+		label.style.setProperty("top", `${(point.y * 0.5 + 0.5) * 100}%`);
+		label.style.setProperty("left", `${(point.x * 0.5 + 0.5) * 100}%`);
+	}
 }
 
-customElements.define('pie-chart', PieChart)
+customElements.define("pie-chart", PieChart);
